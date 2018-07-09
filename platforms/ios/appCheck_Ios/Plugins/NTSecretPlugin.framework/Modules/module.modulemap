@@ -1,0 +1,6 @@
+framework module NTSecretPlugin {
+  umbrella header "NTSecretPlugin.h"
+
+  export *
+  module * { export * }
+}

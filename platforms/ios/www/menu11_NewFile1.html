@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+
+		<style type="text/css">
+			body {
+				margin: 0;
+				padding: 0;
+				background: #FFFFFF;
+			}
+			.li_left {
+				line-height: 55px;
+			}
+			.form_div_big li>img {
+				width: 30px;
+				height: 30px;
+				float: left;
+				margin-top: 13px;
+				margin-left: 20px;
+				margin-right: 20px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+		<div class="top">
+			<div class="back_ic" onclick="parent.hideFrame('hmask')"></div>
+			<span class="top_title">客户建档</span>
+		</div>
+
+		<div class="form_div_big">
+			<ul>
+				<li>
+					<img src="img/sanxia/tools_icon8.png" />
+					<div class="li_left">农区基本信息</div>
+				</li>
+				<li>
+					<img src="img/sanxia/tools_icon9.png" />
+					<div class="li_left">园区基本信息</div>
+				</li>
+
+				<li onclick="showNewFrame('menu11_NewFile2.html','slfade')">
+					<img src="img/sanxia/tools_icon10.png" />
+					<div class="li_left">社区基本信息</div>
+				</li>
+				<li>
+					<img src="img/sanxia/tools_icon11.png" />
+					<div class="li_left">商区基本信息</div>
+				</li>
+
+			</ul>
+		</div>
+
+		<div id="newWin" style=" position: absolute;top:0px;left:0px;width: 100%;height: 100%;overflow:hidden; opacity: 0;z-index: 1000;display:none;">
+			<iframe id="mainFrame5" style="width: 100%;height: 100%;border: none;"></iframe>
+		</div>
+
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		<script>
+			$('li').each(function() {
+				var $obj = $(this);
+				this.addEventListener('touchstart', function() {
+					$obj.css('background-color', '#cccccc');
+				}, false);
+				this.addEventListener('touchend', function() {
+					$obj.css('background-color', '');
+				}, false);
+			});
+		</script>
+
+	</body>
+
+</html>

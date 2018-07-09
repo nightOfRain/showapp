@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="format-detection" content="telephone=no">
+        <title>FrozenUI Demo</title>
+        <script type="text/javascript" src="http://tajs.qq.com/stats?sId=37342703" charset="UTF-8"></script>
+        <link rel="stylesheet" href="css/frozen.css">
+        <link rel="stylesheet" href="demo.css">
+        <script src="lib/zepto.min.js"></script>
+        <script src="js/frozen.js"></script>
+    </head>
+    
+    <body ontouchstart>
+        <header class="ui-header ui-header-positive ui-border-b">
+            <i class="ui-icon-return" onclick="history.back()"></i><h1>抵押物现状查询</h1><button class="ui-btn">回首页</button>
+        </header>
+
+        <section class="ui-container">
+
+
+
+
+<section id="form">
+ 
+
+
+
+
+    <div class="demo-item">
+        <p class="demo-desc">抵押物是否存在查封冻结等权利受限情况？</p>
+        <div class="demo-block">
+            <div class="ui-form ui-border-t">
+                <form action="#">
+                    <label><input name="Fruit" type="checkbox" value="" />是 </label> 
+					<label><input name="Fruit" type="checkbox" value="" />否 </label> 
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="demo-item">
+        <p class="demo-desc">抵押物当期估值是否较授信时估值法师较大变化？</p>
+        <div class="demo-block">
+            <div class="ui-form ui-border-t">
+                <form action="#">
+                    <label><input name="Fruit" type="checkbox" value="" />是 </label> 
+					<label><input name="Fruit" type="checkbox" value="" />否 </label> 
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="demo-item">
+        <p class="demo-desc">权利凭证是否即将到期或已过期？</p>
+        <div class="demo-block">
+            <div class="ui-form ui-border-t">
+                <form action="#">
+                    <label><input name="Fruit" type="checkbox" value="" />是 </label> 
+					<label><input name="Fruit" type="checkbox" value="" />否 </label> 
+
+                </form>
+            </div>
+        </div>
+    </div>
+   <div class="demo-item">
+     	<p  class="demo-desc">抵质押权利凭证到期日期： YYYY年MM月DD日</p>       
+    </div>
+<div class="demo-item">
+  		 <li style="border:0;height:64px;">
+  		 	<p  class="demo-desc">现场抵押物拍照上传</p>
+			<div style="margin-left:20px;">
+				<img src="img/pz.png" height="40px"></img>
+			</div>
+			
+		</li>
+	</div>
+   	<div class="demo-item" style="margin-top:30px;">
+       
+        <div class="demo-block"> 
+            <div class="ui-btn-wrap">
+                <button class="ui-btn-lg ui-btn-primary">
+                    保存
+                </button>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+        </section><!-- /.ui-container-->
+        <script>
+        $('.ui-list li,.ui-tiled li').click(function(){
+            if($(this).data('href')){
+                location.href= $(this).data('href');
+            }
+        });
+        $('.ui-header .ui-btn').click(function(){
+            location.href= 'index.html';
+        });
+        </script>
+    </body>
+</html>

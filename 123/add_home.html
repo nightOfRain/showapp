@@ -1,0 +1,330 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/circle_reset.css">
+<link rel="stylesheet" href="css/circle_style.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+<link rel="stylesheet" href="hello-mui/css/app.css">
+
+<link rel="stylesheet" href="css/frozen.css">
+<link rel="stylesheet" href="css/demo.css">     
+
+<link rel="stylesheet" type="text/css" href="css/timeline.css" />   
+<script src="hello-mui/js/mui.min.js"></script>
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script> 
+<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+<script type="text/javascript" src="js/nt_zuobiao.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=kZ76MkTNOIQ1VnidegnnxbKc"></script>
+
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<style>
+html, body {
+    position: relative;
+    height: 100%;
+}
+body {
+    background: #fff;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color:#000;
+    margin: 0;
+    padding: 0;
+    overflow:auto;
+ 
+}
+
+
+
+</style>
+<script>
+
+			var thisURL; 
+
+			var startX, startY, endX, endY;
+			var start_flag = 0;
+			var offline_flag = 0;
+			var myArray = new Array(); 
+			var myArray_offline = new Array(); 
+	
+			$(function() {				
+		
+				thisURL = document.URL; 
+				top.map_flag = 0;
+				
+				top.edit_flag = 1;
+				top.data={};
+				localStorage.setItem("list_flag", '0');
+
+				mui.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				mui('.mui-scroll-wrapper').scroll({
+	                deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+	                });
+				
+				mui(document.body).on('tap', '.mui-action-back ', function(e) {
+					this.click();
+					return false;
+				});
+				file_begin();
+			});
+
+
+			function file_begin(){
+				//做开关
+				if(start_flag == 1){
+					return;
+				}else{
+					var data = {
+							user_id:localStorage.getItem("user_id"),
+							manager_id:top.user_name,
+							inst_id:top.inst_name,
+							customer:localStorage.getItem("customer"),
+							group_code:localStorage.getItem("group_code"),  
+							type:'0',
+							force:'0',
+							coordinate:top.coordinate,
+		        			address:top.address_gps,
+		        			trandate:get_trandate()
+					};
+		
+					Http_ajax(function(msg){
+						
+						top.stop_process();
+						top.writelog("6003="+msg);
+						var json=eval("("+msg+")");
+						
+						localStorage.setItem("fileno", json.data.fileno);
+						if(json.data.stat == 0 ){ //新增
+							start_flag = 1;
+							//window.scrollTo(0,$('#off_top').offset().top);
+							return ;
+						}else{
+							var statinfo ='';
+							
+							if(json.data.stat == 1){ //已有且未完成
+								statinfo = '检查未完成';
+							}else if(json.data.stat == 2){//已有且完成
+								statinfo = '检查已完成';							
+							}
+							top.confirmInfo_new("今天对该客户已经做过检查，且"+statinfo+"。请选择如下操作", function(msg){
+								if(msg == 1){ //继续录入
+									//showNewFrame('fileno_info.html?fileno='+json.data.fileno, 'smask');
+									var fileno_now = localStorage.getItem("fileno");
+									var data = {
+											fileno:fileno_now											
+									};
+									Http_ajax(function(msg){
+										top.stop_process();
+										var json=eval("("+msg+")");
+										top.data = json.data;
+										var check_jour_one = json.data.check_step_one;
+										var check_jour_two = json.data.check_step_two;
+										var check_jour_three = json.data.check_step_three;
+										var check_jour_four = json.data.check_step_four;
+										var check_jour_five = json.data.check_step_five;
+										var check_jour_six = json.data.check_step_six;
+										if(check_jour_one){
+											$("#step_1").attr("style","background:rgba(68, 153, 238, 0.9)");
+										}
+										if(check_jour_two){
+											$("#step_2").attr("style","background:rgba(68, 153, 238, 0.9)");
+										}
+										if(check_jour_three){
+											$("#step_3").attr("style","background:rgba(68, 153, 238, 0.9)");
+										}
+										if(check_jour_four){
+											$("#step_4").attr("style","background:rgba(68, 153, 238, 0.9)");
+										}
+										if(check_jour_five){
+											$("#step_5").attr("style","background:rgba(68, 153, 238, 0.9)");
+										}
+										if(check_jour_six){
+											$("#step_6").attr("style","background:rgba(68, 153, 238, 0.9)");
+										}
+									}, "app/6011", data);
+								}else if(msg == 2){//重新录入
+									
+									var data = {
+											user_id:localStorage.getItem("user_id"),
+											manager_id:top.user_name,
+											inst_id:top.inst_name,
+											customer:localStorage.getItem("customer"),
+											group_code:localStorage.getItem("group_code"),  
+											type:'0',
+											force:'1',
+											coordinate:top.coordinate,
+						        			address:top.address_gps,
+						        			trandate:get_trandate()
+									};
+									Http_ajax(function(msg){
+										top.stop_process();
+										var json=eval("("+msg+")");
+										localStorage.setItem("fileno", json.data.fileno);
+									}, "app/6003", data);
+								}
+							});
+							
+						}
+						
+					}, "app/6003", data);
+					
+				}
+				
+				
+			}
+			function update_button(step){		
+				$("#step_"+i+"_img").attr("src", "imgurl");
+				$("#step_"+i+"_span").html("");
+			}
+
+
+			function scroll_auto(){
+
+	            mui('.mui-scroll-wrapper').scroll().reLayout();
+	            mui('.mui-scroll-wrapper').scroll().scrollToBottom(500);
+	        
+			}
+	
+			function check_by_step(step){
+
+				switch(step){
+					case 1:
+                        showNewFrame('business_place.html', 'smask');
+						break;
+					case 2:
+						showNewFrame('office_check.html', 'smask');				
+						break;
+					case 3:
+                        showNewFrame('finance_check.html', 'smask');
+											
+						break;
+					case 4:
+						showNewFrame('taxes_check.html', 'smask');
+						break;
+					case 5:
+						showNewFrame('bank_check.html', 'smask');
+						break;
+					case 6:
+						showNewFrame('pawn_check.html', 'smask');												
+						break;
+					default:
+						break;
+				
+				}
+			}
+
+
+			function isEmpty(obj) {
+
+				if(!obj && obj != 0 && obj != '') {　　　　　　　　　
+				  return true;
+				}
+				
+				if(Array.prototype.isPrototypeOf(obj) && obj.length == 0) {
+					　　　return true;
+				}
+				
+				if(Object.prototype.isPrototypeOf(obj) && Object.keys(obj).length == 0) { 
+					
+					　return true; 　　　
+				}
+				return false; 
+			}
+		</script>
+    </head>
+    
+<body>  
+  	<header class="mui-bar mui-bar-nav head_color">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+		<h1 class="mui-title">尽职调查-在线检查</h1>
+	</header>
+	
+	<div class="mui-content mui-scroll-wrapper" >
+    	<div class="mui-scroll" >
+            <iframe style="width:100%;border:0;margin-top:25px;" src="map_header.html" mce_src="map_header.html" name="tmp_iframe" id="tmp_iframe"></iframe>
+        
+        	<section id="cd-timeline" class="cd-container" style="margin-top:-30px;">
+					<div class="cd-timeline-block" onclick="check_by_step('1')" id="step_1">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/cd-icon-picture.svg" alt="Picture" id="step_1_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>客户经营场所检查</h2>																																						
+							<span class="cd-date" id="step_1_span">2015-01-06 15:32</span>							
+						</div>
+					</div>
+					<div class="cd-timeline-block pass" onclick="check_by_step('2')" id="step_2">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/cd-icon-movie.svg" alt="Movie" id="step_2_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>生产经营情况检查</h2>							
+							<span class="cd-date" id="step_2_span">2015-01-06</span>							
+						</div>
+					</div>
+					<div class="cd-timeline-block pass" onclick="check_by_step('3')" id="step_3">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/cd-icon-movie.svg" alt="Movie" id="step_3_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>财务报表信息检查</h2>								
+							<span class="cd-date" id="step_3_span">2015-01-06</span>							
+						</div>
+					</div>
+					<div class="cd-timeline-block pass" onclick="check_by_step('4')" id="step_4">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/cd-icon-movie.svg" alt="Movie" id="step_4_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>纳税申报信息检查</h2>								
+							<span class="cd-date" id="step_4_span">2015-01-06</span>							
+						</div>
+					</div>
+					<div class="cd-timeline-block pass" onclick="check_by_step('5')" id="step_5">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/cd-icon-movie.svg" alt="Movie" id="step_5_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>银行对账信息检查</h2>			
+							<span class="cd-date" id="step_5_span">2015-01-06</span>							
+						</div>
+					</div>
+					<div class="cd-timeline-block pass" onclick="check_by_step('6')" id="step_6">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/cd-icon-movie.svg" alt="Movie" id="step_6_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>抵押物现状检查</h2>	
+							<span class="cd-date" id="step_6_span">2015-01-06</span>							
+						</div>
+					</div>
+
+
+				</section>
+				<div style="margin-top:10px;text-align:center;margin-bottom: 300px;"  onclick="zhiding();">
+					<button type="button" class="mui-btn  mui-btn-primary" style="width:90%">完成检查</button>
+				</div>
+        </div>
+	</div>
+
+</body>
+</html>

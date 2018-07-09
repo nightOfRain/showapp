@@ -1,0 +1,80 @@
+@CHARSET "UTF-8";
+		@keyframes rssss {
+				from {
+					opacity: 1;
+					left:0;
+				}
+				to {
+					opacity: 1;
+					left:100%;
+				}
+			}
+			@-webkit-keyframes
+			rssss {
+				from {
+					opacity: 1;
+					left:0;
+				}
+				to {
+					opacity: 1;
+					left:100%;
+				}
+			}
+	
+			.srssss {
+				animation: rssss 500ms;
+				-webkit-animation: rssss 500ms;
+			}
+			@keyframes lssss {
+				from {
+					opacity: 1;
+					left:100%;
+				}
+				to {
+					opacity: 1;
+					left:0px;
+				}
+			}
+			@-webkit-keyframes
+			lssss {
+				from {
+					opacity: 1;
+					left:100%;
+				}
+				to {
+					opacity: 1;
+					left:0px;
+				}
+			}
+	
+			.slssss {
+				animation: lssss 500ms;
+				-webkit-animation: lssss 500ms;
+			}
+			@keyframes rssss {
+				from {
+					opacity: 1;
+					left:0;
+				}
+				to {
+					opacity: 1;
+					left:100%;
+				}
+			}
+			
+			@-webkit-keyframes
+			rssss {
+				from {
+					opacity: 1;
+					left:0;
+				}
+				to {
+					opacity: 1;
+					left:100%;
+				}
+			}
+	
+			.srssss {
+				animation: rssss 500ms;
+				-webkit-animation: rssss 500ms;
+			}

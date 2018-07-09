@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+	
+    
+        <link rel="stylesheet" href="css/common.css">
+      
+        <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+
+		<link rel="stylesheet" href="css/iconfont.css">
+	<link href="css/mobiscroll.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="hello-mui/css/mui.min.css">
+        <link rel="stylesheet" href="css/frozen.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" href="hello-mui/css/app.css">
+        <script src="hello-mui/js/mui.min.js"></script>
+        
+        <script src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		<script src="js/mobiscroll.custom-2.5.2.min.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="js/frozen.js"></script>
+        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+           
+             html, body {
+                 position: relative;
+                 height: 100%;
+             }
+         body {
+             background: #fff;
+             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+             font-size: 14px;
+             color:#000;
+             margin: 0;
+             padding: 0;
+         }
+       
+        	.img_lit{
+                      
+                        width: 80px;
+                       	height: 80px;
+                        
+                    }
+         	.divcss5_w{ border:0px solid #000; width:90px; height:85px;overflow:hidden;padding:5px;} 
+			.divcss5_w img{max-width:80px;_width:expression(this.width > 80 ? "80px" : this.width);}
+			.divcss5_h{ border:0px solid #000; width:85px; height:90px;overflow:hidden;padding:5px;} 
+			.divcss5_h img{max-height:80px;_height:expression(this.height > 80 ? "80px" : this.height);}
+            input[type="date"]:before{
+                color:#A9A9A9;
+                content:attr(placeholder);
+            }
+        
+        
+        input[type="date"].full:before {
+            color:black;
+            content:""!important;
+        }
+        </style>
+ 		<script type="text/javascript">
+ 		var fileno;
+ 		var pawn_cool = 0;
+		var pawn_worth = 0;
+		var pawn_overdue = 0;
+		var myArray = new Array();
+        var count = 0;
+        var file_path;
+
+		$(function() {
+			//调整map高度
+			var thisURL = document.URL; 
+				localStorage.setItem("thisURL", thisURL);
+			localStorage.setItem("thisURL", thisURL);
+			fileno = localStorage.getItem("fileno");
+			
+			$("#jbrly").val(top.address_gps);
+          count = 0;
+          file_path = localStorage.getItem("group_code");
+			//选择器控制
+			/*
+			$("input[name=radio]").click(function(){
+				  showCont();
+				 });
+			
+			*/
+			initPage();
+          mui.init({
+                   swipeBack:true //启用右滑关闭功能
+                   });
+          mui('.mui-scroll-wrapper').scroll({
+                                            deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+                                            });
+          mui(document.body).on('tap', '.mui-action-back ', function(e) {
+				this.click();
+                                return false;
+			});
+          $("#expire_date").on("input propertychange",function(){
+                               
+                               if($(this).val().length>0){
+                               $(this).addClass("full");
+                               }
+                               else{
+                               $(this).removeClass("full");
+                               }
+                               
+                               });
+          });
+		
+		function initPage(){
+			if(top.data.check_step_six){
+
+ 
+    			
+    			
+				var data = top.data.check_step_six;
+			pawn_cool = data.pawn_cool;
+			if(pawn_cool == 0){
+				$("#radio_2").attr("checked", true);
+			}else{
+				$("#radio_1").attr("checked", true);
+			}
+			pawn_worth = data.pawn_worth;
+			if(pawn_worth == 0){
+				$("#radio_4").attr("checked", true);
+			}else{
+				$("#radio_3").attr("checked", true);
+			}
+			pawn_overdue = data.pawn_overdue;
+			if(pawn_overdue == 0){
+				$("#radio_6").attr("checked", true);
+			}else{
+				$("#radio_5").attr("checked", true);
+			}	
+    			
+    		//	$("#jbrly").val(data.note);
+    			
+    			//如果为空，不处理
+    			if(data.expire_date.lenght > 8){
+    				$("#expire_date").val(data.expire_date);
+    			}
+    			
+    			
+    
+    		 
+    			 
+    			myArray = data.pawn_img.split('|');
+    		
+    	
+				
+    			var file_path = localStorage.getItem("group_code");
+    				for(var j = 0; j < myArray.length; j++){
+    					if(myArray[j].length > 0){
+    						var imgurl =  top.imgpath+file_path+'/'+myArray[j];
+    						add_pic_init(imgurl);
+    					}else{
+    						myArray.splice(j,1);
+    					}
+    					
+    				}
+    		
+    			
+			}else{
+				$("#radio_1").attr("checked", true);
+				$("#radio_3").attr("checked", true);
+				$("#radio_5").attr("checked", true);
+			}
+		}
+		function add_pic_init(server_url){
+			
+			
+			
+			var gallery = document.getElementById('gallery_2');
+				
+			var figure = document.createElement("figure");
+			figure.setAttribute("class", "aui-col-xs-3");
+			
+			var div = document.createElement("div");
+			div.setAttribute("class", "divcss5");
+		
+		
+			var img = document.createElement("img");
+			img.src = server_url;
+            
+            checkPicurl(server_url);
+            var figcaption = document.createElement("figcaption");
+            img.setAttribute("onclick", "show_photo('"+count+"','2')");
+            
+            count++;
+			
+			div.appendChild(img);
+			
+			figure.appendChild(div);
+			figure.appendChild(figcaption)
+		    gallery.appendChild(figure);
+			
+
+	
+							
+		}
+		function showCont(){
+		//	top.writelog($("input[name=radio]:checked").attr("id"));
+			$("input[name=radio]:checked").each(function(){
+				 var key = $(this).attr('id');
+				 switch(key){
+				  case "radio_1":
+					  pawn_cool = 1;		   
+				   break;
+				  case "radio_2":
+					  pawn_cool = 0;
+				   break;
+				  case "radio_3":
+					  pawn_worth = 1; 
+					   break;
+				  case "radio_4":
+					  pawn_worth = 0;
+					   break;
+				  case "radio_5":
+					  pawn_overdue = 1;	 
+					   break;
+				  case "radio_6":
+					  pawn_overdue = 0; 
+					   break;
+				  default:
+				   break;
+				 }
+			});
+			
+		}
+		function pz(){
+            
+            top.capturePhoto(add_pic);
+       
+        }
+		function add_pic(local_url, server_url){
+			top.writelog("pawn_check add_pic local_url:"+local_url+",server_url:"+server_url);
+			//添加照片到数组
+			myArray.push(server_url);
+			var gallery = document.getElementById('gallery_2');
+			
+			var figure = document.createElement("figure");
+			figure.setAttribute("class", "aui-col-xs-3");
+			
+			var div = document.createElement("div");
+			div.setAttribute("class", "divcss5");
+		
+		
+			var img = document.createElement("img");
+			img.src = local_url;
+            var imgurl = top.imgpath+file_path+"/" + server_url;
+            checkPicurl(imgurl);
+            var figcaption = document.createElement("figcaption");
+            img.setAttribute("onclick", "show_photo('"+count+"','2')");
+            
+            count++;
+			div.appendChild(img);
+			
+			figure.appendChild(div);
+			figure.appendChild(figcaption)
+		    gallery.appendChild(figure);
+							
+		}
+		function upload_info(){
+			showCont();
+			if(myArray.length == 0){
+				top.alertInfo("至少要上传一张抵押物检查图片");
+				return;
+			}
+			var data = {
+        			fileno : fileno,
+        			pawn_cool : pawn_cool,
+        			pawn_worth : pawn_worth,
+        			expire_date : $("#expire_date").val(),
+        			pawn_overdue : pawn_overdue,
+        			pawn_img : myArray.join('|'),  
+        			note:$("#jbrly").val(),
+        			coordinate:top.coordinate,
+        			address:top.address_gps,
+        			trandate:get_trandate()
+        		};
+		top.writelog("pawncheck="+JSON.stringify(data));
+			Http_ajax(function(msg){
+				top.stop_process();
+			
+				var json = eval("("+msg+")");
+				if(json.data.retcode == 0){
+					top.alertInfo(json.data.retinfo);	
+					top.data.check_step_six = data;
+					back_history();
+                      parent.update_button('6');
+				}else{
+					top.alertInfo(json.retinfo);
+				}
+				
+				
+					
+				return;
+			}, "app/6009", data);
+			
+	        
+		}
+        function checkPicurl(url){
+            
+            var img = new Image();
+            img.src = url;
+            img.onerror = function(){
+                top.writelog(url+" 图片加载失败，请检查url是否正确");
+                return false;
+            };
+            
+            if(img.complete){
+                top.writelog("complete[url]="+url+":"+img.width+","+img.height);
+                localStorage.setItem(url, img.width+","+img.height)
+            }else{
+                img.onload = function(){
+                    top.writelog("onload[url]="+url+":"+img.width+","+img.height);
+                    localStorage.setItem(url, img.width+","+img.height);
+                    
+                    img.onload=null;//避免重复加载
+                }
+            }
+            
+        }
+        function show_photo(index, num){
+            top.items_curr = [];
+            top.writelog("index="+index+";num="+num);
+            for(var i = 0; i < myArray.length; i++){
+                
+                var imgurl = top.imgpath+file_path+"/" + myArray[i];
+                
+                var size = localStorage.getItem(imgurl);
+                var width = size.split(',')[0];
+                var height = size.split(',')[1];
+                top.writelog("i="+i+";url="+imgurl+"[size]="+size);
+                var item = {
+                    src: imgurl,
+                    w: parseInt(width, 10),
+                    h: parseInt(height, 10)
+                };
+                item.title = "客户抵押物检查";
+                top.items_curr.push(item);
+            }
+            showNewFrame('showimage.html?index='+index+'&num='+num, 'smask');
+        }
+        function updateItem(num, ind){
+            myArray.splice(ind, 1);
+            top.writelog("ind="+ind+"after delete:"+myArray);
+            var gallery = document.getElementById('gallery_2');
+            var list = document.getElementsByTagName('figure');
+            
+            gallery.removeChild(list[ind]);
+        }
+		</script>
+    </head>                                
+	<body style="background-color: #f4f4f4;">
+
+		<header class="mui-bar mui-bar-nav head_color">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();top.scroll_auto();" ></a>
+			<h1 class="mui-title">客户抵押物检查</h1>
+		</header>
+		
+        <div class="container-fluid">
+            <div class="mui-content mui-scroll-wrapper" >
+                
+                <div class="mui-scroll top_head">
+      	<section class="ui-container" style="background-color: #ffffff">
+			<section id="form">
+			<div style="font-size: 15px;text-align: left;margin-top:0px;">
+                       <textarea style="width:90%;color:#5b5b5b;border:1px;background:#ffffff;margin-left: 15px;margin-right: 15px;" rows="2" id="jbrly"  readonly="readonly" placeholder="这里放当前ＧＰＳ定位位置"></textarea>
+                </div>
+		        <div class="demo-item">		
+		        	<div class="demo-desc" style="margin-left: 10px;;font-size:18px;">抵押物是否存在查封冻结等权利受限情况</div>		        
+			        <div class="demo-block">
+			            <div class="ui-form ui-border-t">
+			                <form action="#">
+			                    <div class="ui-form-item ui-form-item-radio ui-border-b">				                        
+			                        <label class="ui-radio" for="radio">
+			                            <input type="radio" name="radio" id="radio_1"/>
+			                        </label>
+			                        <p>是</p>
+			                    </div>
+			                    <div class="ui-form-item ui-form-item-radio ui-border-b">
+			                        
+			                        <label class="ui-radio" for="radio">
+			                            <input type="radio" name="radio" id="radio_2"/>
+			                        </label>
+			                        <p>否</p>
+			                    </div>
+			                </form>
+			            </div>
+			        </div>
+			    </div>
+			     <div class="demo-item">		
+		        	<div class="demo-desc" style="margin-left: 10px;;font-size:18px;">抵押物当期估值是否较授信时估值法师较大变化</div>		        
+			        <div class="demo-block">
+			            <div class="ui-form ui-border-t">
+			                <form action="#">
+			                    <div class="ui-form-item ui-form-item-radio ui-border-b">				                        
+			                        <label class="ui-radio" for="radio">
+			                            <input type="radio" name="radio" id="radio_3"/>
+			                        </label>
+			                        <p>是</p>
+			                    </div>
+			                    <div class="ui-form-item ui-form-item-radio ui-border-b">
+			                        
+			                        <label class="ui-radio" for="radio">
+			                            <input type="radio"  name="radio" id="radio_4"/>
+			                        </label>
+			                        <p>否</p>
+			                    </div>
+			                </form>
+			            </div>
+			        </div>
+			    </div>
+			     <div class="demo-item">		
+		        	<div class="demo-desc" style="margin-left: 10px;;font-size:18px;">权利凭证是否即将到期或已过期</div>		        
+			        <div class="demo-block">
+			            <div class="ui-form ui-border-t">
+			                <form action="#">
+			                    <div class="ui-form-item ui-form-item-radio ui-border-b">				                        
+			                        <label class="ui-radio" for="radio">
+			                            <input type="radio" name="radio" id="radio_5"/>
+			                        </label>
+			                        <p>是</p>
+			                    </div>
+			                    <div class="ui-form-item ui-form-item-radio ui-border-b">
+			                        
+			                        <label class="ui-radio" for="radio">
+			                            <input type="radio"  name="radio"  id="radio_6"/>
+			                        </label>
+			                        <p>否</p>
+			                    </div>
+			                </form>
+			            </div>
+			        </div>
+			    </div>
+
+		     	
+				<div class="ui-form ui-border-t">
+	      		 	<div class="ui-form-item ui-form-item-l ui-border-b">
+		                 <label class="ui-border-r">
+		                           	 抵押到期日
+		                 </label>
+	                     <input type="date"  placeholder="选择日期" id="expire_date" style="height:41px;overflow: hidden;"/>
+	                                            
+	                </div>
+		  		</div>
+		  		
+				<div class="demo-item" >
+       				 <div class="demo-desc" style="text-align:center;font-size:18px;">抵押物拍照（至少2张照片）</div>       				 
+       			</div>
+       					
+			</section>
+
+        </section>
+        <div class="contain" style="margin: 0 0 0;background-color: #ffffff;border-bottom: 1px solid #d0d0d0;">
+					<ul style="width:100%;">
+						<li style="display:inline-block;width:100%;">
+		        			<!--data-pswp-uid 是每个gallery的id不能重复-->
+					
+							<div class="my-gallery" data-pswp-uid="2" style="width:100%;" id="gallery_2">	
+																					
+																							
+							</div>	
+								<div class="aui-col-xs-3"><div class="divcss5"><img src="img/add.png" onclick="pz();"/></div></div>											
+						</li>
+					</ul>
+		</div>
+
+      	   <section class="ui-container" >
+			<section id="form">
+				<div class="demo-item" >			       
+			        <div class="demo-block"> 
+			            <div class="ui-btn-wrap">
+			            
+			                <button class="ui-btn-lg ui-btn-primary"  style="margin-top:20px;" onclick="upload_info();">
+			                  	  保存
+			                </button>
+			            </div>
+			
+			        </div>
+			    </div>
+			   </section>
+			  </section>  
+	
+<div style="height:200px;"><p style="color:#f4f4f4">现场检查</p></div>
+
+
+	</div>
+    </div></div>
+	</body>
+</html>

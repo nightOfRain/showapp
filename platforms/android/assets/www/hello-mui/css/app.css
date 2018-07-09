@@ -1,0 +1,69 @@
+/*
+ *这是单独为hello mui准备的个性化css，可以覆盖标准mui的css定义；
+ * 在实际项目开发时，建议为App单独写一个css文件，从而实现项目的自定义皮肤功能；
+ * 
+ * */
+.mui-plus header.mui-bar{
+	display: none;
+}
+.mui-plus .mui-bar-nav~.mui-content{
+	padding: 0;
+}
+
+/*hm开头的表示仅为 Hello MUI示例定义*/
+.hm-description{
+	margin: .5em 0;
+}
+
+.hm-description>li {
+	font-size: 14px;
+	color: #8f8f94;
+}
+.head_color{
+	background: -webkit-linear-gradient(left, #049FF1, #70E1FF);
+	background: -o-linear-gradient(right, #049FF1, #70E1FF);
+	background: -moz-linear-gradient(right, #049FF1, #70E1FF);
+	background: linear-gradient(to right, #049FF1, #70E1FF);
+	height:70px;
+	padding-top:25px;
+}
+.head_tmp_color{
+	border:0;
+	height:70px;
+	padding-top:25px;
+	background-color:rgba(235,236,237,0.5);
+	-webkit-box-shadow:none;
+	box-shadow:none;
+}
+.header_jb{
+	background: -webkit-linear-gradient(left, #049FF1, #70E1FF);
+	background: -o-linear-gradient(right, #049FF1, #70E1FF);
+	background: -moz-linear-gradient(right, #049FF1, #70E1FF);
+	background: linear-gradient(to right, #049FF1, #70E1FF);
+	-webkit-box-shadow:none;
+	box-shadow:none;
+}
+.div_fullscreen_map{       
+    z-index:9998;width:100%;height:40%;position: fixed;top:60%;
+
+}
+.top_head{
+	margin-top:71px;
+}
+.div_footer{
+	color:#A9A9A9; 
+	text-align:center; 
+	height:300px;
+	line-height:300px;
+}
+.mui-action-back{
+	color:#ffffff;
+}
+.divcss5_w{ border:0px solid #000; width:90px; height:85px;overflow:hidden;padding:5px;} 
+.divcss5_w img{max-width:80px;_width:expression(this.width > 80 ? "80px" : this.width);}
+.divcss5_h{ border:0px solid #000; width:85px; height:90px;overflow:hidden;padding:5px;} 
+.divcss5_h img{max-height:80px;_height:expression(this.height > 80 ? "80px" : this.height);} 
+.divcss5{ border:0px solid #000; width:85px; height:85px;overflow:hidden;padding:5px;} 
+.divcss5 img{ width: 80px;height: 80px;}
+.divcss4{ border:3px solid #fff; width:100%;height:0px;padding-bottom:100%;position:relative;} 
+.divcss4 img{ width:100%;height:100%;position:absolute;}

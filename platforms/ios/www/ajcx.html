@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            
+            <meta name="viewport"
+                content="width=device-width, initial-scale=1.0, user-scalable=no">
+                <title></title>
+                
+                <link href="css/lib/bootstrap/bootstrap-combined.min.css"
+                    rel="stylesheet">
+                    <link rel="stylesheet" type="text/css"
+                    href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+                    <link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+                        <link href="css/common.css" rel="stylesheet">
+                            <link href="css/index.css" rel="stylesheet">
+                                <link href="dev/css/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+                                <link href="dev/css/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+                                <link href="dev/css/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+                                
+                                <link href="css/easydropdown.metro.css" rel="stylesheet">
+                                    <script src="js/jquery.min.js"></script>
+                                    <script src="js/jquery.easydropdown.js"></script>
+                                    <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                                    <script src="js/lib/jQuery/jquery.mobile-1.4.3.js" type="text/javascript" charset="utf-8"></script>
+                                    <script type="text/javascript" src="js/lib/bootstrap/bootstrap.min.js"></script>
+                                    <script src="js/mobiscroll.custom-2.5.2.min.js" type="text/javascript" charset="utf-8"></script>
+                                    <script src="dev/js/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+                                    <script src="dev/js/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+                                    <script src="dev/js/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+                                    <script src="dev/js/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+                                    <script src="dev/js/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+                                    <script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+                                    <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                                    <style>
+                                        .btn:hover, .btn:focus, .btn.focus{color:#fff;}
+                                        body {
+                                            margin: 0;
+                                            padding: 0;
+                                            color: #555;
+                                            font-size: 14px;
+                                            font-family: "微软雅黑", "Microsoft Yahei";
+                                            background-color: #8EC2F5;
+                                        }
+                                    .rgt {
+                                            width: 10px;
+                                            height: 18px;
+                                            float: right;
+                                            margin-right: 20px;
+                                            margin-top: 12px;
+                                            background-size: 100% 100%;
+                                            background-image: url("img/right.png");
+                                        }
+                                    
+                                        </style>
+    </head>
+    <script type="text/javascript">
+        //初始化插件内容
+        var opt_datatime = {
+            preset: 'date', //日期格式 date（日期）|datetime（日期加时间）
+            theme: 'android-ics light', //皮肤样式
+            display: 'modal', //显示方式
+            mode: 'clickpick', //日期选择模式
+            dateFormat: 'yyyymmdd', // 日期格式
+            timeWheels:'HHii', //时间格式24小时
+            timeFormat:'HH:ii', //时间格式24小时
+            setText: '确定', //确认按钮名称
+            cancelText: '取消',//取消按钮名籍我
+            dateOrder: 'yyyymmdd', //面板中日期排列格式
+            dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+            yearText: '年', monthText: '月',  dayText: '日',  //面板中年月日文字
+            endYear:2020, //结束年份
+            showNow:true,
+            nowText:'今天',
+            hourText:'小时',
+            minuteText:'分'
+        }
+    document.addEventListener("DOMContentLoaded", initial);
+    function initial() {
+        thisURL = document.URL;
+        
+   //     document.getElementsByTagName('body')[0].style.width = top.screenWidth+"px";
+   //     document.getElementsByTagName('body')[0].style.height = top.screenHeight+20+"px";
+        //$(".top_title").html(top.title);
+        
+        var getenv = thisURL.split('?')[1];
+        var type = getenv.split('=')[1];
+        
+        if(type == '1'){
+            $("#cx1001").attr("style", "display:black");
+        }else if(type == '2'){
+            $("#cx1002").attr("style", "display:black");
+        }
+   
+        $("#qssj").mobiscroll(opt_datatime);
+        $("#jzsj").mobiscroll(opt_datatime);
+        
+        localStorage.setItem("account_c", 1);
+        localStorage.setItem("info_flag", 1);
+        $(".container-fluid").attr("style", "height:"+(top.screenHeight - 45)+":px;margin-top:35px;");
+    }
+    
+    /*单笔查询*/
+    function query_aj() {
+        
+        $("#p1").attr("style", "display:block");
+        
+        
+        var data = {};
+        data.userid = localStorage.getItem("userid");
+        data.jkr_xm = $("#jkr_xm").val();
+        data.jkr_sfzh = $("#jkr_sfzh").val();
+        data.jkr_lxfs = $("#jkr_lxfs").val();
+        
+        
+        
+        $.ajax({
+               type : "post",
+               url: "http://"+IP+":"+PORT+"/app/6007;",
+               timeout: 10000,
+               data : data,
+               datatype : "json",
+               success :function(msg){
+               
+               showmessage(msg);
+               },
+               error:function(msg){
+               
+               top.alertInfo('通信失败');
+               }
+               });
+               
+    }
+    
+    /*多笔查询*/
+    function querys_aj() {
+        
+        $("#p1").attr("style", "display:block");
+        
+        
+        var data = {};
+        data.userid = localStorage.getItem("userid");
+        
+        data.begindate = $("#qssj").val();
+        data.enddate = $("#jzsj").val();
+        /*
+        if(　$("#qssj").val().length == 0 || $("#qssj").val().length == 0){
+            top.alertInfo('起始日期或截止日期不能为空');
+            return;
+        }
+        */
+        $.ajax({
+               type : "post",
+               url: "http://"+IP+":"+PORT+"/app/6008;",
+               timeout: 10000,
+               data : data,
+               datatype : "json",
+               success :function(msg){
+               
+               showmessage(msg);
+               },
+               error:function(msg){
+               
+               top.alertInfo('通信失败');
+               }
+               });
+               
+    }
+    
+    function removeAllNote(){
+    	//先删除所有子节点
+        var f = document.getElementById("p11"); 
+        var childs = f.childNodes; 
+
+        for(var i = childs.length - 1; i >= 0; i--) { 
+        	  
+        	  f.removeChild(childs[i]); 
+        }
+       
+    }
+    
+    function showmessage(msg){
+        
+        var json=eval("("+msg+")");
+        removeAllNote();
+        var div_host = document.getElementById("p11");
+        var div_content = document.createElement("div");
+        div_content.setAttribute("class", "content");
+        div_content.setAttribute("id", "content");
+        
+        
+        //var data = json.responsedata.data;
+        var data = json.data;
+       
+        if( data.length == 0){
+            top.alertInfo('没有相关案卷信息，请确认查询条件是否正确');
+        } else {
+            
+            for (var i = 0; i < data.length; i++ ){
+                
+                
+                var ul = document.createElement("ul");
+                var li = document.createElement("li");
+                li.setAttribute("onclick", "go_yh('"+data[i].fileno+"')");
+                
+                
+                
+                var sp3_t=document.createElement("div");
+                sp3_t.setAttribute("style", "background-color: #ffffff;overflow: hidden; text-indent:1em;white-space: nowrap; text-overflow: ellipsis;width:100%;font-size: 13px;margin-top:13px;margin-left:5px;margin-right:45px;color:#708090;");
+                
+                sp3_t.innerHTML = data[i].fc_dz;
+                
+                var img=document.createElement("img");
+                img.setAttribute("src", "img/right.png");
+                img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top:-20px;background-size: 100% 100%;");
+                
+                
+                li.appendChild(sp3_t);
+                li.appendChild(img);
+                ul.appendChild(li);
+                
+                div_content.appendChild(ul);
+            }
+            var div_space = document.createElement("div");
+            div_space.setAttribute("style", "height:80px;");
+            div_host.appendChild(div_content);
+            div_host.appendChild(div_space);
+        }
+    }
+    
+    
+    function go_yh(fileno){
+    	var pos = localStorage.getItem("accountPosition");
+    	 if(pos == 'X1' || pos == 'X2' || pos == 'X3' || pos == 'Y1' || pos == 'Y2' ){
+    		 showNewFrame('flow_new.html?fileno='+fileno,'smask');
+         }else{ //没有案卷创建
+        	 showNewFrame('ajcx_detail.html?fileno='+fileno,'smask');
+         }
+        
+        
+        
+    }
+
+    
+
+    </script>
+    
+    <body style="background:#8EC2F5;overflow:auto">
+        
+       
+            <div class="topNavWrapper" >
+                <div class="topNav">
+                    <div component-role="m11_top" class="top">				
+                        <div class="back_ic" onClick="parent.hideFrame('srfade');"></div>
+                        <span class="top_title">案卷查询</span>
+                    </div>
+                </div>
+            </div>
+            
+
+              <div class="container-fluid" >
+                    <div class="form_div" style="display:none;margin-top:10px;" id="cx1001">
+                        <ul>
+                            <li>
+                                <div class="inp_label_new" width="140px" >客户姓名</div> <input id="jkr_xm" type="text"
+                                    class="inp_text" data-role="none" placeholder="客户姓名">
+                                    </li>
+                            <li>
+                                <div class="inp_label_new" >证件号码</div> <input id="jkr_sfzh" type="text" placeholder="证件号码"
+                                    class="inp_text" data-role="none" maxlength="20" onKeyUp="value=value.replace(/[\W]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></input>
+                            </li>					
+                            <li>
+                                <div class="inp_label_new">电话号码</div> <input type="text" placeholder="电话号码"
+                                    class="inp_text"  maxlength="11" id="jkr_lxfs" data-role="none">
+                                    </li>
+                        </ul>
+                        <div class="bot_btn_m" onClick="query_aj();">查询</div>
+                    </div>
+                    
+
+                    <div class="form_div" style="display:none;margin-top:10px;" id="cx1002" >
+                        <ul>
+                            <li>
+                                <div class="inp_label_new" >起始时间</div> <input id="qssj" type="text"
+                                    class="inp_text" data-role="none" placeholder="起始时间">
+                                    </li>
+                            <li>
+                                <div class="inp_label_new"  width="160px">截止时间</div> <input id="jzsj" type="text" placeholder="截止时间"
+                                    class="inp_text" data-role="none"></input>
+                            </li>					
+                        </ul>
+                        <div class="bot_btn_m" onClick="querys_aj();">查询</div>
+                    </div>
+                    
+                
+            
+                <div id="p11"  class="form_div" style="height:450px;overflow:auto">
+                </div>
+                <div class="form_div" style="height:40px;"></div>
+            </div>
+            
+        
+        
+    </body>
+</html>

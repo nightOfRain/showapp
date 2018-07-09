@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title></title>
+<link href="css/lib/bootstrap/bootstrap-combined.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" type="text/css"
+	href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+	<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+<link href="css/common.css" rel="stylesheet">
+<link href="css/index.css" rel="stylesheet">
+
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script src="js/lib/jQuery/jquery.mobile-1.4.3.js"
+	type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="js/lib/bootstrap/bootstrap.min.js"></script>
+<script src="js/mobiscroll.custom-2.5.2.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="dev/css/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+<script src="dev/js/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+<script src="dev/js/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+<link href="dev/css/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+<link href="dev/css/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+<script src="dev/js/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+<script src="dev/js/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+<script src="dev/js/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+	<style>
+		.btn:hover, .btn:focus, .btn.focus{color:#fff;}
+
+.rgt {
+	width: 10px;
+	height: 18px;
+	float: right;
+	margin-right: 20px;
+	margin-top: 12px;
+	background-size: 100% 100%;
+	background-image: url("img/right.png");
+}
+	</style>
+</head>
+<script type="text/javascript">
+//初始化插件内容
+var opt_datatime = {
+       preset: 'date', //日期格式 date（日期）|datetime（日期加时间）
+       theme: 'android-ics light', //皮肤样式
+    display: 'modal', //显示方式
+    mode: 'clickpick', //日期选择模式
+    dateFormat: 'yyyymmdd', // 日期格式
+       timeWheels:'HHii', //时间格式24小时
+       timeFormat:'HH:ii', //时间格式24小时
+    setText: '确定', //确认按钮名称
+    cancelText: '取消',//取消按钮名籍我
+    dateOrder: 'yyyymmdd', //面板中日期排列格式
+    dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+    yearText: '年', monthText: '月',  dayText: '日',  //面板中年月日文字
+    endYear:2020, //结束年份
+    showNow:true,
+    nowText:'今天',
+    hourText:'小时',
+    minuteText:'分'
+}
+document.addEventListener("DOMContentLoaded", initial);
+function initial() {
+	thisURL = document.URL;  
+
+	
+	$(".top_title").html(top.title);
+ 
+  
+  	
+  	if( top.level == 0 ){
+  		$("#cxlx_select").attr("style", "display:none");
+  		$("#cx1001").attr("style", "display:black");
+  	}
+	$("#qssj").mobiscroll(opt_datatime);
+	$("#jzsj").mobiscroll(opt_datatime);
+	
+	
+}
+
+/*单笔查询*/
+function query_aj() {
+	
+	$("#p1").attr("style", "display:block");
+	
+	
+	var data = {};
+	data.userid = localStorage.getItem("userid");
+	data.jkr_xm = $("#jkr_xm").val();
+	data.jkr_sfzh = $("#jkr_sfzh").val();
+	data.jkr_lxfs = $("#jkr_lxfs").val();
+	
+	
+	top.start_process();
+	$.ajax({
+			type : "post",
+			url: "http://"+IP+":"+PORT+"/app/6007;"+top.sessionid,
+			timeout: 10000,
+			data : data,
+			datatype : "json",
+			success :function(msg){
+				top.stop_process();	
+				showmessage(msg);
+			},
+			error:function(msg){
+				top.stop_process();
+				top.alertInfo('通信失败','','温馨提示','确认');
+			}
+		});
+	
+}
+
+/*多笔查询*/
+function querys_aj() {
+	
+	$("#p1").attr("style", "display:block");
+
+					
+	var data = {};
+	data.userid = localStorage.getItem("userid");
+	
+	data.begindate = $("#qssj").val();
+	data.enddate = $("#jzsj").val();
+	
+	if(　$("#qssj").val().length == 0 || $("#qssj").val().length == 0){
+		top.alertInfo('起始日期或截止日期不能为空','','温馨提示','确认');
+		return;
+	}
+	top.start_process();
+	$.ajax({
+			type : "post",
+			url: "http://"+IP+":"+PORT+"/app/6008;"+top.sessionid,
+			timeout: 10000,
+			data : data,
+			datatype : "json",
+			success :function(msg){
+				top.stop_process();	
+				showmessage(msg);
+			},
+			error:function(msg){
+				top.stop_process();
+				top.alertInfo('通信失败','','温馨提示','确认');
+			}
+		});
+
+}
+
+
+	function showmessage(msg){
+		
+//	var	msg='{"data":[{ "fileno":"10000090", "loantype":"8001","fc_dz":"湖北省武汉市XXX区XXXX小区XXXX号"},{ "fileno":"10000091", "loantype":"8002","fc_dz":"湖北省武汉市XXX区XXXX小区XXXX号"},{ "fileno":"10000092", "loantype":"8003","fc_dz":"湖北省武汉市XXX区XXXX小区XXXX号"},{ "fileno":"10000093", "loantype":"8004","fc_dz":"湖北省武汉市XXX区XXXX小区XXXX号"},{ "fileno":"10000094", "loantype":"8005","fc_dz":"湖北省武汉市XXX区XXXX小区XXXX号"},{ "fileno":"10000095", "loantype":"8006","fc_dz":"湖北省武汉市XXX区XXXX小区XXXX号"},{ "fileno":"10000096", "loantype":"8007","fc_dz":"湖北省武汉市XXX区XXXX小区XXXX号"}]}';	
+	
+//	var msg = '{"data":{"data": [{"fileno":"5","FILENO":"5","loantype":"3","LOANTYPE":"3","userid":"5","USERID":"5","username":"5","USERNAME":"5","loanamt":"5","LOANAMT":"5","isfinish":"0","ISFINISH":"0","fcDz":"5","FC_DZ":"5","jkrLxfs":"5","JKR_LXFS":"5","jyFkfs":"5","JY_FKFS":"5","trustees":"5","TRUSTEES":"5","trusteename":"5","TRUSTEENAME":"5","hzjgLbBh":"5","HZJG_LB_BH":"5","hzmdBh":"5","HZMD_BH":"5","hzdjrBh":"5","HZDJR_BH":"5","begindate":"5","BEGINDATE":"5","enddate":"10","ENDDATE":"10","fileflow":"5","FILEFLOW":"5","flowtime":"5","FLOWTIME":"5","flowtimeout":"5","FLOWTIMEOUT":"5","filestat":"5","FILESTAT":"5","note":"","NOTE":"","userorgnid":"AAAA","USERORGNID":"AAAA","hzjgBh":"5","HZJG_BH":"5","trandate":1467302400000,"TRANDATE":1467302400000,"accountId":"5","ACCOUNT_ID":"5","accountPassword":"1he05V9FuGw=","ACCOUNT_PASSWORD":"1he05V9FuGw=","accountStatus":1,"ACCOUNT_STATUS":1,"accountName":"审","ACCOUNT_NAME":"审","accountOrgn":"AAAA","ACCOUNT_ORGN":"AAAA","accountPosition":"1","ACCOUNT_POSITION":"1"},{"fileno":"6","FILENO":"6","loantype":"1","LOANTYPE":"1","userid":"5","USERID":"5","username":"6","USERNAME":"6","loanamt":"6","LOANAMT":"6","isfinish":"0","ISFINISH":"0","fcDz":"6","FC_DZ":"6","jkrLxfs":"6","JKR_LXFS":"6","jyFkfs":"6","JY_FKFS":"6","trustees":"6","TRUSTEES":"6","trusteename":"6","TRUSTEENAME":"6","hzjgLbBh":"6","HZJG_LB_BH":"6","hzmdBh":"6","HZMD_BH":"6","hzdjrBh":"6","HZDJR_BH":"6","begindate":"12","BEGINDATE":"12","enddate":"15","ENDDATE":"15","fileflow":"6","FILEFLOW":"6","flowtime":"6","FLOWTIME":"6","flowtimeout":"6","FLOWTIMEOUT":"6","filestat":"6","FILESTAT":"6","note":"","NOTE":"","userorgnid":"AAAA","USERORGNID":"AAAA","hzjgBh":"6","HZJG_BH":"6","trandate":1467648000000,"TRANDATE":1467648000000,"accountId":"5","ACCOUNT_ID":"5","accountPassword":"1he05V9FuGw=","ACCOUNT_PASSWORD":"1he05V9FuGw=","accountStatus":1,"ACCOUNT_STATUS":1,"accountName":"审","ACCOUNT_NAME":"审","accountOrgn":"AAAA","ACCOUNT_ORGN":"AAAA","accountPosition":"1","ACCOUNT_POSITION":"1"}]},"stat":0}';
+	var json=eval("("+msg+")");
+	
+	if(document.getElementById('content') )
+		document.getElementById('p1').removeChild(document.getElementById('content'));
+	var div_host = document.getElementById("p1");
+	var div_content = document.createElement("div");
+	div_content.setAttribute("class", "content");
+	div_content.setAttribute("id", "content");
+	
+	
+	//var data = json.responsedata.data;
+	var data = json.data;
+	
+	if( data.length == 0){
+		top.alertInfo('没有相关案卷信息，请确认查询条件是否正确','','温馨提示','确认');
+	} else {
+		
+	
+		for (var i = 0; i < data.length; i++ ){
+			
+			
+			var ul = document.createElement("ul");   
+			var li = document.createElement("li"); 
+			li.setAttribute("onclick", "go_yh('"+data[i].fileno+"')");
+			
+	
+			
+			var sp3_t=document.createElement("div");
+			sp3_t.setAttribute("style", "background-color: #ffffff;text-overflow:ellipsis;font-size: 12px;margin-top:13px;margin-left:5px;margin-right:45px;color:#8e8e8e;");
+			//sp3_t.setAttribute("contenteditable", "true");
+		//	sp3_t.setAttribute("disable", "disable");
+			sp3_t.innerHTML = data[i].fc_dz;
+			
+			var img=document.createElement("img");
+			img.setAttribute("src", "img/right.png");
+			img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: -20px;background-size: 100% 100%;");
+			
+			
+			li.appendChild(sp3_t);
+			li.appendChild(img);
+			ul.appendChild(li);
+			
+			div_content.appendChild(ul);
+		}
+		
+		div_host.appendChild(div_content);
+	}
+  }
+  
+
+  function go_yh(fileno){
+		var level = localStorage.getItem("level");
+		if( level == 0 ) //外部客户只能看流程
+		{
+			showNewFrame('fileflow.html?fileno='+fileno,'smask');
+		}
+		else {
+			showNewFrame('ajcx_detail.html?fileno='+fileno,'smask');
+		}
+	  
+  }
+  
+  function cxlx_xz(){
+	  cxlx = $("#cxlx").val();
+	  if(cxlx == "1001"){
+		  $("#cx1001").attr("style", "display:block");
+		  $("#cx1002").attr("style", "display:none");
+	  } else {
+		  $("#cx1002").attr("style", "display:block");
+		  $("#cx1001").attr("style", "display:none");
+	  }
+	 // $("#p1").removeChild();
+	 $("#p1").attr("style", "display:none");
+  }
+</script>
+
+<body style="background:#f4f4f4;">
+
+
+
+<div class="topNavWrapper" >
+			<div class="topNav">
+				<div component-role="m11_top" class="top">				
+					<div class="back_ic" onClick="parent.hideFrame('srfade');"></div>
+					<span class="top_title">案卷查询</span>
+				</div>
+			</div>
+		</div>
+<!-- 
+	<div class="row">
+			<div class="col-xs-12">
+				<div align="center" border="0" style="height: 30px; margin-top: 35px;">
+					<span style="font-size: 20px; color: #000;">案卷查询</span>
+				</div>
+		    </div>
+		</div>
+		 -->
+	<div class="container-fluid" style="height:580px;overflow:auto">
+	<div class="form_div" id="cxlx_select">
+		<ul>															
+			<li style="height:58px;">
+				<div class="inp_label_new" style="line-height:58px;">
+					查询类型
+				</div>
+				<select id='cxlx' class="dropdown"  onchange="cxlx_xz()" >
+					<option value=''>请选择查询类型</option>	
+					<option value='1001'>单笔查询</option>										
+					<option value='1002'>多笔查询</option>
+													
+				</select>
+			</li>								
+		</ul>
+	</div>
+	<div class="row" style="display:none;margin-top:20px;" id="cx1001" >
+		<div class="form_div">
+			<ul>
+				<li>
+					<div class="inp_label_s" width="140px" >客户姓名</div> <input id="jkr_xm" type="text"
+					class="inp_text" data-role="none" placeholder="客户姓名">
+				</li>
+				<li>
+					<div class="inp_label_s" >证件号码</div> <input id="jkr_sfzh" type="text" placeholder="证件号码"
+					class="inp_text" data-role="none" maxlength="20" onKeyUp="value=value.replace(/[\W]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></input>
+				</li>					
+				<li>
+					<div class="inp_label_s">电话号码</div> <input type="text" placeholder="电话号码"
+					class="inp_text"  maxlength="11" id="jkr_lxfs" data-role="none">
+				</li>
+			</ul>				
+		</div>
+		<div class="bot_btn_m" onClick="query_aj();">单笔查询</div>
+    </div>
+	
+	<div class="row" style="margin-top:20px;display:none" id="cx1002" >
+		<div class="form_div">
+			<ul>
+				<li>
+					<div class="inp_label_s" width="160px" >起始时间</div> <input id="qssj" type="text"
+					class="inp_text" data-role="none" placeholder="起始时间">
+				</li>
+				<li>
+					<div class="inp_label_s"  width="160px">截止时间</div> <input id="jzsj" type="text" placeholder="截止时间"
+					class="inp_text" data-role="none" maxlength="20" onKeyUp="value=value.replace(/[\W]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></input>
+				</li>					
+			</ul>				
+		</div>
+		<div class="bot_btn_m" onClick="querys_aj();">多笔查询</div>
+    </div>
+    
+	<div id="p1"  class="form_div" style="margin-top:10px;">		
+	</div>
+	<div class="form_div" style="height:40px;"></div>
+	</div>
+
+
+</body>
+</html>

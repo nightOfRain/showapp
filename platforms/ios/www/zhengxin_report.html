@@ -1,0 +1,172 @@
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+
+<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+<link rel="stylesheet" href="hello-mui/css/app.css" />
+<link href="hello-mui/css/mui.picker.css" rel="stylesheet" />
+<link href="hello-mui/css/mui.poppicker.css" rel="stylesheet" />
+<link href="hello-mui/css/mui.picker.css" rel="stylesheet" />
+<link href="hello-mui/css/mui.poppicker.css" rel="stylesheet" />
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<style>
+html, body {
+    position: relative;
+    height: 100%;
+}
+body {
+    background: #fff;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color:#000;
+    margin: 0;
+    padding: 0;
+    overflow:auto;
+ 
+}
+
+</style>
+<script>
+var id = 0; //问题序号
+$(function() {			
+	  
+	//初始化mui
+	mui.init({
+		swipeBack:true //启用右滑关闭功能
+	});
+	/*初始化滚动条*/
+	mui('.mui-scroll-wrapper').scroll({
+        deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+    });
+	//返回键 tap事件监听
+	mui(document.body).on('tap', '.mui-action-back ', function(e) {
+  		this.click();
+  		return false;
+  	});
+	/*页面初始化方法*/
+	initPage();
+
+});  
+
+
+/*页面初始化方法*/
+function initPage(){
+	var thisURL = document.URL; 
+	var getenv = thisURL.split('?')[1];
+	 
+	id = getenv.split('=')[1];
+}
+
+function ans_summit(){
+
+	
+	if(top.isEmpty($("#ans_note").val())){
+		
+		top.alertInfo("回复不能为空");
+		return;
+	}
+	var data = {
+			userid:localStorage.getItem("userid"),
+			username:localStorage.getItem("username"),
+			quid:id,			
+			note:$("#ans_note").val()
+	}
+	//调用通讯方法
+	top.http_comm("app7010",data, function(msg){
+		
+		var json = eval("("+msg+")");
+		
+		if(json.data.retcode == '0000'){
+			top.alertInfo("问题提交成功,可以在工作平台查看");
+			back_history();
+			parent.initPage();
+		}
+	});
+}
+
+</script>
+</head>
+    
+<body>
+	<header class="mui-bar mui-bar-nav head_color">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+		<h1 class="mui-title">发表回复</h1>
+	</header>
+
+	<div class="container-fluid">
+		<div class="mui-content mui-scroll-wrapper" >				
+			<div class="mui-scroll-wrapper">							
+			    <div class="mui-scroll top_head">
+			    	<div class="mui-content-padded" style="margin: 5px;">								
+						<form class="mui-input-group" >										
+							<div class="mui-input-row">
+								<label>处理方式</label>
+								<input type="text" placeholder="选项" id="region_gr" readonly="readonly">
+							</div>														
+						</form>
+					</div>				    	
+					<div class="mui-content-padded" style="margin: 5px;">								
+						<form class="mui-input-group" >																
+							<div class="mui-input-row" style="height:80px;">															
+								<textarea id="ans_note" rows="4" placeholder="我来说两句"></textarea>
+							</div>
+						</form>
+					</div>
+					<div style="margin-top:10px;text-align:center;margin-bottom: 300px;" onclick="ans_summit();">
+						<button type="button" class="mui-btn  mui-btn-primary" style="width:90%">提交</button>
+					</div>	
+				</div>
+			</div>
+		</div>
+	</div> 
+			<script src="hello-mui/js/mui.min.js"></script>
+		
+		<script src="hello-mui/js/mui.picker.js"></script>
+		<script src="hello-mui/js/mui.poppicker.js"></script>
+		<script src="hello-mui/js/city.data.js" type="text/javascript" charset="utf-8"></script>
+		<script src="hello-mui/js/city.data-3.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			(function($, doc) {
+				$.init();
+				$.ready(function() {
+					/*********是否有房产中介***********/
+					var isPicker = new $.PopPicker({
+						layer: 1
+					});
+					var isData = [{
+						value: '0',
+						text: '直接反馈到系统'
+					}, {
+						value: '1',
+						text: '反馈系统，发短信给外包公司'
+					}, {
+						value: '2',
+						text: '反馈系统，并提示需走法律诉讼'
+					}];
+					isPicker.setData(isData);
+					var is_zj = doc.getElementById('region_gr');
+					//var userResult = doc.getElementById('userResult');
+					is_zj.addEventListener('tap', function(event) {
+						isPicker.show(function(items) {
+							
+							hasZj = (items[0] || {}).value;
+							is_zj.value = (items[0] || {}).text;
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+	
+						});
+					}, false);
+					
+				});
+			})(mui, document);
+		</script>
+</body>
+</html>

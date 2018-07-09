@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+		<link rel="stylesheet" href="css/common.css">
+	 <link rel="stylesheet" href="hello-mui/css/mui.min.css">
+        <link rel="stylesheet" href="css/frozen.css">
+        
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+	
+        <link rel="stylesheet" href="css/iconfont.css">
+        <link rel="stylesheet" href="hello-mui/css/app.css">
+<script src="hello-mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		
+     
+        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<style>
+           
+html, body {
+    position: relative;
+    height: 100%;
+}
+body {
+    background: #fff;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color:#000;
+    margin: 0;
+    padding: 0;
+}
+       
+
+.divcss5_w{ border:0px solid #000; width:45vw; height:43vw;overflow:hidden;padding:5px;} 
+.divcss5_w img{max-width:40vw;_width:expression(this.width > 40 ? "40vw" : this.width);}
+.divcss5_h{ border:0px solid #000; width:85px; height:90px;overflow:hidden;padding:5px;} 
+.divcss5_h img{max-height:80px;_height:expression(this.height > 80 ? "80px" : this.height);} 
+
+h5{
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-indent: 12px;
+}
+   
+.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
+	font-size: 15px;
+	margin-top:8px;
+	color: #333;
+}
+.Max_msg{
+    float:right;
+}
+img{
+	height:40vw;
+}
+</style>
+<script type="text/javascript">
+var pawn_no;
+var count = 0;
+
+var myArray = new Array();
+var des = new Array();
+	
+$(function() {
+	//调整map高度
+/*  	var thisURL = document.URL; 
+
+	var getenv = thisURL.split("?")[1];
+	
+	pawn_no = getenv.split("=")[1];; 
+	top.edit_flag = 1;
+	
+	initPage();  */
+	mui.init({
+    	swipeBack:true //启用右滑关闭功能
+    });
+	mui('.mui-scroll-wrapper').scroll({
+		deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+	});
+	mui(document.body).on('tap', '.mui-action-back ', function(e) {
+		this.click();
+		return false;
+	});
+	
+ 	//动态给li添加点击事件
+	$("ul").on("click","img", function() {
+		
+		var index = $(this).index;
+		var len = $("ul img").length;
+		top.writelog("index = "+index+"len="+len);
+		if(index < (len - 1)){
+			show_photo($(this).index(), '2');
+		}
+		
+		return false;
+	});
+
+	
+});
+
+		function initPage(){
+
+			
+			
+		 	var pawndatas = localStorage.getItem(pawn_no+"_pawn_data");
+			console.log("pawndatas = "+pawndatas);
+			localStorage.setItem("file_path", pawn_no);
+ 			if(!top.isEmptyObject(pawndatas)){
+				var pawndata = JSON.parse(pawndatas);
+				if(!top.isEmpty(pawndata.note)){
+					$("#jbrly").val(pawndata.note);
+				}
+    			
+    			//已录入的数据			
+     			var images = pawndata.pawn_images;
+    			
+    			var infos = pawndata.pawn_des; 
+    			
+
+    			if(!top.isEmpty(images)){
+    				 myArray = images.split('|');
+        			 des = infos.split('|');
+    			
+    			
+    				console.log("images="+images);
+    			
+	   				for(var i = 0; i < myArray.length; i++){
+	   					if(!top.isEmpty(myArray[i])){
+	   						
+	       					add_pic_init(myArray[i], des[i]);
+	   					}else{
+	   						myArray.splice(i,1);
+	   						des.splice(i,1);
+	   					}
+	   					
+	   				}
+    			}
+    			
+			}  
+		}
+		
+		function add_pic_init(image, des){
+			var imgurl =  top.imgpath+pawn_no+'/'+image;
+			checkPicurl(imgurl);
+			var add_html ='<li class="mui-table-view-cell mui-media mui-col-xs-6"><a href="#">'
+						+'<div class="divcss5_w"><img class="mui-media-object" src="'+imgurl+'" ></div>'
+						+'<div class="mui-media-body" style="height:60px;">'
+						+'<textarea rows="2" style="height:45px;font-size:0.8em" placeholder="请填写图片描述">'+des+'</textarea></div></a></li>';
+			count++;
+			//在倒数第二的位置插入
+			//$(".mui-table-view li:last").prev().append(add_html);
+			$("ul li:eq(-1)").before(add_html);
+/* 			//动态给li添加点击事件
+ 			$("ul").on("click","img", function() {
+					
+				show_photo($(this).index(), '2');
+				return false;
+			});  */
+			
+			
+  		 
+		}
+	
+		function pz(){
+            
+            top.capturePhoto(add_pic);
+
+        }
+		function add_pic(local_url, server_url){
+		
+            console.log("bank_check add_pic local_url:"+local_url+",server_url:"+server_url);
+        
+          //添加照片到数组
+		
+          
+          myArray.push(server_url);
+          
+			var imgurl = top.imgpath+pawn_no+"/" + server_url;
+			checkPicurl(imgurl);
+			
+			var add_html ='<li class="mui-table-view-cell mui-media mui-col-xs-6"><a href="#">'
+				+'<div class="divcss5_w"><img class="mui-media-object" src="'+local_url+'" ></div>'
+				+'<div class="mui-media-body" style="height:60px;">'
+				+'<textarea rows="2" style="height:45px;font-size:0.8em" placeholder="请填写图片描述"></textarea></div></a></li>';
+	
+			//在倒数第二的位置插入
+		//	$(".mui-table-view li:last").prev().append(add_html);
+			$("ul li:eq(-1)").before(add_html);
+			//动态给li添加点击事件
+/*  			$("ul").on("click","img", function() {
+				
+				show_photo($(this).index(), '2');
+				return false;
+			});	 */	 
+ 			 
+	
+		}
+
+		function upload_info(){
+			
+			var img_des = new Array();
+			//遍历所有图片描述
+			$(".mui-table-view").each(function () {  
+		         
+		  
+		         $(this).find('textarea').each(function() {  
+		        	 img_des.push($(this).val());  
+		         });  
+		   /*       $(this).find('.mui-table-view-cell').each(function() {  
+		        	 myArray.push($(this).attr("name"));  
+		         }); */
+		      });
+			
+			if(myArray.length == 0){
+				top.alertInfo("至少要上传一张抵押物检查图片");
+				return;
+			}
+			var notes = $("#jbrly").val();
+			if(notes.length < 9){
+				top.alertInfo("备注信息不得少于10字");
+				return;
+			}
+			
+			  
+			var data = {
+        			pawn_number : pawn_no,
+        			pawn_images:myArray.join('|'),
+        			pawn_des: img_des.join('|'),
+        			note:$("#jbrly").val(),
+        			coordinate:top.coordinate,
+        			userid:localStorage.getItem("user_id")
+        		};
+			localStorage.setItem(pawn_no+"_pawn_data", JSON.stringify(data));
+            console.log("bankcheck="+JSON.stringify(data));
+
+			top.http_comm("app/6091", data, doAfterSummit)
+	        
+		}
+		
+		function doAfterSummit(msg){
+			var json = eval("("+msg+")");
+			if(json.data.retcode == "0000"){
+			
+				back_history();				
+				return;
+			}else{
+				top.alertInfo(json.retinfo);
+			}
+		}
+
+ 		function checkPicurl(url){
+            
+            var img = new Image();
+            img.src = url;
+            img.onerror = function(){
+                console.log(url+" 图片加载失败，请检查url是否正确");
+                return false;
+            };
+            
+            if(img.complete){
+                console.log("complete[url]="+url+":"+img.width+","+img.height);
+                localStorage.setItem(url, img.width+","+img.height)
+            }else{
+                img.onload = function(){
+                    console.log("onload[url]="+url+":"+img.width+","+img.height);
+                    localStorage.setItem(url, img.width+","+img.height);
+                    
+                    img.onload=null;//避免重复加载
+                }
+            }
+            
+        }
+ 		   function show_photo(index, num){
+ 			  //	function show_photo(){
+    		console.log("index="+$(this).index());
+			var img_des = new Array();
+			//遍历所有图片描述
+			$(".mui-table-view").each(function () {  
+		         
+		  
+		         $(this).find('textarea').each(function() {  
+		        	 img_des.push($(this).val());  
+		         });  
+		       /*   $(this).find('.mui-table-view-cell').each(function() {  
+		        	 myArray.push($(this).attr("name"));  
+		         }); */
+		      });
+        	
+        	console.log("show_photo index="+index);
+            top.items_curr = [];
+           // console.log("index="+index+";num="+num);
+            
+            var img_des = new Array();
+
+            for(var i = 0; i < myArray.length; i++){
+                
+                var imgurl = top.imgpath+pawn_no+"/" + myArray[i];
+                
+                var size = localStorage.getItem(imgurl);
+                var width = size.split(',')[0];
+                var height = size.split(',')[1];
+                console.log("i="+i+";url="+imgurl+"[size]="+size);
+                var item = {
+                    src: imgurl,
+                    w: parseInt(width, 10),
+                    h: parseInt(height, 10)
+                };
+                item.title = img_des[i];
+                top.items_curr.push(item);
+            }
+            showNewFrame('showimage.html?index='+index+'&num=2', 'smask');
+        }
+        function updateItem(num, ind){
+            myArray.splice(ind, 1);
+            console.log("ind="+ind+"after delete:"+myArray);
+            $("ul li:eq("+ind+")").remove()
+        }
+        
+      //多行文本输入框剩余字数计算
+        function checkMaxInput(obj, maxLen) {
+            if (obj == null || obj == undefined || obj == "") {
+                return;
+            }
+            if (maxLen == null || maxLen == undefined || maxLen == "") {
+                maxLen = 100;
+            }
+            
+            var strResult;
+            var $obj = $(obj);
+            var newid = $obj.attr("id") + 'msg';
+            
+            if (obj.value.length > maxLen) { //如果输入的字数超过了限制
+                obj.value = obj.value.substring(0, maxLen); //就去掉多余的字
+                strResult = '<span id="' + newid + '" class=\'Max_msg\' >剩(' + (maxLen - obj.value.length) + ')字</span>'; //计算并显示剩余字数
+            }
+            else {
+                strResult = '<span id="' + newid + '" class=\'Max_msg\' >剩(' + (maxLen - obj.value.length) + ')字</span>'; //计算并显示剩余字数
+            }
+            
+            var $msg = $("#" + newid);
+            if ($msg.length == 0) {
+                $obj.after(strResult);
+            }
+            else {
+                $msg.html(strResult);
+            }
+        }
+      
+      function save_submit(){
+    	  
+      }
+		</script>
+    </head>                                
+	<body style="background-color: #fafafa;">
+        <header class="mui-bar mui-bar-nav head_color">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+			<h1 class="mui-title">抵押物检查</h1>
+		</header>
+
+        <div class="mui-content mui-scroll-wrapper">
+            <div class="mui-scroll">
+ 				<h5 style="background-color:#efeff4">慢生活</h5>
+			    <ul class="mui-table-view mui-grid-view">
+<!--    			        <li class="mui-table-view-cell mui-media mui-col-xs-6">
+			            <a href="#">
+			                <div class="divcss5_w"><img class="mui-media-object" src="img/header.jpg" ></div>
+			                <div class="mui-media-body" style="height:60px;"><textarea rows="2" style="height:45px;font-size:0.8em" placeholder="请填写图片描述"></textarea></div></a></li>
+			        <li class="mui-table-view-cell mui-media mui-col-xs-6">
+			            <a href="#">
+			                <div class="divcss5_w"><img class="mui-media-object" src="img/header.jpg"></div>
+			                <div class="mui-media-body" style="height:60px;"><textarea rows="2" style="height:45px;font-size:0.8em" placeholder="请填写图片描述"></textarea></div></a></li>
+			        <li class="mui-table-view-cell mui-media mui-col-xs-6">
+			            <a href="#"><div class="divcss5_w"><img class="mui-media-object" src="img/header.jpg" ></div>
+			                <div class="mui-media-body" style="height:60px;"><textarea rows="2" style="height:45px;font-size:0.8em" placeholder="请填写图片描述"></textarea></div></a></li>
+			        <li class="mui-table-view-cell mui-media mui-col-xs-6 ">
+			            <a href="#">
+			            	<div class="divcss5_w"><img class="mui-media-object" src="img/header.jpg" ></div>
+			                
+			                <div class="mui-media-body" style="height:60px;"><textarea rows="2" style="height:45px;font-size:0.8em" placeholder="请填写图片描述">asDADASDasd</textarea></div></a></li> -->  
+			        <li class="mui-table-view-cell mui-media mui-col-xs-6" onclick="pz();">
+			            <a href="#">
+			                <div class="divcss5_h"><img class="mui-media-object" src="img/add.png"></div>
+			                <div class="mui-media-body" style="height:60px;">点击添加图片与描述</div></a></li>
+			    </ul>
+		
+				<!-- 经办人留言信息 -->
+	            <div class="mui-content-padded" style="margin: 5px;">
+	                <form class="mui-input-group" >
+	                    <div class="mui-input-row" style="height:105px;">
+	                        <textarea id="jbrly" rows="4" placeholder="注意事项（500字以内）" maxlength='500' onkeydown="checkMaxInput(this,500)"
+	                            onkeyup="checkMaxInput(this,500)" onfocus="checkMaxInput(this,500)" onblur="checkMaxInput(this,500);resetMaxmsg()"></textarea>
+	                    </div>
+	                </form>
+	            </div>
+				<div style="margin-top:10px;text-align:center;margin-bottom: 300px;">
+	                <button type="button" class="mui-btn  mui-btn-primary" style="width:90%" onclick="upload_info()">保存备注</button>
+	            </div>
+	            <div class="div_footer">-页面是否可以滑动了-</div>
+			</div>
+		</div>
+	</body>
+	
+</html>

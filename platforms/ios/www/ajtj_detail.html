@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            
+            <meta name="viewport"
+                content="width=device-width, initial-scale=1.0, user-scalable=no">
+                <!-- Link Swiper's CSS -->
+                <link href="css/lib/bootstrap/bootstrap-combined.min.css"
+                    rel="stylesheet">
+                    <link rel="stylesheet" type="text/css"
+                    
+                    href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+                    <link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+                        <link href="css/common.css" rel="stylesheet">
+                            <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+                            <link rel="stylesheet" type="text/css" href="css/aui/aui.2.0.css" />
+                            <link rel="stylesheet" type="text/css" href="css/aui/api.css" />
+                            <link rel="stylesheet" type="text/css" href="css/aui/aui-list-swipe.css" />
+                            <link rel="stylesheet" type="text/css" href="css/aui/aui-flex.css" />
+                            <link rel="stylesheet" href="dist/css/swiper.min.css">
+                                <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                                
+                                <script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+                                <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                                
+                                <style>
+                                    html, body {
+                                        position: relative;
+                                        height: 100%;
+                                    }
+                                body {
+                                    background: #fff;
+                                    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+                                    font-size: 14px;
+                                    color:#000;
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                    
+                    .span_ph{
+                        
+                        
+                        line-height:35px;
+                        color:#708090;
+                        font-size:14px;
+                        margin-left:10px;
+                    }
+                          
+                                    .inp_label_x{
+                                        width: 80%;
+                                        line-height: 35px;
+                                        color: #FF00FF;
+                                        font-size: 17px;
+                                        text-align: left;
+                                        float: left;
+                                        margin-left: 15px;
+                                        font-weight: bold;
+                                        
+                                    }
+                                    .inp_label_f{
+                                        width: 100px;
+                                        line-height: 35px;
+                                        color: #000000;
+                                        font-size: 14px;
+                                        text-align: left;
+                                        float: left;
+                                        margin-left: 15px;
+                                        
+                                        
+                                        
+                                    }
+                                    .inp_text_f {
+                                        .inp_text {
+                                            border: 0 !important;
+                                            background: none !important;
+                                            box-shadow: none !important;
+                                            line-height: 35px !important;
+                                            color: #5b5b5b !important;
+                                            width: 160px !important;
+                                            font-size: 14px;
+                                            display:inline-block;
+                                        }
+                                    }
+                          
+                          .rgt_s {
+                              
+                              height: 18px;
+                              float: right;
+                              width: 60px;
+                              line-height: 45px;
+                              color: #000000;
+                              font-size: 17px;
+                              text-align: left;
+                          }
+                                    
+         
+         
+                                    </style>
+                                    <script type="text/javascript">
+                                        var json;
+                                        var count;
+                                        var fileno;
+                                        var flow;
+                                        var number;
+                                        var currentPoint;
+                                        var toggleflag=0;
+                                        var cpzl_map = {
+                                            "8001":"公积金贷款",
+                                            "8002":"商贷贷款",
+                                            "8003":"组合贷款",
+                                            "8004":"房抵贷",
+                                            "8005":"安居贷",
+                                            "8006":"大树金融",
+                                            "8007":"友金所",
+                                            "8008":"平安新一贷",
+                                            "8009":"赎楼贷",
+                                            "8010":"尾款贷"
+                                        };
+                                    var point_arr, points, progress, trigger, activate, active, max, tracker, val;
+                                    document.addEventListener("DOMContentLoaded", initial);
+                                    function initial() {
+                                        var thisURL = document.URL;  
+                                        
+                                        
+                                        var getenv = thisURL.split('?')[1];
+                                        fileno = getenv.split('=')[1];
+                                   //     document.getElementsByTagName('body')[0].style.width = top.screenWidth+"px";
+                                  //      document.getElementsByTagName('body')[0].style.height = top.screenHeight+20+"px";
+                                        $("#fileno").html(fileno);
+                                        
+                                        
+                                        
+                                        var level = localStorage.getItem("level");
+                                        
+                                        if( level == 1) //都能看
+                                        {
+                                            
+                                            $("#cwys").attr("style", "display:black");
+                                            $("#cwyf").attr("style", "display:black");
+                                        } else if (level == 3){
+                                            //驻行专员和销售经理能看应收
+                                            
+                                            $("#cwys").attr("style", "display:black");
+                                        } else if( level == 4 ){
+                                            //合作机构老板
+                                            $("#hzjg_l").attr("style", "display:none");
+                                            $("#cwyf").attr("style", "display:black");
+                                        }
+                                        initPage();
+                                        
+                                    }
+                                    
+                                    function initPage(){
+                                        
+                                        var data = {};
+                                        data.userid = localStorage.getItem("userid");
+                                        data.fileno = fileno;
+                                        
+                                        $.ajax({
+                                               type : "post",
+                                               url: "http://"+IP+":"+PORT+"/app/6010;",
+                                               timeout: 3000,
+                                               data : data,
+                                               datatype : "json",
+                                               success :function(msg){
+                                               
+                                               showinfo(msg);
+                                               },
+                                               error:function(msg){
+                                               
+                                               top.alertInfo('通信失败');
+                                               }
+                                               }); 
+                                               
+                                               
+                                    }	
+                                    
+                                    
+                                    
+                                    
+                                    function showinfo(msg){
+                                       
+                                        var json=eval("("+msg+")");
+                                        
+                                        $("#fileno").html(json.data.fileinfo.fileno);
+                                        if(json.data.fileinfo.fc_dz==''||json.data.fileinfo.fc_dz=="undefine"){
+                                            $("#fc_dz").html("面签人员暂不知道房产地址");
+                                        }else{
+                                            $("#fc_dz").html(json.data.fileinfo.fc_dz);
+                                        }
+                                        
+                                        $("#cwys_pgf").html(json.data.fileinfo.cwys_pgf);
+                                        $("#cwys_dbf").html(json.data.fileinfo.cwys_dbf);
+                                        $("#cwys_fwf").html(json.data.fileinfo.cwys_fwf);
+                                        $("#cwys_zlf").html(json.data.fileinfo.cwys_zlf);
+                                        $("#cwys_qtfy").html(json.data.fileinfo.cwys_qtfy);
+                                        
+                                        var cwys_total = (json.data.fileinfo.cwys_pgf*1.00+json.data.fileinfo.cwys_dbf*1.00+json.data.fileinfo.cwys_fwf*1.00+json.data.fileinfo.cwys_zlf*1.00+json.data.fileinfo.cwys_qtfy*1.00).toFixed(2);
+                                       $("#cwys_total").html(cwys_total+"元");
+                                        
+                                        $("#cwyf_pgf").html(json.data.fileinfo.cwyf_pgf);
+                                        $("#cwyf_dydjf").html(json.data.fileinfo.cwyf_dydjf);
+                                        $("#cwyf_qtfy").html(json.data.fileinfo.cwyf_qtfy);
+                                        
+                                        var cwyf_total = (json.data.fileinfo.cwyf_pgf*1.00 + json.data.fileinfo.cwyf_dydjf*1.00 + json.data.fileinfo.cwyf_qtfy*1.00).toFixed(2);
+                                        
+                                        $("#cwyf_total").html(cwyf_total+"元");
+                                    }
+                                    
+                                    
+                                    
+                                    
+                                    function myphone(lxfs){
+                                        
+                                        top.call_phone("联系方式:"+$("#"+lxfs).html());
+                                    }
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    function query_fileinfo(){
+                                        showNewFrame("flow_new.html?fileno="+fileno,'smask');
+                                    }
+                                    
+                                        </script>
+                                    
+                                    
+                                    </head>
+    <body style="background:#f0f0f0;overflow:hidden;">
+        <!-- 顶部固定，不能滚动 -->
+        <div class="topNavWrapper" >
+            <div class="topNav">
+                <div component-role="m11_top" class="top">				
+                    <div class="back_ic" onClick="back_history();"></div>
+                    <span class="top_title">统计详情</span>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid" >
+            
+            
+
+                <div class="form_div" style="margin-top:40px;box-shadow: 0 0 1px 1px #BEC0C2;">
+                    
+                        <li onclick="query_fileinfo();" style="height:35px;">
+                            
+                                <div class="aui-col-xs-4 " >
+                                    <span class="span_ph"  >案卷编号</span>
+                                </div>
+                                <div class="aui-col-xs-6 " >
+                                    <span class="span_ph"  id="fileno"></span>
+                                </div>
+                                <div class="aui-col-xs-2" >
+                                    <span class="span_ph" >查询</span>
+                                </div>
+                        </li >
+               
+                        <li style="height:35px;border:0px;">
+                            
+                                <div class="aui-col-xs-4 " >
+                                    <span class="span_ph"  >房产地址</span>
+                                </div>
+                                <div class="aui-col-xs-8 " >
+                                    <span class="span_ph"  id="fc_dz"></span>
+                                </div>
+                        </li>
+                            
+                    
+                </div>
+                
+                                
+                                
+                                
+
+                                
+                                <div class="form_div" style="margin-top: 20px;display:black;box-shadow: 0 0 1px 1px #BEC0C2;" id="cwys">
+                                <li style="height:35px;">
+                                <div class="aui-col-xs-4"><span id="pa1_label" class="inp_label_x" >应收</span></div>
+                                <div class="aui-col-xs-6"><span id="cwys_total" class="span_ph" ></span></div>
+                                </li>
+                               	<ul>
+                                <li style="height:35px;">
+                               
+                                <div class="aui-col-xs-4 " >
+                                    <span class="span_ph"  >评估费</span>
+                                </div>
+                                <div class="aui-col-xs-6 " >
+                                    <span class="span_ph"  id="cwys_pgf"></span>
+                                </div>
+                                <div class="aui-col-xs-2" >
+                                    <span class="span_ph" >元</span>
+                                </div>
+                                </li>
+                                <li style="height:35px;border:0px;">
+                                
+                                <div class="aui-col-xs-4 " >
+                                    <span class="span_ph"  >担保费</span>
+                                </div>
+                                <div class="aui-col-xs-6 " >
+                                    <span class="span_ph"  id="cwys_dbf"></span>
+                                </div>
+                                <div class="aui-col-xs-2" >
+                                    <span class="span_ph" >元</span>
+                                </div>
+                                </li>
+                                
+                                <li style="height:35px;border:0px;">
+                               
+                                <div class="aui-col-xs-4 " >
+                                    <span class="span_ph"  >服务费</span>
+                                </div>
+                                <div class="aui-col-xs-6 " >
+                                    <span class="span_ph"  id="cwys_fwf"></span>
+                                </div>
+                                <div class="aui-col-xs-2" >
+                                    <span class="span_ph" >元</span>
+                                </div>
+                                </li>
+                                <li style="height:35px;border:0px;">
+                                
+                                <div class="aui-col-xs-4 " >
+                                    <span class="span_ph"  >资料费</span>
+                                </div>
+                                <div class="aui-col-xs-6 " >
+                                    <span class="span_ph"  id="cwys_zlf"></span>
+                                </div>
+                                <div class="aui-col-xs-2" >
+                                    <span class="span_ph" >元</span>
+                                </div>
+                                </li>
+                                <li style="height:35px;border:0px;">
+                                
+                                <div class="aui-col-xs-4 " >
+                                    <span class="span_ph"  >其他费用</span>
+                                </div>
+                                <div class="aui-col-xs-6 " >
+                                    <span class="span_ph"  id="cwys_qtfy"></span>
+                                </div>
+                                <div class="aui-col-xs-2" >
+                                    <span class="span_ph" >元</span>
+                                </div>
+                                </li>
+                                </ul>
+                                </div>
+                                
+                                <!-- 应付 -->
+                                <div class="form_div" id="cwyf" style="margin-top: 20px;display:none;box-shadow: 0 0 1px 1px #BEC0C2;">
+                                
+                                <li style="height:35px;" id="hzjg_l">
+                                <div class="aui-col-xs-4"><span id="p22_label" class="inp_label_x" >应付</span></div>
+                                <div class="aui-col-xs-6"><span id="cwyf_total" class="span_ph" ></span></div>
+                                </li>
+                                <ul>
+                                <li style="height:35px;border:0px;">
+                                
+                                <div class="aui-col-xs-4 " >
+                                    <span class="span_ph"  >评估费</span>
+                                </div>
+                                <div class="aui-col-xs-6 " >
+                                    <span class="span_ph"  id="cwyf_pgf"></span>
+                                </div>
+                                <div class="aui-col-xs-2" >
+                                    <span class="span_ph" >元</span>
+                                </div>
+                                </li>
+                                <li style="height:35px;border:0px;">
+                                
+                                <div class="aui-col-xs-4 " >
+                                    <span class="span_ph"  >抵押费用</span>
+                                </div>
+                                <div class="aui-col-xs-6 " >
+                                    <span class="span_ph"  id="cwyf_dydjf"></span>
+                                </div>
+                                <div class="aui-col-xs-2" >
+                                    <span class="span_ph" >元</span>
+                                </div>
+                                </li>
+                                <li style="height:35px;border:0px;">
+                                
+                                <div class="aui-col-xs-4 " >
+                                    <span class="span_ph"  >其他费用</span>
+                                </div>
+                                <div class="aui-col-xs-6 " >
+                                    <span class="span_ph"  id="cwyf_qtfy"></span>
+                                </div>
+                                <div class="aui-col-xs-2" >
+                                    <span class="span_ph" >元</span>
+                                </div>
+                                </li>
+                                </ul>
+                                
+                                </div>
+                                
+                    
+                </div>
+                                
+                                
+                                
+                                
+                                
+                               
+                               
+                                
+                                
+                                </body>
+                                </html>

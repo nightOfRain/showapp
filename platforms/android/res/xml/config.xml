@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget xmlns:cdv="http://cordova.apache.org/ns/1.0"
+    id="com.nantian.aaNTMobileBank_Android"
+    version="0.0.1"
+    xmlns="http://www.w3.org/ns/widgets" >
+
+    <preference
+        name="loglevel"
+        value="DEBUG" />
+    
+<preference name="SplashScreenDelay" value="300000" />
+
+    <name>
+aaNTMobileBank_Android
+    </name>
+
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+
+    <author
+        email="dev@cordova.apache.org"
+        href="http://cordova.io" >
+        Apache Cordova Team
+    </author>
+
+    <content src="index.html" />
+
+   <access origin="*" />  
+	
+<!--	<access origin="file:///android_asset/" />-->  
+    <feature name="Camera" >
+        <param
+            name="android-package"
+            value="org.apache.cordova.camera.CameraLauncher" />
+    </feature>
+    <feature name="Device" >
+        <param
+            name="android-package"
+            value="org.apache.cordova.device.Device" />
+    </feature>
+    <feature name="Notification" >
+        <param
+            name="android-package"
+            value="org.apache.cordova.dialogs.Notification" />
+    </feature>
+    <feature name="File" >
+        <param
+            name="android-package"
+            value="org.apache.cordova.file.FileUtils" />
+        <param
+            name="onload"
+            value="true" />
+    </feature>
+    <feature name="FileTransfer" >
+        <param
+            name="android-package"
+            value="org.apache.cordova.filetransfer.FileTransfer" />
+    </feature>
+    <feature name="Globalization" >
+        <param
+            name="android-package"
+            value="org.apache.cordova.globalization.Globalization" />
+    </feature>
+    <feature name="InAppBrowser" >
+        <param
+            name="android-package"
+            value="org.apache.cordova.inappbrowser.InAppBrowser" />
+    </feature>
+    <feature name="Capture" >
+        <param
+            name="android-package"
+            value="org.apache.cordova.mediacapture.Capture" />
+    </feature>
+    <feature name="NetworkStatus" >
+        <param
+            name="android-package"
+            value="org.apache.cordova.networkinformation.NetworkManager" />
+    </feature>
+
+    <feature name="NTNewHttpCommunication" >
+        <param
+            name="android-package"
+            value="com.nantian.element.http.plugin.NTHttpPlugin" />
+    </feature>
+    
+    <feature name="NTPictureTaker" >
+        <param
+            name="android-package"
+            value="com.nantian.element.camera.plugin.NTCameraPlugin" />
+    </feature>
+    <feature name="NTQRScanner" >
+        <param
+            name="android-package"
+            value="com.nantian.element.camera.plugin.NTCameraPlugin" />
+    </feature>
+    <feature name="NTVideoPlayer" >
+        <param
+            name="android-package"
+            value="com.nantian.element.camera.plugin.NTCameraPlugin" />
+    </feature>
+    <feature name="NTVideo" >
+        <param
+            name="android-package"
+            value="com.nantian.element.camera.plugin.NTCameraPlugin" />
+    </feature>
+
+    <feature name="Ntfile" >
+        <param
+            name="android-package"
+            value="com.nantian.element.fileupload.plugin.NTFilePlugin" />
+    </feature>
+    
+    <feature name="NTDataDictionary" >
+        <param
+            name="android-package"
+            value="com.nantian.plugins.NTDataDictionaryPlugin" />
+    </feature>
+    
+    <feature name="NTUICtrl" >
+        <param
+            name="android-package"
+            value="com.nantian.plugins.NTUIPlugin" />
+    </feature>
+    
+    <feature name="NTKeyboard" >
+        <param
+            name="android-package"
+            value="com.nantian.element.keyboard.plugin.NTKeyBoardPlugin" />
+    </feature>
+    
+    <feature name="NTSecret" >
+        <param
+            name="android-package"
+            value="com.nantian.plugins.NTSecretPlugin" />
+    </feature>
+    
+    <feature name="NTSqlite" >
+        <param
+            name="android-package"
+            value="com.nantian.element.sqlite.plugin.NTSqlitePlugin" />
+    </feature>
+    
+    <feature name="NTCallBrowser" >
+        <param
+            name="android-package"
+            value="com.nantian.plugins.NTCallBrowserPlugin" />
+    </feature>
+    
+    <feature name="NTShare" >
+        <param
+            name="android-package"
+            value="com.nantian.element.share.plugin.NTSharePlugin" />
+    </feature>
+    
+     <feature name="NTCache" >
+        <param
+            name="android-package"
+            value="com.nantian.plugins.NTCachePlugin" />
+    </feature>
+    
+     <feature name="NTUpdate" >
+        <param
+            name="android-package"
+            value="com.nantian.plugins.NTUpdatePlugin" />
+    </feature>
+    
+    <feature name="NTMap" >
+        <param
+            name="android-package"
+            value="com.nantian.element.map.plugin.NTMapPlugin" />
+    </feature>
+    
+    <feature name="NTLocation" >
+        <param
+            name="android-package"
+            value="com.nantian.element.location.plugin.NTLocationPlugin" />
+    </feature>
+    
+    <feature name="NTContacts" >
+        <param
+            name="android-package"
+            value="com.nantian.element.contacts.plugin.NTContactsPlugin" />
+    </feature>
+        <feature name="AppUpdate">
+        <param
+            name="android-package"
+            value="com.xiyu.plugin.AppUpdate" />
+    </feature>
+    <feature name="JPushPlugin">
+        <param name="android-package" value="com.nantian.plugins.JPushPlugin" />
+    </feature>
+    <feature name="CallPhone" >
+        <param
+            name="android-package"
+            value="com.nantian.plugins.CallPhone" />
+    </feature>
+        <feature name="ImagePicker">
+        <param
+            name="android-package"
+            value="com.nantian.plugins.ImagePicker" />
+    </feature>
+        <feature name="BaiduLocation" >
+        <param
+            name="android-package"
+            value="com.nantian.plugins.BaiduLocation" />
+    </feature>
+</widget>

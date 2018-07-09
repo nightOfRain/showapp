@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport"
+                content="width=device-width, initial-scale=1.0, user-scalable=no">
+                <title>个人资料修改</title>
+                <link href="css/lib/bootstrap/bootstrap-combined.min.css"
+                    rel="stylesheet">
+                    <link rel="stylesheet" type="text/css"
+                    href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+                    <link href="css/common.css" rel="stylesheet">
+                        
+                        <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                        <script src="js/lib/jQuery/jquery.mobile-1.4.3.js" type="text/javascript" charset="utf-8"></script>
+                        
+                        
+                        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                        
+                        
+                        <script src="js/mobiscroll.custom-2.5.2.min.js" type="text/javascript" charset="utf-8"></script>
+                        <link href="dev/css/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+                        
+                        
+                        <script src="dev/js/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+                        <script src="dev/js/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+                        
+                        <link href="dev/css/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+                        <link href="dev/css/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+                        <script src="dev/js/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+                        <script src="dev/js/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+                        
+                        <script src="dev/js/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+                        <script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+                        <script src="js/jquery.md5.js" type="text/javascript" charset="utf-8"></script>
+    </head>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", initial);
+        var thisURL;
+        function initial() {
+            thisURL = document.URL;
+            $(".top_title").html(top.title);
+            $("#sjh").val(localStorage.getItem("userid"));
+        }
+    </script>
+    <body style="overflow:auto;">
+        
+        <!-- 顶部固定，不能滚动 -->
+        <div class="topNavWrapper" >
+            <div class="topNav">
+                <div component-role="m11_top" class="top">
+                    <div class="back_ic"  style="margin-top:-4px" onClick="parent.hideFrame('srfade');">	</div>
+                    <span class="top_title">世纪源金融</span>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div align="center" border="0" style="height: 30px; margin-top: 10px;">
+                            <span style="font-size: 20px; color: #000; margin-top: 5px;">个人资料修改</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" style="background:#f4f4f4;height:15px;margin-top:54px;"></div>
+        
+        <div class="row-fluid">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="content">
+                    <div class="form_div">
+                        <div >
+                            <ul>
+                                <li>
+                                    <span class="inp_label" style="margin-left:30px;">用户号</span>
+                                    <input type="text"  readonly="readonly" class="inp_text" id="sjh" data-role="none" style="margin-left:10px;"/>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="row" style="background:#f4f4f4;height:15px;"></div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <span class="inp_label" style="margin-left:30px;">旧密码</span>
+                                    <input type="password" placeholder="旧密码" class="inp_text" id="mm_old" data-role="none" style="margin-left:10px;" />
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <ul>
+                                <li>
+                                    <span class="inp_label" style="margin-left:30px;">密码</span>
+                                    <input type="password" placeholder="密码不得低于6位" class="inp_text" id="mm" data-role="none" style="margin-left:10px;" />
+                                </li>
+                                <li>
+                                    <span class="inp_label" style="margin-left:30px;">确认密码</span>
+                                    <input type="password" placeholder="请重新输入密码" class="inp_text" id="mm1" data-role="none" style="margin-left:10px;" />
+                                </li>	
+                            </ul>
+                        </div>
+                    </div>
+                </div></div></div>
+        
+        <div>
+            <br/><br/><br/><br/><br/>
+            <div class="bot_btn_1" id="tj" style="background-color: #FF6317;" onclick="xgtj();">修改</div>
+        </div>
+        
+        
+        <script type="text/javascript">
+            function xgtj(){
+                var data = {};
+                data.userid = $("#sjh").val();
+                
+                
+                //密码_后台传值
+                var transPwd = '';
+                var transPwd_old = '';
+                var password = $("#mm").val();
+                var password_old = $("#mm_old").val();
+                
+                if(password_old != ''){ //不为空
+                    if(password_old.length < 6){
+                        IosAlert.alert('旧密码位数错误');
+                    }
+                    transPwd_old = $.md5(password_old);
+                }else{
+                    transPwd_old = '';
+                }
+                
+                if(password != ''){ //不为空
+                    if(password.length < 6){
+                        IosAlert.alert('密码不得低于6位');
+                    }
+                    transPwd = $.md5(password);
+                }else{
+                    transPwd = '';
+                }
+                
+                var mm1 = $("#mm1").val();
+                if ( password != mm1 )
+                {
+                    IosAlert.alert('两次输入密码不一致');
+                    return;
+                }
+                
+                var data = {
+                    "sjh" : $("#sjh").val(),
+                    "password_old" : transPwd_old,
+                    "password_new" : transPwd,
+                };
+                $.ajax({
+                       type : "post",
+                       url: "http://"+IP+":"+PORT+"/app/6025",
+                       data : data,
+                       datatype : "json",
+                       success : function(msg) {
+                       IosAlert.alert('修改成功');
+                       },
+                       error:function(msg){
+                       IosAlert.alert('修改失败');
+                       }
+                       });
+                       
+            }
+        
+        function getdataback(msg){
+            //	alert("msg="+msg);
+            parent.hideFrame('srfade');
+        }
+        </script>  
+    </body>  
+</html>

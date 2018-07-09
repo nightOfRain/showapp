@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>我要贷款</title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+		<link href="css/common.css" rel="stylesheet">
+		<!-- select 样式  -->
+		<link href="css/easydropdown.metro.css" rel="stylesheet">
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.easydropdown.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+
+		
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script src="js/lib/jQuery/jquery.mobile-1.4.3.js"
+	type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="js/lib/bootstrap/bootstrap.min.js"></script>
+
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="cordova.js"></script> 
+
+<script src="js/mobiscroll.custom-2.5.2.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="dev/css/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+
+
+    <script src="dev/js/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+	<script src="dev/js/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+
+	<link href="dev/css/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+	<link href="dev/css/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+	<script src="dev/js/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+	<script src="dev/js/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+
+	<script src="dev/js/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+		<style>
+			.btn:hover, .btn:focus, .btn.focus{color:#fff;}
+			.inp_label{
+	width: 200px;
+	line-height: 45px;
+	color: #000000;
+	font-size: 17px;
+	text-align: left;
+	float: left;
+	margin-left: 15px;
+}
+			.inp_label_s{
+	width: 100px;
+	line-height: 45px;
+	color: #000000;
+	font-size: 17px;
+	text-align: left;
+	float: left;
+	margin-left: 15px;
+}
+.inp_label_x{
+	width: 200px;
+	line-height: 45px;
+	color: #5B5B5B;
+	font-size: 17px;
+	text-align: left;
+	float: left;
+	margin-left: 15px;
+}
+	
+		</style>
+		
+		<script type="text/javascript">
+		var dklb = 2; //默认   个人贷款
+		
+		document.addEventListener("DOMContentLoaded", initial);
+		function initial() {
+			var login_flag = localStorage.getItem("login_flag");
+			if( login_flag == 1) //未登录
+			{
+				document.getElementById("user_login").style.display="none";
+				document.getElementById("wydk").style.display="block";//显示
+			}
+			else
+			{
+				document.getElementById("wydk").style.display="none";
+				document.getElementById("user_login").style.display="block";//显示
+			}
+		}
+	
+		var btn_flag;	
+		function login(){
+			var data = {};
+			
+			var sjh = $("#sjh").val();
+			var password = $("#mm").val();
+			var mm = $.md5(password);
+						
+			localStorage.setItem("sjh", sjh);	
+			var data = {
+					"sjh" : sjh,
+					"mm" : mm,
+					"login_type" : "0",
+				};
+				$.ajax({
+					type : "post",
+
+					url: "http://"+IP+":"+PORT+"/JRWG/hwyh/denglu",
+					data : data,
+					datatype : "json",
+					success : function(msg) {
+						if(msg.data.code == 0)
+						{
+							/*登录成功后退回上层页面*/
+							localStorage.setItem("login_flag", "1");
+							localStorage.setItem("yhsjh",sjh);
+							localStorage.setItem("xm",  msg.data.yhxm);
+							localStorage.setItem("usr_sfzh",  msg.data.sfzh);
+							document.getElementById("user_login").style.display="none";
+							document.getElementById("wydk").style.display="block";//显示
+							window.location.reload();
+						}
+						else{
+							top.alertInfo("登录失败"+msg.data.message,'','温馨提示','确认');
+						}
+					},
+					error:function(msg){
+						top.alertInfo('登录失败','','温馨提示','确认');
+					}
+				});
+			}
+	
+			function zhuce(){
+				showNewFrame("grzlzc.html","smask");
+			}
+			
+			function wjmm(){
+				showNewFrame("wjmm.html","smask"); 
+			}
+				
+		
+			//个人贷款  btn wydkbtn 
+			function grdk() {	
+				dklb = 2;
+				document.getElementById('button_grdk').className = 'btn navbar-btn navbar-btn-active';
+				document.getElementById('button_qydk').className = 'btn navbar-btn';
+                $("#button_grdk").attr("style", "background:#FF6317;");
+				$("#button_qydk").attr("style", "background:#FFFFFF;");
+				document.getElementById("li_gsmc").style.display="none";//隐藏
+			    document.getElementById("li_zsxm").style.display="block";//显示
+				document.getElementById("li_gs_khzjhm").style.display="none";
+				document.getElementById("li_gr_khzjhm").style.display="";
+			
+                $("#wydk_gr_khzjhm").attr("placeholder", "请输入个人证件号");
+				btn_flag=1;
+			}
+			//企业贷款
+			function qydk(){
+				dklb = 1;
+				document.getElementById('button_grdk').className = 'btn navbar-btn';
+				document.getElementById('button_qydk').className = 'btn navbar-btn navbar-btn-active';
+			   $("#button_qydk").attr("style", "background:#FF6317;");
+                $("#button_grdk").attr("style", "background:#FFFFFF;");
+				document.getElementById("li_gsmc").style.display="block";//显示
+                document.getElementById("li_zsxm").style.display="none";//显示
+				document.getElementById("li_gs_khzjhm").style.display="";
+				document.getElementById("li_gr_khzjhm").style.display="none";
+                $("#wydk_gs_khzjhm").attr("placeholder", "请输入企业证件号");
+				btn_flag=2;
+			}
+			
+			//提交
+			function submit(){
+				var khsjh = localStorage.getItem("yhsjh");
+				var sfzh = localStorage.getItem("jrfw_uuid");
+				var index = sfzh.indexOf('-');
+				if(index != -1){
+					sfzh = sfzh.substring(0,index);
+				}
+				var wdh = top.wdh;
+				
+				var khzjhm = '';  //客户证件号码
+				var gsmc = '';
+				var dz = '';
+				var zw = '';
+				var dkyt = '';
+				var dkqx = '';
+				var dkje = '';
+				//alert("wdh="+wdh);
+				dkqx = $("#wydk_dkqx").val();
+				dkje = $("#wydk_dkje").val();
+				dkyt = $("#wydk_dkyt").val();
+				dz = $("#wydk_xqxq").val(); //贷款需求详情
+				if(dklb == 2){  //个人
+					/* dz = $("#wydk_xxdz").val(); */
+					khzjhm = $("#wydk_gr_khzjhm").val();
+					gsmc =  $("#wydk_zsxm").val(); //真实姓名
+					if( gsmc == ''){
+						top.alertInfo('真实姓名不能为空','','温馨提示','确认');
+						return;
+					}
+				}else if(dklb == 1){  //对公
+					gsmc =  $("#wydk_gsmc").val(); //公司名称
+					/* dz = $("#wydk_gsdz").val();
+					zw = $("#wydk_zw").val(); */
+					khzjhm = $("#wydk_gs_khzjhm").val();
+					if( gsmc == ''){
+						top.alertInfo('公司名称不能为空','','温馨提示','确认');
+						return;
+					}
+				}
+				if( khzjhm == ''){
+					top.alertInfo('证件号不能为空','','温馨提示','确认');
+					return;
+				}
+				
+				if( dkyt == ''){
+					top.alertInfo('贷款用途不能为空','','温馨提示','确认');
+					return;
+				}
+				if( dkqx == ''){
+					top.alertInfo('贷款期限不能为空','','温馨提示','确认');
+					return;
+				}
+				if( dkje == ''){
+					top.alertInfo('贷款金额不能为空','','温馨提示','确认');
+					return;
+				}
+				
+				var data = {
+						"wdh" : wdh,
+						"khsjh" : khsjh,
+						"sfzh" : sfzh,						
+						"khzjhm" : khzjhm,
+						"dklb" : dklb,
+						"gsmc" : gsmc,
+						"dz" : dz,
+						"zw" : zw,
+						"dkje" : dkje,
+						"dkyt" : dkyt,
+						"dkqx" : dkqx,
+					};
+					$.ajax({
+						type : "post",
+						url: "http://"+IP+":"+PORT+"/JRWG/sqdk/add",
+						data : data,
+						datatype : "json",
+						success : function(msg) {
+							top.alertInfo('提交成功','','温馨提示','确认');
+							//parent.hideFrame('srfade');
+							back_history();
+							//parent.reload();
+						},
+						error:function(msg){
+							top.alertInfo('提交失败','','温馨提示','确认');
+						}
+					});
+			
+			}
+function cpzl_xz(){
+	$("#cpzl_chance").attr("display", "none");
+	$("#cpxq").attr("display", "block")
+}
+
+
+		</script>  
+		
+	</head>
+	<body style="background:#ffffff;overflow: visible;">
+		<!-- 顶部固定，不能滚动 -->
+	<div data-role="page" id="p1">
+		<div class="top">
+		<div class="back_ic" onClick="history.go(-1)"></div>		
+			<span class="top_title">案卷创建</span><div class="go_home" onclick="back_home()"></div>
+		</div>
+		
+		<div id='cpzl_chance' style="display: block;margin-top: 20px;" class="form_dev">
+			
+			
+						<div class="form_div">
+							<ul>															
+								<li>
+									<div class="inp_label_new" >
+										产品种类
+									</div>
+									<select id='cpzl' class="dropdown" >
+										<option value='8001'>按揭贷款</option>
+										<option value='8002'>房抵贷</option>
+										<option value='8003'>安居贷</option>
+										<option value='8004'>信用贷</option>
+										<option value='8005'>赎楼贷</option>
+										<option value='8006'>尾款贷</option>										
+									</select>
+								</li>								
+							</ul>
+						</div>
+					
+
+						<div id="submit_grdk" class="bot_btn_1" style="width: 92%; background-color: #FF6317; margin-left: 15px; ; margin-right: 15px;" onclick="cpzl_xz();">
+							提交
+						</div>
+						
+				
+		</div>	
+		<div id="cpxq" class="form_div">
+					<li>
+						<div class="inp_label">档案编号</div><span id="cpbh"></span>
+					</li>
+				<ul>
+					<li onClick="jQuery.mobile.changePage('#p2', {transition : 'slide'});" id="li_02">
+						<div class="inp_label" id="cpxq_02">买方（借款人）信息</div>
+						<div class="rgt"></div>
+					</li>
+					<li onClick="jQuery.mobile.changePage('#p3', {transition : 'slide'});" id="li_03">
+						<div class="inp_label" id="cpxq_03">卖方信息</div>
+						<div class="rgt"></div>
+					</li>
+					<li onClick="jQuery.mobile.changePage('#p4', {transition : 'slide'});" id="li_04">
+						<div class="inp_label" id="cpxq_04">交易信息</div>
+						<div class="rgt"></div>
+					</li>
+					<li onClick="jQuery.mobile.changePage('#p5', {transition : 'slide'});" id="li_05">
+						<div class="inp_label" id="cpxq_05">卖方原贷款信息</div>
+						<div class="rgt"></div>
+					</li>
+				</ul>
+				<ul>
+					<li onClick="jQuery.mobile.changePage('#p6', {transition : 'slide'});" id="li_06">
+						<div class="inp_label" id="cpxq_06">贷款信息</div>
+						<div class="rgt"></div>
+					</li>
+					<li onClick="jQuery.mobile.changePage('#p7', {transition : 'slide'});" id="li_07">
+						<div class="inp_label" id="cpxq_07">房屋信息</div>
+						<div class="rgt"></div>
+					</li>
+				</ul>
+					<li onClick="jQuery.mobile.changePage('#p8', {transition : 'slide'});">
+						<div class="inp_label">合作机构</div>
+						<div class="rgt"></div>
+					</li>
+					<li onClick="jQuery.mobile.changePage('#p9', {transition : 'slide'});">
+						<div class="inp_label">业绩归属</div>
+						<div class="rgt"></div>
+					</li>
+					<li onClick="jQuery.mobile.changePage('#pa', {transition : 'slide'});">
+						<div class="inp_label">财务收付</div>
+						<div class="rgt"></div>
+					</li>
+					<li onClick="jQuery.mobile.changePage('#pb', {transition : 'slide'});">
+						<div class="inp_label">其他信息</div>
+						<div class="rgt"></div>
+					</li>
+				</ul>
+		</div>
+	</div>
+	<!-- 卖方信息  -->
+	<div data-role="page" id="p2">
+		<div class="top">
+			<div class="back_ic" onClick="history.go(-1)"></div>
+			<span class="top_title" id="title_p2">卖方信息</span>
+		</div>
+		<div  >
+			<!-- 产权人信息 -->
+			<div class="form_div">
+				<li>
+					<div><span id="p21_label" class="inp_label_x">产权人信息</span></div>
+				</li>
+				<ul>
+					<li>
+						<div class="inp_label_s" width="140px" >姓名</div> <input id="name_p21" type="text"
+						class="inp_text" data-role="none">
+					</li>
+					<li>
+						<div class="inp_label_s" >证件号码</div> <input id="zjhm_p21" type="text"
+						class="inp_text" data-role="none" maxlength="20" onKeyUp="value=value.replace(/[\W]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></input>
+					</li>
+					
+					<li>
+						<div class="inp_label_s">电话(固定)</div> <input type="text"
+						class="inp_text"  id="gddh_p21" data-role="none">
+					</li>
+					<li>
+						<div class="inp_label_s">电话(移动)</div> <input type="text"
+						class="inp_text"  id="yddh_p21" data-role="none"  maxlength="10" onKeyUp="value=value.replace(/[\W]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+					</li>
+					<li>
+						<div class="inp_label_s">其他电话</div> <input type="text"
+						class="inp_text"  id="qtdh_p21" data-role="none"  maxlength="10" onKeyUp="value=value.replace(/[\W]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+					</li>
+				</ul>
+			</div>
+
+			<!-- 配偶信息 -->
+			<div class="form_div">
+				
+				<li>
+					<div><span id="p22_label" class="inp_label_x">产权人配偶信息</span></div>
+				</li>
+				<ul>
+					<li>
+						<div class="inp_label_s" width="140px" >姓名</div> <input id="name_p22" type="text"
+						class="inp_text" data-role="none">
+					</li>
+					<li>
+						<div class="inp_label_s" >证件号码</div> <input id="zjhm_p22" type="text"
+						class="inp_text" data-role="none" maxlength="20" onKeyUp="value=value.replace(/[\W]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></input>
+					</li>					
+					<li>
+						<div class="inp_label_s">电话(固定)</div> <input type="text"
+						class="inp_text"  id="gddh_p22" data-role="none">
+					</li>
+					<li>
+						<div class="inp_label_s">电话(移动)</div> <input type="text"
+						class="inp_text"  id="yddh_p22" data-role="none"  maxlength="10" onKeyUp="value=value.replace(/[\W]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+					</li>
+					<li>
+						<div class="inp_label_s">其他电话</div> <input type="text"
+						class="inp_text"  id="qtdh_p22" data-role="none"  maxlength="10" onKeyUp="value=value.replace(/[\W]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+					</li>
+				</ul>
+			</div>
+			
+			<div class="form_div" style="margin-top: 25px;">
+				<ul>
+				<li onClick="uploadimg();">
+						<div class="inp_label">相关图片上传</div>
+					<div class="rgt"></div></li>
+				</ul>
+			</div>
+						
+			<div class="bot_btn" onClick="history.go(-1)">保存</div>
+		</div>
+
+	</div>
+	</body>
+</html>

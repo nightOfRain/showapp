@@ -1,0 +1,897 @@
+
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+        <link rel="stylesheet" href="css/frozen.css">
+        <link rel="stylesheet" href="css/demo.css">
+<!--App自定义的css-->
+<link rel="stylesheet" type="text/css" href="hello-mui/css/app.css" />
+<link href="hello-mui/css/mui.picker.css" rel="stylesheet" />
+<link href="hello-mui/css/mui.poppicker.css" rel="stylesheet" />
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+        
+<script src="js/frozen.js"></script>
+<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<style>
+html, body {
+    position: relative;
+    height: 100%;
+}
+body {
+    background: #fff;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color:#000;
+    margin: 0;
+    padding: 0;
+    overflow:auto;
+ 
+}
+.div_fullscreen_pg{
+        
+        z-index:9998;background-color:rgba(2,2,2,0.8);width:100%;height:100%;position: fixed;top:0px;
+    }
+    
+.div_fullscreen{       
+    z-index:9998;background-color:rgba(244,244,244,1);width:100%;height:100%;position: fixed;top:0px;
+}
+.div_userflag{       
+    z-index:9998;background-color:rgba(244,244,244,1);width:100%;height:100%;position: fixed;top:0px;
+}
+.div_process{
+       
+    z-index:9999;background-color:#FFFFFF; width:100%;position: fixed; top:0;bottom:0;text-align:left;
+        
+}
+    
+.mui-btn {
+	font-size: 16px;
+	padding: 8px;
+	margin: 3px;
+}
+h5.mui-content-padded {
+	margin-left: 3px;
+	margin-top: 20px !important;
+}
+h5.mui-content-padded:first-child {
+	margin-top: 12px !important;
+}
+.ui-alert {
+	text-align: center;
+	padding: 20px 10px;
+	font-size: 16px;
+}
+
+
+.head_color{
+	background-color: #18b4ed;
+}
+
+.bnt_class_show{
+	margin-top:10px;
+	text-align:center;
+	margin-bottom: 600px;
+}
+.bnt_class_hide{
+	margin-top:10px;
+	text-align:center;
+	margin-bottom: 600px;
+}
+</style>
+<script>
+
+var thisURL; 
+var activeIndex = 0; //0-企业用户 1-个人用户
+var institution = 0; //房产中介编号
+var bondingCompany = 0; //担保公司编号
+var pgCompany = 0; //评估公司编号
+var pgCompany_name = ''; //评估公司编号
+var pawn_flag_value_gr=0; //抵押物资质-个人
+var pawn_address_value_gr='';//存放抵押物行政编号
+var customer_id='';
+var cityValue = 0;
+var customer_type = 0; //0-新增用户 1-存量用户
+var hasZj = 0;//是否有中介 0-没有 1-有
+var fileno;
+var pgList; //用于存放评估公司数列
+$(function() {				
+			 
+
+	thisURL = document.URL; 
+	pgCompany = 0; 
+	
+	customer_id='';
+
+	mui.init({
+		swipeBack:true //启用右滑关闭功能
+	});
+	mui('.mui-scroll-wrapper').scroll({
+              deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+              });
+	
+	mui(document.body).on('tap', '.userflag', function(e){
+		$(".div_userflag").show();
+	});
+	mui(".mui-table-view").on('tap', '.mui-table-view-cell', function (event) {
+		this.click();
+		
+		});
+	mui(document.body).on('tap', '.mui-action-back ', function(e) {
+		this.click();
+		return false;
+	});
+	mui(document.body).on('tap', '.yaohao', function(e) {
+		
+		if(pgCompany != 0 ){ //已经摇过号了
+			alert("出号已成功，请不要重复摇号");
+			return;
+		}
+        mui(this).button('loading');
+        
+       	yaohao_go();
+        
+        mui(this).button('reset');
+
+    });
+
+	document.querySelector('.mui-table-view.mui-table-view-radio').addEventListener('selected',function(e){
+		//info.innerHTML = "当前选中的为："+e.detail.el.innerText;
+		console.log(e.detail.el.id);
+		pgCompany = e.detail.el.id;
+		
+			$("#pg_name_gr").val(e.detail.el.innerText);
+		
+	});
+    
+
+	
+	$('.num_class').bind('input propertychange', function() {  							
+		this.value=this.value.replace(/[^0-9]/g, '');
+		
+    });
+	
+	$('#pggs_key').bind('input propertychange', pggs_search);
+	initPage();//初始化页面
+});  
+
+function initPage(){
+	var getenv = thisURL.split('?')[1];
+	fileno = getenv.split('=')[1];
+	
+	var data = {
+         fileno:fileno           
+    };
+	
+	Http_ajax(done_check_info, "app/6041", data);
+}
+function done_check_info(msg){
+
+	top.writelog("6041 recv:"+msg);
+	top.stop_process();
+	var json = eval("("+msg+")");
+	
+	if(json.stat == '1'){
+		top.alertInfo("查询失败，请把该笔记录信息上报管理员处理");
+		return;
+	}
+	flag = json.data.fileinfo.flag;
+	
+	curr_assess_id = json.data.fileinfo.assess_id;
+
+	top.writelog("fileno="+fileno+";stat="+json.data.fileinfo.stat);
+	top.alertInfo("驳回理由:"+json.data.fileinfo.note);
+
+		$("#gr_div").show();
+		
+	
+		$("#customer_gr").val(json.data.fileinfo.customer); //客户名称
+		$("#tel_no_gr").val(json.data.fileinfo.tel_no); //联系方式
+		$("#pawn_flag_gr").val(json.data.fileinfo.pawnName + json.data.fileinfo.pawnSmall); //抵押物类型
+		$("#pawn_address_gr").val(json.data.fileinfo.pawn_address_text.split('_')[0]); //具体地址
+		$("#address_gr").val(json.data.fileinfo.pawn_address_text.split('_')[1]);
+		pawn_flag_value_gr = json.data.fileinfo.pawn_flag_value +'-'+json.data.fileinfo.pawn_small_value;
+		
+		
+		if(json.data.fileinfo.pawn_flag_value == 10000){
+			$('#div_zj').attr("style", "display:block");
+			
+			$('#gr_userflag').hide();
+			$("#is_zj").val('请选择是否有中介公司');
+			/*
+			if(top.isEmpty(json.data.fileinfo.)){//没有中介
+				$("#is_zj").val('没有');
+				
+			}else{
+				$("#is_zj").val('有');
+				$("#fczj").show();
+				$("#fczj").val(json.data.fileinfo.agency_name);
+			}
+			*/
+		}
+		
+		pawn_address_value_gr = json.data.fileinfo.pawn_address_value;
+		cityValue = json.data.fileinfo.area_id;
+		$("#region_gr").val(json.data.fileinfo.areaName);
+}
+
+
+function yaohao_go(){
+	var data={};
+
+		
+		if(pawn_flag_value_gr == 0){
+			top.alertInfo("抵押物类型不能为空");
+			return;
+		}
+
+		
+		if(top.isEmpty($("#customer_gr").val())){
+			top.alertInfo("客户姓名不能为空");
+			return;
+		}
+
+		if(top.isEmpty($("#tel_no_gr").val())){
+			top.alertInfo("联系方式不能为空");
+			return;
+		}
+		if(top.isEmpty($("#pawn_flag_gr").val())){
+			top.alertInfo("抵押物类型不能为空");
+			return;
+		}
+		if(top.isEmpty($("#pawn_address_gr").val())){
+			top.alertInfo("抵押物行政区域不能为空");
+			return;
+		}
+		if(top.isEmpty($("#address_gr").val())){
+			top.alertInfo("抵押物具体地址不能为空");
+			return;
+		}
+		if(top.isEmpty($("#region_gr").val())){
+			top.alertInfo("支行所在区域不能为空");
+			return;
+		}
+		if(hasZj == 1){
+			if(top.isEmpty($("#institution_name").val())){
+				top.alertInfo("房产中介名称不能为空");
+				return;
+			}
+			if(top.isEmpty($("#institution_lxr").val())){
+				top.alertInfo("房产中介联系人不能为空");
+				return;
+			}
+			if(top.isEmpty($("#institution_lxfs").val())){
+				top.alertInfo("房产中介联系方式不能为空");
+				return;
+			}
+		}
+		$("#pg_form_gr").show();
+	
+		data = {
+			user_id:localStorage.getItem("user_id"),
+			fileno:fileno,
+			customer_type:customer_type,
+			customer_name:$("#customer_gr").val(),
+			customer_id:customer_id,
+			flag:activeIndex,
+			tel_no:$("#tel_no_gr").val(),
+			pawn_flag_value:pawn_flag_value_gr.split('-')[0],
+			pawn_small_value:pawn_flag_value_gr.split('-')[1],
+			pawn_flag_text:$("pawn_flag_gr").val(),  	
+			pawn_address_value:pawn_address_value_gr,
+			pawn_address:$("#pawn_address_gr").val().trim().replace(/\s/g,"") + '_' + $("#address_gr").val(),
+			area_id:cityValue,
+			agency_id:$("#institution_name").val(),
+			agency_lxr:$("#institution_lxr").val(),
+			agency_lxfs:$("#institution_lxfs").val(),
+			guarant_id:'',
+			assess_id:'',
+   			assess_name:''
+		}
+		
+		
+			//通信
+       	Http_ajax(function(msg){
+       		var json = eval("("+msg+")");
+       		top.stop_process();
+  
+    		top.writelog("6033 gr recv:"+msg);
+    		if(json.stat == 1){ //服务器吹了失败
+    			top.alertInfo("服务器处理失败，请稍后再试");
+    			return;
+    		}
+    		
+    		if(json.data.pg_stat == 0 ){ //摇号成功
+    			$("#pg_form_gr").show();
+        	
+        		if( top.myLevel == 0){
+    				$("#pg_name_gr").val("具体分派评估公司稍后通知");    			
+    			}else{
+    				$("#pg_name_gr").val(json.data.assess_name);    				
+    			}
+    			
+    			top.alertInfo("摇号成功，具体分派评估公司稍后通知"); 
+        		
+        		parent.initPage();
+        		
+        		back_history();
+    		}else if(json.data.pg_stat == 1){ //有存量客户，且有多条满足条件的评估公司共选择
+    			set_pggs(msg);
+        		$("#yaohao_gr").hide();
+        		$("#zhiding_gr").show();
+    		}
+    		
+    		document.getElementById('gr_userflag').removeAttribute('href');
+       	}, "app/6033", data);
+		
+		
+	
+}
+function set_pggs(msg){
+	var json = eval("("+msg+")");
+	
+	$("#pggs").html('');
+	var pggs_html = '';
+	
+	for( var i = 0; i < json.data.pgList.length; i++){
+		pggs_html += '<li class="mui-table-view-cell" id='+json.data.pgList[i].rid+'><a class="mui-navigate-right">'+json.data.pgList[i].assess_name+'</a></li>'
+	}
+	
+	$("#pggs").html(pggs_html);
+	
+	$(".div_fullscreen_pg").show();
+}
+
+function pggs_search(){
+	var key = $("#pggs_key").val();
+	$("#pggs").html('');
+	var pggs_html = '';
+	if( key < 2){
+		for( var i = 0; i < pgList.length; i++){
+			pggs_html += '<li class="mui-table-view-cell" id='+json.data.pgList[i].rid+'><a class="mui-navigate-right">'+json.data.pgList[i].assess_name+'</a></li>';
+		}
+	}else{
+		for( var i = 0; i < pgList.length; i++){
+			if(json.data.pgList[i].assess_name.match(key)){
+				pggs_html += '<li class="mui-table-view-cell" id='+json.data.pgList[i].rid+'><a class="mui-navigate-right">'+json.data.pgList[i].assess_name+'</a></li>';
+			}			
+		}	
+	}
+	$("#pggs").html(pggs_html);
+
+}
+
+
+//直接指定了评估公司
+function zhiding(){
+
+
+    	if(pawn_flag_value_gr == 0){
+    		top.alertInfo("抵押物类型不能为空");
+    		return;
+    	}
+
+    	
+    	if(top.isEmpty($("#customer_gr").val())){
+    		top.alertInfo("客户姓名不能为空");
+    		return;
+    	}
+
+    	if(top.isEmpty($("#tel_no_gr").val())){
+    		top.alertInfo("联系方式不能为空");
+    		return;
+    	}
+    	if(top.isEmpty($("#pawn_flag_gr").val())){
+    		top.alertInfo("抵押物类型不能为空");
+    		return;
+    	}
+    	if(top.isEmpty($("#pawn_address_gr").val())){
+    		top.alertInfo("抵押物行政区域不能为空");
+    		return;
+    	}
+    	if(top.isEmpty($("#address_gr").val())){
+    		top.alertInfo("抵押物具体地址不能为空");
+    		return;
+    	}
+    	if(top.isEmpty($("#region_gr").val())){
+    		top.alertInfo("支行所在区域不能为空");
+    		return;
+    	}
+    	
+    	if(top.isEmpty($("#pg_name_gr").val())){
+    		top.alertInfo("存量客户评估公司不能为空");
+    		return;
+    	}
+    	if(hasZj == 1){
+    		if(top.isEmpty($("#institution_name").val())){
+				top.alertInfo("房产中介名称不能为空");
+				return;
+			}
+			if(top.isEmpty($("#institution_lxr").val())){
+				top.alertInfo("房产中介联系人不能为空");
+				return;
+			}
+			if(top.isEmpty($("#institution_lxfs").val())){
+				top.alertInfo("房产中介联系方式不能为空");
+				return;
+			}
+		}
+    	data = {
+    			user_id:localStorage.getItem("user_id"),
+    			customer_name:$("#customer_gr").val(),
+    			fileno:fileno,
+    			customer_id:customer_id,
+    			flag:activeIndex,
+    			tel_no:$("#tel_no_gr").val(),
+    			pawn_flag_value:pawn_flag_value_gr.split('-')[0],
+    			pawn_small_value:pawn_flag_value_gr.split('-')[1],
+    			pawn_flag_text:$("pawn_flag_gr").val(),  	
+    			pawn_address_value:pawn_address_value_gr,
+    			pawn_address:$("#pawn_address_gr").val().trim().replace(/\s/g,"") + '_' + $("#address_gr").val(),
+    			area_id:cityValue,
+    			agency_id:$("#institution_name").val(),
+    			agency_lxr:$("#institution_lxr").val(),
+    			agency_lxfs:$("#institution_lxfs").val(),
+    			guarant_id:'',
+    			assess_id:pgCompany,
+    			assess_name:$("#pg_name_gr").val()
+    	}
+    
+
+
+
+	
+		//通信
+    	Http_ajax(function(msg){
+    		
+    		top.stop_process();
+    		top.writelog("6033 recv:"+msg);
+    		var json = eval("("+msg+")");
+    		if(json.stat == 1){ //服务器吹了失败
+    			top.alertInfo("服务器处理失败，请稍后再试");
+    			return;
+    		}
+    		if(json.data.pg_stat == 0 ){ //摇号成功
+    			top.alertInfo("摇号结果："+json.data.assess_name);        		
+        		$("#zhiding_gr").hide();       		
+        		$("input").attr("readonly", "readonly");
+        		parent.initPage();
+        		back_history();
+        		
+    		}else{ //指定评估公司不应该出现pb_stat!=0的情况
+    			top.alertInfo("摇号失败："+json.data.retinfo);
+    		}
+    			
+    	}, "app/6033", data);
+}
+
+//选择用户是新增还是存量  如果是新增客户 显示摇号按钮 ；如果是存量客户
+function userflag_show(flag){
+	
+	customer_type = flag;
+	if(flag == '0'){ //新增客户
+		
+		$("#gr_userflag").html("新增客户");
+		$("#yaohao_gr").show();
+		$("#zhiding_gr").hide();
+		
+	}else{ //存量客户
+	
+		$("#gr_userflag").html("存量客户");
+		$("#zhiding_gr").show();
+		$("#yaohao_gr").hide();
+		
+	//如果是存量客户直接发起摇号;
+		yaohao_go();
+	}
+}
+
+
+function judge_esf(flag){
+	
+	if(flag == '10000'){//二手房需要选择中介
+	
+		$('#div_zj').attr("style", "display:block");
+
+		$('#gr_userflag').hide();
+	}else{								
+		$('#gr_userflag').show();
+		$('#div_zj').hide();
+	
+	}
+}
+function showpggsList(){
+	$('#yaohao_gr').hide();
+	$('#zhiding_gr').show();
+	$('#pg_form_gr').show();
+}
+function fczj_chance(flag){
+	top.writelog("fczj="+flag);
+	if(flag == '1'){//有房产中介
+		//$('#fczj').show();	
+		$('.div_fczj').show();	
+	   	data = {
+    			pawn_flag_value:pawn_flag_value_gr.split('-')[0],
+    			area_id:cityValue				    	
+    	}
+     	Http_ajax(function(msg){
+       		var json = eval("("+msg+")");
+       		top.stop_process();
+  
+    		top.writelog("6045 gr recv:"+msg);
+    		if(json.stat == 1){ //服务器吹了失败
+    			top.alertInfo("服务器处理失败，请稍后再试");
+    			return;
+    		}
+    
+			set_pggs(msg);
+			
+    		$("#yaohao_gr").hide();
+    		$("#zhiding_gr").show();
+
+       	}, "app/6045", data);
+		
+	}else{								
+		$('.div_fczj').hide();
+		$('#zhiding_gr').hide();
+		$('#yaohao_gr').show();
+		
+	}
+}
+function dismiss(){
+	$(".div_fullscreen_pg").hide();
+}
+</script>
+</head>
+    
+<body>
+
+   	<header class="mui-bar mui-bar-nav head_color">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+		<h1 class="mui-title">评估摇号</h1>
+	</header>
+
+	<div class="container-fluid">
+	<div class="mui-content " >
+
+		<div class="mui-scroll-wrapper">
+		    <div class="mui-scroll  top_head">
+						<div class="mui-content-padded" style="margin: 5px;">								
+					<form class="mui-input-group">
+						<div class="mui-input-row">
+							<label>客户名称</label>
+							<input type="text" placeholder="输入客户名称（全称）" id="customer_gr">
+						</div>
+						
+						<div class="mui-input-row">
+							<label>联系方式</label>
+							<input type="text" placeholder="输入联系方式" id="tel_no_gr" maxlength="11" class="num_class">
+						</div>
+					</form>								
+				</div>
+					<div class="mui-content-padded" style="margin: 5px;">								
+						<form class="mui-input-group" >										
+							<div class="mui-input-row">
+								<label>抵押物类型</label>
+								<input type="text" placeholder="点击选择抵押物类型" id='pawn_flag_gr' readonly="readonly">
+							</div>
+							<div class="mui-input-row">
+								<label>抵押物区域</label>
+								<input type="text" placeholder="点击选择抵押物区域" id="pawn_address_gr" readonly="readonly">
+							</div>
+							<div class="mui-input-row">
+								<label>具体地址</label>
+								<input type="text" placeholder="输入具体地址" id="address_gr">
+							</div>
+						</form>
+					</div>	
+					<div class="mui-content-padded" style="margin: 5px;">								
+						<form class="mui-input-group" >										
+							<div class="mui-input-row">
+								<label>业务地区</label>
+								<input type="text" placeholder="支行所处区域" id="region_gr" readonly="readonly">
+							</div>
+														
+						</form>
+					</div>
+					
+					<div class="mui-content-padded" style="display:none" id="div_zj">								
+						<form class="mui-input-group" >		
+							<div class="mui-input-row">										
+								<label>房产中介</label>
+								<input type="text" placeholder="是否有房产中介"  readonly="readonly" id="is_zj">
+							</div>								
+							<div class="mui-input-row div_fczj"style="display:none">										
+								<label>中介名称</label>
+								<input type="text" placeholder="请输入房产中介名称" id='institution_name'>
+							</div>
+							<div class="mui-input-row div_fczj"  style="display:none">										
+								<label>联系人</label>
+								<input type="text" placeholder="请输入房产中介名称" id='institution_lxr'>
+							</div>
+							<div class="mui-input-row div_fczj"  style="display:none">										
+								<label>联系方式</label>
+								<input type="tel" placeholder="请输入房产中介名称" id='institution_lxfs'>
+							</div>										
+						</form>
+					</div>
+					<div class="mui-content-padded" style="display:none;">								
+						<form class="mui-input-group" >										
+							<div class="mui-input-row">
+								<label>担保机构</label>
+								<input type="text" placeholder="担保机构（可不选）" id='bondingCompany_name' readonly="readonly">
+							</div>										
+						</form>
+					</div>	
+					<div class="mui-content-padded">
+						<form class="mui-input-group" id="pg_form_gr" style="display:none">										
+							<div class="mui-input-row">
+								<label>评估公司</label>
+								<input type="text" placeholder="评估公司" id='pg_name_gr' readonly="readonly">
+							</div>										
+						</form>								
+					</div>
+					<a href="#userflag" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined" style="padding: 5px 20px;" id="gr_userflag">新增客户or存量客户?</a>
+					
+					
+					<div style="margin-top:10px;text-align:center;margin-bottom: 600px;" id="yaohao_gr">
+						<button type="button" class="mui-btn  mui-btn-primary yaohao" style="width:90%">重新摇号</button>
+					</div>		
+					<div style="margin-top:10px;text-align:center;margin-bottom: 600px; display:none" id="zhiding_gr" onclick="zhiding();">
+						<button type="button" class="mui-btn  mui-btn-primary" style="width:90%">评估申请</button>
+					</div>						
+			 </div>
+		</div>
+		
+			
+		</div>
+	</div>
+		
+
+	<div id="userflag" class="mui-popover mui-popover-action mui-popover-bottom">
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell" onclick="userflag_show('0')">
+				<a href="#userflag">新增客户</a>
+			</li>
+			<li class="mui-table-view-cell" onclick="userflag_show('1')">
+				<a href="#userflag">存量客户</a>
+			</li>
+		</ul>
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a href="#userflag"><b>取消</b></a>
+			</li>
+		</ul>
+	</div>
+       
+       <div class="div_fullscreen_pg" style="display:none">
+       
+       		<div class="div_process" style="border-top:1px solid #d0d0d0">
+       			<div class="mui-content">
+	       		 	<div class="mui-scroll-wrapper mui-scroll top_head" >	       		
+		       			<div class="mui-content-padded" style="font-weight:bold;text-align:center"><span style="color:#FF6600">当前客户为存量客户，且有多个满足条件的评估公司可供挑选，请选择后点击确认按钮。</span></div>	       			
+						<!-- 
+						<div class="mui-input-row mui-search">
+							<input type="search" class="mui-input-clear" placeholder="可以输入关键字搜索" id="pggs_key" onkeyup="pggs_search()">
+						</div>
+						 -->
+						<ul class="mui-table-view mui-table-view-radio" id="pggs">
+							<li class="mui-table-view-cell" id='1'><a class="mui-navigate-right">测试一下</a></li>
+							<li class="mui-table-view-cell" id='2'><a class="mui-navigate-right">测试2下</a></li>
+							<li class="mui-table-view-cell" id='3'><a class="mui-navigate-right">测试3下</a></li>
+							<li class="mui-table-view-cell" id='4'><a class="mui-navigate-right">测试4下</a></li>							
+						</ul>		
+						
+						<div class="mui-button-row" style="margin-top:10px;">
+							<button type="button" class="mui-btn mui-btn-primary" onclick="dismiss();zhiding();">确认</button>&nbsp;&nbsp;
+							<button type="button" class="mui-btn mui-btn-danger" onclick="dismiss();">取消</button>
+						</div>
+						
+						<div style="height:30px;">
+							<span style="color:#fff">选择评估公司</span>
+						</div>
+					</div>
+				</div>
+			</div>
+       </div>       
+<script src="hello-mui/js/mui.min.js"></script>
+		<!--<script src="../js/mui.picker.min.js"></script>-->
+		<script src="hello-mui/js/mui.picker.js"></script>
+		<script src="hello-mui/js/mui.poppicker.js"></script>
+		<script src="hello-mui/js/city.data.js" type="text/javascript" charset="utf-8"></script>
+		<script src="hello-mui/js/city.data-3.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			(function($, doc) {
+				$.init();
+				$.ready(function() {
+					/*********是否有房产中介***********/
+					var isPicker = new $.PopPicker({
+						layer: 1
+					});
+					
+					var isData = [{
+						value: '1',
+						text: '有'
+					}, {
+						value: '0',
+						text: '没有'
+					}];
+					isPicker.setData(isData);
+					
+					var is_zj = doc.getElementById('is_zj');
+					//var userResult = doc.getElementById('userResult');
+					is_zj.addEventListener('tap', function(event) {
+						isPicker.show(function(items) {
+							
+							hasZj = (items[0] || {}).value;
+							is_zj.value = (items[0] || {}).text;
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+							top.writelog("flag="+hasZj);
+							fczj_chance(hasZj);
+							
+						
+							
+						});
+					}, false);
+					/*******抵押物类型选择器********/
+	
+					 //个人
+					var pawnPicker = new $.PopPicker({
+						layer: 2
+					});
+				
+					pawnPicker.setData(pawnData);
+					var pawn_flag_gr = doc.getElementById('pawn_flag_gr');
+				
+					pawn_flag_gr.addEventListener('tap', function(event) {
+						pawnPicker.show(function(items) {
+							pawn_flag_gr.value = (items[0] || {}).text + " " + (items[1] || {}).text;	
+							pawn_flag_value_gr = (items[0] || {}).value + "-" + (items[1] || {}).value;
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+							//top.writelog("gr pawn_flag_value_gr="+pawn_flag_value_gr);
+							
+							judge_esf((items[0] || {}).value);
+				
+							
+						});
+					}, false);
+					
+
+					
+					//三级联示例 抵押物地址
+					var cityPicker3 = new $.PopPicker({
+						layer: 3
+					});
+					cityPicker3.setData(cityData3);
+					cityPicker3.pickers[0].setSelectedIndex(16);//默认湖北
+						
+					cityPicker3.pickers[1].setSelectedValue(1);//默认武汉
+					
+					var pawn_address_gr = doc.getElementById('pawn_address_gr');
+				
+					pawn_address_gr.addEventListener('tap', function(event) {
+						cityPicker3.show(function(items) {
+							pawn_address_gr.value = (items[0] || {}).text + " " + (items[1] || {}).text + " " + (items[2] || {}).text;
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+							pawn_address_value_gr = (items[0] || {}).value + "-" + (items[1] || {}).value + "-" + (items[2] || {}).value;
+
+							
+						});
+					}, false);
+					
+
+					
+					
+					/********支行地区选择器*********/
+					
+					var cityPicker = new $.PopPicker();
+					cityPicker.setData(regionData);
+					var region_gr = doc.getElementById('region_gr');
+				
+					
+					region_gr.addEventListener('tap', function(event) {
+						$("#address_gr").blur();
+						cityPicker.show(function(items) {
+							region_gr.value = (items[0] || {}).text;	
+							cityValue = (items[0] || {}).value;
+
+	
+							if(pawn_flag_value_gr.split('-')[0] == '10000'){
+								//getInst_by_pawn();
+							}
+						});
+						
+					
+					}, false);
+
+				});
+				var pawn_flag = true;
+				var pawn_count = 0;
+				//根据抵押物信息获取中介公司信息
+				function getInst_by_pawn(){
+					
+					top.writelog("pawn_count="+pawn_count++);
+					//选择完合作中介后根据合作中介自动匹配合作机构
+					var data = {
+							pawn_flag_value:pawn_flag_value_gr.split('-')[0],							
+							area_id:cityValue,
+							user_id:localStorage.getItem("user_id")
+					}
+					
+					Http_ajax(function(msg){
+						var json = eval("("+msg+")");
+						/*******合作机构选择器********/
+						top.stop_process();
+						top.writelog("6035 recv:"+msg);
+						
+				
+						var institutionPicker = new $.PopPicker();
+						institutionPicker.setData(json.data.instList);
+						var institution_name = doc.getElementById('institution_name');
+						institution_name.addEventListener('tap', function(event) {
+							institutionPicker.show(function(items) {			
+								institution_name.value = (items[0] || {}).text;		
+								institution = (items[0] || {}).value;	
+								//返回 false 可以阻止选择框的关闭
+								//return false;
+								
+								//选择完合作中介后根据合作中介自动匹配合作机构
+								var data = {
+										agency_id:institution
+								}
+								Http_ajax(getCompany_By_Inst, "app/6037", data);
+							});
+											
+						}, false);
+						
+	
+					}, "app/6035", data);
+					
+					return false;
+				}
+				
+				//根据中介公司信息获取 评估公司信息
+				function getCompany_By_Inst(msg){
+					top.stop_process();
+					//$("#pg_form_gr").show();
+					
+					var json = eval("("+msg+")");
+					top.writelog("6037 recv:"+msg);
+					
+					//如果有对应评估公司，就直接指定，不用摇号了
+					if( json.data.pgList.length > 0){
+						top.alertInfo("请在评估公司选择里选择评估公司，并保存");
+						
+						showpggsList();
+						
+						/*******评估公司选择器********/
+						var CompanyPicker = new $.PopPicker();
+						CompanyPicker.setData(json.data.pgList);
+						var Company_name = doc.getElementById('pg_name_gr');
+						Company_name.addEventListener('tap', function(event) {
+							CompanyPicker.show(function(items) {			
+								Company_name.value = (items[0] || {}).text;		
+								pgCompany_name = (items[0] || {}).text;	
+								pgCompany = (items[0] || {}).value;	
+								//返回 false 可以阻止选择框的关闭
+								//return false;
+							});
+						}, false);
+					}
+					
+				}
+			})(mui, document);
+		</script>
+    </body>
+</html>

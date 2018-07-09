@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+                <link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+                    
+                   
+                     <link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+                    
+                    
+                    <link href="css/lib/bootstrap/bootstrap-combined.min.css" rel="stylesheet">
+                        <link rel="stylesheet" type="text/css" href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+                        <link href="css/index.css" rel="stylesheet">
+                            <link rel="stylesheet" href="common/slick/slick.css">
+                                <link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+                                    
+                                        <link href="css/common.css" rel="stylesheet">
+                                            <link href="dev/css/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+                                            <link href="dev/css/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+                                            <link href="dev/css/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+                                            <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+                                            <link rel="stylesheet" type="text/css" href="css/aui/aui.2.0.css" />
+                                            <link rel="stylesheet" type="text/css" href="css/aui/api.css" />
+                                            <link rel="stylesheet" type="text/css" href="css/aui/aui-list-swipe.css" />
+                                            <link rel="stylesheet" type="text/css" href="css/aui/aui-flex.css" />
+                                            <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                                            <script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+                                            <script src="js/mobiscroll.custom-2.5.2.min.js" type="text/javascript" charset="utf-8"></script>
+                                            <script src="dev/js/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+                                            <script src="dev/js/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+                                            <script src="dev/js/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+                                            <script src="dev/js/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+                                            <script src="dev/js/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+                                            <script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+                                            
+                                            <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                                    <style>
+                                        html, body {
+                                            position: relative;
+                                            height: 100%;
+                                        }
+                                    body {
+                                        background: #fff;
+                                        font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+                                        font-size: 14px;
+                                        color:#000;
+                                        margin: 0;
+                                        padding: 0;
+                                    }
+                                        .rgt {
+                                            width: 10px;
+                                            height: 18px;
+                                            float: right;
+                                            margin-right: 20px;
+                                            margin-top: 12px;
+                                            background-size: 100% 100%;
+                                            background-image: url("img/right.png");
+                                        }
+                                    .rgt_c {
+                                        width: 40px;
+                                        height: 36px;
+                                        float: right;
+                                        margin-right: 10px;
+                                        margin-top: 6px;
+                                        background-size: 100% 100%;
+                                        background-image: url("img/tpck.png");
+                                    }
+                                    .list_font{
+                                        font-size:15px;
+                                        color:#696969;
+                                    }
+                                    .max{width:100%;height:auto;}
+                                                                                                    .form_div_m{
+	width: 100%;
+	background-color:#ffffff;
+	margin: 0px auto;
+	padding: 0px;
+}
+.form_div_m li{
+		height: 35px;
+		line-height:35px;
+	width: 100%;
+	border-top: 0; 
+	border-bottom : 1px solid #d0d0d0;
+	list-style-type: none;
+	margin: 0px;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-align-items: center;
+	align-items: center;
+	
+}
+.inp_text_m {
+	border: 0 !important;
+	background: none !important;
+	box-shadow: none !important;
+	line-height: 35px !important;
+	height:40px !important;
+	color: #5b5b5b !important;
+	width: 50% !important;	
+	font-size: 15px;
+	height:100%;
+	vertical-bottom:0;
+	
+}
+                                        </style>
+                                    </head>
+    <script type="text/javascript">
+        //初始化插件内容
+        var opt_datatime = {
+            preset: 'date', //日期格式 date（日期）|datetime（日期加时间）
+            theme: 'android-ics light', //皮肤样式
+            display: 'modal', //显示方式
+            mode: 'clickpick', //日期选择模式
+            dateFormat: 'yyyymmdd', // 日期格式
+            timeWheels:'HHii', //时间格式24小时
+            timeFormat:'HH:ii', //时间格式24小时
+            setText: '确定', //确认按钮名称
+            cancelText: '取消',//取消按钮名籍我
+            dateOrder: 'yyyymmdd', //面板中日期排列格式
+            dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+            yearText: '年', monthText: '月',  dayText: '日',  //面板中年月日文字
+            endYear:2020, //结束年份
+            showNow:true,
+            nowText:'今天',
+            hourText:'小时',
+            minuteText:'分'
+        }
+        var cpzl_image = {
+                "8001":"img/gjj.png",
+                "8002":"img/sddk.png",
+                "8003":"img/zhd.png",
+                "8004":"img/fdd.png",
+                "8005":"img/ajd.png",
+                "8006":"img/dsjr.png",
+                "8007":"img/yjs.png",
+                "8008":"img/paxyd.png",
+                "8009":"img/sld.png",
+                "8010":"img/wkd.png"
+            };
+    document.addEventListener("DOMContentLoaded", initial);
+    function initial() {
+        thisURL = document.URL;
+        
+    //    document.getElementsByTagName('body')[0].style.width = top.screenWidth+"px";
+    //    document.getElementsByTagName('body')[0].style.height = top.screenHeight+20+"px";
+        //$(".top_title").html(top.title);
+        
+
+        $("#qssj").mobiscroll(opt_datatime);
+        $("#jzsj").mobiscroll(opt_datatime);
+        query();
+    }
+    
+    /*单笔查询*/
+    function query() {
+        
+        $("#p1").attr("style", "display:block");
+        
+    
+        
+        
+        var data = {};
+        data.userid = localStorage.getItem("userid");
+       
+        data.accountPosition = localStorage.getItem("accountPosition");
+        data.flag = $("#time_flag").val();
+        if($("#time_flag").val() == 3){
+        	if($("#qssj").val() =='' || $("#jzsj").val()==''){
+        		top.alertInfo("自定义时，时间区间不能为空");
+        		return;
+        	}
+        }
+        data.begindate = $("#qssj").val();
+        data.enddate = $("#jzsj").val();
+        top.start_process();
+        $.ajax({
+               type : "post",
+               timeout: 5000,
+               url: "http://"+IP+":"+PORT+"/app/6037",
+               data : data,
+               datatype : "json",
+               success : showmessage,
+               error:function(msg){
+            	   top.stop_process();
+               top.alertInfo('登录失败');
+               }
+               });
+               
+    }
+    
+    
+    
+    
+    function showmessage(msg){
+    	top.stop_process();
+        var json=eval("("+msg+")");
+        var hkjh_info='';
+  
+		if(json.data.length == 0){
+			var msg;
+			if($("#time_flag").val() == 0){
+				msg = "本周没有相关案卷的财务信息";
+			}else if($("#time_flag").val() == 1){
+				msg = "本月没有相关案卷的财务信息";
+			}else if($("#time_flag").val() == 2){
+				msg = "本年没有相关案卷的财务信息";
+			}else{
+				msg = "该时段没有相关案卷的财务信息";
+			}
+			
+			hkjh_info = '<div style="text-align:center"><p>'+msg+'</p></div>';
+			$("#hkjh_info").html(hkjh_info);
+			return;
+		}
+        for(var i = 0; i < json.data.length; i++){
+            
+            var info={};
+            info.fileno=json.data[i].fileno;
+            info.jkr_xm=json.data[i].jkr_xm;
+            info.bank_name = json.data[i].bankname;
+            info.typeName = json.data[i].typeName;
+            if(json.data[i].loantype == "8001"){
+                info.loan_amt = json.data[i].dk_gjj_je;
+            }else if(json.data[i].loantype == "8003"){
+                info.loan_amt = json.data[i].dk_gjj_je + json.data[i].dk_gjj_je;
+            }else{
+                info.loan_amt = json.data[i].dk_je;
+            }
+            
+            info.hk_sj = json.data[i].hk_sj;
+            info.hk_aj = json.data[i].hk_aj;
+            info.dk_qx = json.data[i].dk_qx;
+            info.dk_lv = json.data[i].dk_lv;
+            info.img_url = json.data[i].hk_img;
+            var url = cpzl_image[json.data[i].loantype];
+            
+            hkjh_info += '<li class="aui-list-view-cell aui-img" onclick="goto_map(\''+json.data[i].fileno+'\');">'
+                            +'<img class="aui-img-object aui-pull-left" src="'+url+'">'
+                            +'<div class="aui-img-body">'
+                            +'<p class="aui-ellipsis-1 list_font">'+json.data[i].jkr_xm+'<span style="float:right;font-size:12px;color:#808080">还款时间:'+json.data[i].hk_sj+'</span></p>'
+                            +'<p class="aui-ellipsis-1 list_font"><span id="title" >贷款金额：'+info.loan_amt+'</span><span style="float:right">月供：'+json.data[i].hk_aj+'</span></p>'
+                            +'<p class="aui-ellipsis-1 list_font"><span id="address">贷款银行：'+json.data[i].bankname+'</span></p></div></li>';
+            
+            
+            
+            
+
+            localStorage.setItem("hkjh_"+json.data[i].fileno,JSON.stringify(info));
+        }
+        
+        $("#hkjh_info").html(hkjh_info);
+        
+    }
+    
+    function time_flag(){
+  
+        if($("#time_flag").val() == 3){
+            $("#time_div").show();
+            $(".radmenu").attr("style", "display: flex !important;")
+        }else{
+            $("#time_div").hide();
+            $(".radmenu").attr("style", "none;")
+            var data = {};
+            data.userid = localStorage.getItem("userid");
+            data.flag = $("#time_flag").val();
+            localStorage.setItem("ph_flag", data.flag);
+            data.accountPosition = localStorage.getItem("accountPosition");
+            top.start_process();
+            $.ajax({
+                   type : "post",
+                   timeout: 5000,
+                   url: "http://"+IP+":"+PORT+"/app/6037",
+                   data : data,
+                   datatype : "json",
+                   success : showmessage,
+                   error:function(msg){
+                   
+                   alertInfo('登录失败');
+                   }
+                   });
+        }
+    }
+    function goto_map(fileno){
+        localStorage.setItem("hkjh_fileno", fileno);
+        showNewFrame("aj_hkjh_gr.html?id="+fileno, "smask");
+    }
+        </script>
+    
+    <body style="background-color:#f0f0f0;overflow:auto;">
+        
+        
+        <div class="topNavWrapper" >
+            <div class="topNav">
+                <div component-role="m11_top" class="top">
+                    <div class="back_ic" onClick="parent.hideFrame('srfade');"></div>
+                    <span class="top_title">还款计划</span>
+                </div>
+            </div>
+        </div>
+        
+           <div class="container-fluid"   style="overflow:auto;margin-top: 3px;height:100%;"> 
+            
+                <div class="form_div">
+                    <ul>
+                        <li>
+                            <div class="inp_label_new" style="margin-left:30px;">客户姓名</div><input id="jkr_xm" type="text"
+                                class="inp_text"  data-role="none" placeholder="客户姓名">
+                                </li>
+                    </ul>
+                </div>
+              
+                <div class="aui-content" style="margin-top: 10px">
+                    <ul class="aui-user-view">
+                        <li class="aui-user-view-cell aui-img" >
+                            
+                            <div class="inp_label_new" >
+                                时间区间
+                            </div>
+                            <select id='time_flag'  style="width:40%" onchange="time_flag()" >
+                                <option value=''>请选择</option>
+                                <option value='0'>本周</option>
+                                <option value='1' selected="selected">本月</option>
+                                <option value='2'>本年</option>
+                                <option value='3'>自定义</option>
+                            </select>
+                            <div style="width:20%;"><div class="radmenu" onclick="query();">查询</div></div>
+                        </li>
+                        
+                    </ul>
+                </div>
+                    <div class="form_div_m" id="time_div" style="display:none">
+                        <ul>
+                           <li style="border:0px;">
+                    			<input id="qssj" type="text"
+                        class="inp_text_m" style="margin-left:30px;" data-role="none" placeholder="起始时间">
+                        
+                    		<input id="jzsj" type="text" placeholder="截止时间"
+                        class="inp_text_m" style="margin-right:30px;" data-role="none"></input>
+                		</li>
+                        </ul>
+                        
+                    </div>
+                
+                
+                
+            
+            
+
+
+
+        
+            <div class="aui-content" >
+                <ul class="aui-list-view demo-box" style="margin-bottom: 0;" id="hkjh_info">
+                    
+                    
+
+                 
+                </ul>
+               
+            </div>
+
+       </div>
+        
+        
+        
+        
+    </body>
+</html>

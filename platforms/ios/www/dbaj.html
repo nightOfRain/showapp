@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+                <link href="css/lib/bootstrap/bootstrap-combined.min.css" rel="stylesheet">
+                    <link rel="stylesheet" type="text/css" href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+                    <link href="css/index.css" rel="stylesheet">
+                        <link rel="stylesheet" href="common/slick/slick.css">
+                            <link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+                                <link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+                                    <link href="css/common.css" rel="stylesheet">
+                                               <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+              
+                                        <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                                       
+                                        <script type="text/javascript" src="js/lib/bootstrap/bootstrap.min.js"></script>
+                                        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                                        <script type="text/javascript" src="js/lib/zzljs/menu11.js"></script>
+                                        <script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+                                        <style>
+                                            .btn:hover, .btn:focus, .btn.focus{color:#fff;}
+                                            .bot_btn_m{
+                                                text-shadow: none !important;
+                                                width: 80%;
+                                                text-align: center;
+                                                height:45px;
+                                                line-height: 45px;
+                                                color: #ffffff;
+                                                font-size: 20px;
+                                                margin: 10px auto;
+                                                margin-top: 30px;
+                                                margin-bottom: 30px;
+                                                background-color: #cc0033;
+                                            }
+                                        .rgt {
+                                            width: 10px;
+                                            height: 18px;
+                                            float: right;
+                                            margin-right: 20px;
+                                            margin-top: 12px;
+                                            background-size: 100% 100%;
+                                            background-image: url("img/right.png");
+                                        }
+                                        .inp_label{
+                                            width: 200px;
+                                            line-height: 45px;
+                                            color: #000000;
+                                            font-size: 17px;
+                                            text-align: left;
+                                            float: left;
+                                            margin-left: 15px;
+                                        }
+                                        .div-radius {
+                                            padding:1px; ;
+                                            border-color: white;
+                                            -moz-border-radius: 15px;
+                                            -webkit-border-radius: 15px;
+                                            border-radius:15px;
+                                            
+                                        }
+                                        </style>
+    </head>
+    <script type="text/javascript">
+        var cpzl_map = {
+            "8001":"公积金按揭贷款",
+            "8002":"商贷按揭贷款",
+            "8003":"组合按揭贷款",
+            "8004":"房抵贷",
+            "8005":"安居贷",
+            "8006":"大树金融",
+            "8007":"友金所",
+            "8008":"平安新一贷",
+            "8009":"赎楼贷",
+            "8010":"尾款贷"
+        };
+        var dk;
+        var userid;
+    document.addEventListener("DOMContentLoaded", initial);
+    function initial() {
+        thisURL = document.URL;
+        document.getElementsByTagName('body')[0].style.width = top.screenWidth+"px";
+        document.getElementsByTagName('body')[0].style.height = top.screenHeight+20+"px";
+      //  localStorage.setItem("acount", "0");
+        //	show_aj();
+      //  initPage();
+      	userid = localStorage.getItem("userid");
+    }
+    
+    function initPage(){
+        //操作员显示本人代办案卷，管理员显示本公司所有超时代办案卷
+        $("#search_by").val('');
+        localStorage.setItem("acount", "0");
+        var data = {};
+        data.userid = localStorage.getItem("userid");
+        top.start_process();
+      //  alert("userid="+data.userid);
+        $.ajax({
+               type : "post",
+               url: "http://"+IP+":"+PORT+"/app/6019;",
+               timeout: 5000,
+               data : data,
+               datatype : "json",
+               success :  function(msg){
+            	   top.stop_process();
+               show_aj(msg);
+               },
+               error:function(msg){
+            	   top.stop_process();
+               		//top.alertInfo('通信失败');
+               		login_again();
+               }
+               });
+               
+               
+    }
+    
+    function show_aj(msg){
+       
+        var json=eval("("+msg+")");
+        
+        if(document.getElementById('content') )
+        document.getElementById('p1').removeChild(document.getElementById('content'));
+        var div_host = document.getElementById("p1");
+        var div_content = document.createElement("div");
+        div_content.setAttribute("class", "content");
+        div_content.setAttribute("id", "content");
+        
+        
+        dk = json.data.pushList;
+        var level = localStorage.getItem("level");
+       
+        //for test
+        //level = 4;
+        //办事员工
+        
+        if( dk.length == 0 ){
+            var div_row = document.createElement("div");
+            div_row.setAttribute("class", "row");
+            div_row.setAttribute("style", "background:#f4f4f4;height:130px;");
+            div_content.appendChild(div_row);
+            
+            var div = document.createElement("div");
+            div.setAttribute("class", "form_div");
+            div.setAttribute("align", "center");
+            var img = document.createElement("img");
+            img.setAttribute("width", "180px");
+            img.setAttribute("heigth", "180px");
+            img.setAttribute("src", "img/wdjrxq.png");
+            
+            div.appendChild(img);
+            div_content.appendChild(div);
+
+        }else {
+
+            
+            for(var i = 0; i < dk.length; i++){
+            	
+            	
+                var div = document.createElement("div");
+                div.setAttribute("class", "form_div");
+               
+                var table = document.createElement("table");
+                table.setAttribute("class", "table_class_new ");
+                table.setAttribute("style", "box-shadow: 0 0 1px 1px #BEC0C2;margin-top:5px;border-radius:5px;")
+                var li1 = document.createElement("li");
+                li1.setAttribute("style", "border:0;height:35px;border-radius:5px;")
+                var sp1=document.createElement("span");
+                sp1.setAttribute("class", "inp_label_wdjrxq");
+                sp1.innerHTML = "客户姓名";
+                var sp1_t=document.createElement("span");
+                sp1_t.setAttribute("class", "inp_show_text_new1");
+                var fileno = dk[i].fileno;
+                sp1_t.innerHTML = dk[i].jkrxm;
+                
+                li1.appendChild(sp1);
+                li1.appendChild(sp1_t);
+              
+                
+                var li2 = document.createElement("li");
+                li2.setAttribute("style", "height:35px;")
+                var sp2=document.createElement("span");
+                sp2.setAttribute("class", "inp_label_wdjrxq");
+                sp2.innerHTML = "贷款类别";
+                var sp2_t=document.createElement("span");
+                sp2_t.setAttribute("class", "inp_show_text_new1");
+                var loantype = dk[i].loantype;
+                sp2_t.innerHTML = cpzl_map[loantype];
+                li2.appendChild(sp2);
+                li2.appendChild(sp2_t);
+                
+                var li3 = document.createElement("li");
+                li3.setAttribute("style", "height:35px;border-bottom:0;")
+                var sp3=document.createElement("span");
+                sp3.setAttribute("class", "inp_label_wdjrxq");
+                sp3.innerHTML = "当前流程";
+                var sp3_t=document.createElement("div");
+               sp3_t.setAttribute("class", "inp_show_text_new1");
+                sp3_t.innerHTML = dk[i].flowname;//房产地址
+                li3.appendChild(sp3);
+                li3.appendChild(sp3_t);
+                
+                var li5 = document.createElement("li");
+                li5.setAttribute("style", "height:35px;border-bottom:0;")
+                var sp5=document.createElement("span");
+                sp5.setAttribute("class", "inp_label_wdjrxq");
+                sp5.innerHTML = "签单时间";
+                var sp5_t=document.createElement("div");
+               sp5_t.setAttribute("class", "inp_show_text_new1");
+               if(dk[i].trandate && dk[i].trandate!="null"){
+            	   sp5_t.innerHTML = dk[i].trandate;//签单时间
+               }else{
+            	   sp5_t.innerHTML = "没有获取到签单时间";//签单时间
+               }
+                
+                li5.appendChild(sp5);
+                li5.appendChild(sp5_t);
+                
+                var li4 = document.createElement("li");
+                li4.setAttribute("style", "border:0px;height:35px;border-bottom:0;border-top:0;")
+          //   alert("flow="+dk[i].flow+";userid="+dk[i].pushAcc+";me="+userid);
+                if ( level == 3 || level ==2) {
+                    if( dk[i].flow == 1 ) //案卷创建未完成
+                    {
+                        
+                        var sp4=document.createElement("span");
+                        sp4.setAttribute("class", "inp_label");
+ 						if(dk[i].pushAcc.toLowerCase() == userid.toLowerCase()){
+ 							sp4.innerHTML = "补全资料";
+ 	                        li4.setAttribute("onclick", "show_moreinfo('"+dk[i].fileno+"', 0)");
+ 	                        div.setAttribute("onclick", "show_moreinfo('"+dk[i].fileno+"', 0)");
+                        }else{
+                        	sp4.innerHTML = "案卷查看";
+                            li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                            div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                        }
+                        
+                        var img=document.createElement("img");
+                        img.setAttribute("src", "img/right.png");
+                        img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                        li4.appendChild(sp4);
+                        li4.appendChild(img);
+                       
+                    } else {
+                        //li4.setAttribute("onclick", "ajlz_go('"+dk[i].fileno+"','"+dk[i].flow+"')");
+                        
+                       var sp4=document.createElement("span");
+                        sp4.setAttribute("class", "inp_label");
+                        if(dk[i].pushAcc.toLowerCase() == userid.toLowerCase()){
+ 							sp4.innerHTML = "案卷流转";
+ 							li4.setAttribute("onclick", "ajlz_go('"+dk[i].fileno+"','2')");
+ 	                        div.setAttribute("onclick", "ajlz_go('"+dk[i].fileno+"','2')");
+                        }else{
+                        	sp4.innerHTML = "案卷查看";
+                            li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                            div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                        }
+                        
+                   
+                        var img=document.createElement("img");
+                        img.setAttribute("src", "img/right.png");
+                        img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                        li4.appendChild(sp4);
+                        li4.appendChild(img);
+                    } 
+                } else if ( level == '4' || level == '5' || level == '6') { //合作机构
+                    li4.setAttribute("onclick", "ajpj_go('"+dk[i].fileno+"')");
+                    div.setAttribute("onclick", "ajpj_go('"+dk[i].fileno+"')");
+                    var sp4=document.createElement("span");
+                    sp4.setAttribute("class", "inp_label");
+                    if(dk[i].push_type == 3)//正常流程
+                    {
+                    	sp4.innerHTML = "案卷完成请评价";
+                    }else{
+                    	sp4.innerHTML = "案卷处理中";
+                    }
+                    var img=document.createElement("img");
+                    img.setAttribute("src", "img/right.png"); 
+                    img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                    li4.appendChild(sp4);
+                    li4.appendChild(img);
+                } else if( level == '0'){ //外部客户
+                    li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                    div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                    var sp4=document.createElement("span");
+                    sp4.setAttribute("class", "inp_label");
+                    sp4.innerHTML = "案卷详情";
+                    var img=document.createElement("img");
+                    img.setAttribute("src", "img/right.png");
+                    img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                    li4.appendChild(sp4);
+                    li4.appendChild(img);
+                } else { //公司管理层，展示超时信息
+                    
+                    var sp4=document.createElement("span");
+                    sp4.setAttribute("class", "inp_label");
+                    if(dk[i].push_type == 1)//正常流程
+                    {
+                        sp4.innerHTML = "案卷详情";
+                        li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                        div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                    }else {//超时流程
+                        sp4.innerHTML = "案卷已超时";
+                        sp4.setAttribute("style", "color:#FF5151");
+                        li4.setAttribute("onclick", "timeout_go('"+dk[i].fileno+"')");
+                        div.setAttribute("onclick", "timeout_go('"+dk[i].fileno+"')");
+                    }
+                    
+                    var img=document.createElement("img");
+                    img.setAttribute("src", "img/right.png");
+                    img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                    li4.appendChild(sp4);
+                    li4.appendChild(img);
+                }
+                
+                
+                
+                var liRow = document.createElement("li");
+                
+                liRow.setAttribute("style", "height:15px;border:0px;margin-top:1px;");
+                var div_row = document.createElement("div");
+                div_row.setAttribute("class", "row");
+                div_row.setAttribute("style", "background:#f4f4f4;height:20px;");
+                liRow.appendChild(div_row);
+                
+                table.appendChild(li1);
+                table.appendChild(li2);
+                table.appendChild(li3);
+                table.appendChild(li5);
+                table.appendChild(li4);
+                //table.appendChild(liRow);
+                div.appendChild(table);
+                div.appendChild(liRow);
+                div_content.appendChild(div);
+            }
+            
+        }
+        div_host.appendChild(div_content);
+    }
+    
+    function yiyue(fileno){
+    	 $.ajax({
+             type : "post",
+             timeout: 10000,
+             url: "http://"+IP+":"+PORT+"/app/6035",
+             data : data,
+             datatype : "json",
+             success : function(msg){
+             },
+             error:function(msg){
+             
+             alertInfo('登录失败');
+             }
+             });
+    }
+    //案卷流转
+    function ajlz_go(fileno, flow){
+        
+        parent.showNewFrame("ajlz.html?fileno="+fileno+"&flow="+flow,'smask');
+        
+    }
+    
+    //案卷评价
+    function ajpj_go(fileno){
+        
+        parent.showNewFrame("ajpj.html?fileno="+fileno,'smask');
+    }
+    //外部客户查看
+    function ajgz_go(fileno){
+       
+        parent.showNewFrame("flow_new.html?fileno="+fileno,'smask');
+    }
+    //超时展示
+    function timeout_go(fileno){
+        
+        parent.showNewFrame("ajcs.html?fileno="+fileno,'smask');
+    }
+    //补齐案卷资料
+    function show_moreinfo(fileno, flag){
+        
+      
+            parent.showNewFrame("dbaj_detail.html?id="+fileno+"&flag="+flag,'smask');
+    
+        
+        //	parent.showNewFrame("ajcx_detail.html?id="+fileno,'smask');
+    }
+    function query_aj() {
+        
+        $("#p1").attr("style", "display:block");
+        
+    }
+    function querys_aj() {
+        
+        $("#p1").attr("style", "display:block");
+        
+    }
+    
+    
+    
+    function cxlx_xz(){
+        cxlx = $("#cxlx").val();
+        
+        if( cxlx == "8888")
+        {
+            $("#test1").attr("style", "display:block");
+            $("#test2").attr("style", "display:block");
+        } else {
+            $("#test1").attr("style", "display:none");
+            $("#test2").attr("style", "display:none");
+        }
+        
+    }
+ function search_by(){
+        
+        var x = document.getElementById("search_by");
+        if(document.getElementById('content') )
+        document.getElementById('p1').removeChild(document.getElementById('content'));
+        var div_host = document.getElementById("p1");
+        var div_content = document.createElement("div");
+        div_content.setAttribute("class", "content");
+        div_content.setAttribute("id", "content");
+        
+        
+      //  dk = json.data.pushList;
+        var level = localStorage.getItem("level");
+        
+        
+        
+        
+            
+          //  alert("len="+x.value.length);
+            for(var i = 0; i < dk.length; i++){
+                if( x.value.length == 0){
+                	 var div = document.createElement("div");
+                     div.setAttribute("class", "form_div");
+                    
+                     var table = document.createElement("table");
+                     table.setAttribute("class", "table_class_new ");
+                     table.setAttribute("style", "box-shadow: 0 0 1px 1px #BEC0C2;margin-top:5px;border-radius:5px;")
+                     var li1 = document.createElement("li");
+                     li1.setAttribute("style", "border:0;height:35px;border-radius:5px;")
+                     var sp1=document.createElement("span");
+                     sp1.setAttribute("class", "inp_label_wdjrxq");
+                     sp1.innerHTML = "客户姓名";
+                     var sp1_t=document.createElement("span");
+                     sp1_t.setAttribute("class", "inp_show_text_new1");
+                     var fileno = dk[i].fileno;
+                     sp1_t.innerHTML = dk[i].jkrxm;
+                     
+                     li1.appendChild(sp1);
+                     li1.appendChild(sp1_t);
+                   
+                     
+                     var li2 = document.createElement("li");
+                     li2.setAttribute("style", "height:35px;")
+                     var sp2=document.createElement("span");
+                     sp2.setAttribute("class", "inp_label_wdjrxq");
+                     sp2.innerHTML = "贷款类别";
+                     var sp2_t=document.createElement("span");
+                     sp2_t.setAttribute("class", "inp_show_text_new1");
+                     var loantype = dk[i].loantype;
+                     sp2_t.innerHTML = cpzl_map[loantype];
+                     li2.appendChild(sp2);
+                     li2.appendChild(sp2_t);
+                     
+                     var li3 = document.createElement("li");
+                     li3.setAttribute("style", "height:35px;border-bottom:0;")
+                     var sp3=document.createElement("span");
+                     sp3.setAttribute("class", "inp_label_wdjrxq");
+                     sp3.innerHTML = "当前流程";
+                     var sp3_t=document.createElement("div");
+                    sp3_t.setAttribute("class", "inp_show_text_new1");
+                     sp3_t.innerHTML = dk[i].flowname;//房产地址
+                     li3.appendChild(sp3);
+                     li3.appendChild(sp3_t);
+                     
+                     var li5 = document.createElement("li");
+                     li5.setAttribute("style", "height:35px;border-bottom:0;")
+                     var sp5=document.createElement("span");
+                     sp5.setAttribute("class", "inp_label_wdjrxq");
+                     sp5.innerHTML = "签单时间";
+                     var sp5_t=document.createElement("div");
+                    sp5_t.setAttribute("class", "inp_show_text_new1");
+                    if(dk[i].trandate && dk[i].trandate!="null"){
+                 	   sp5_t.innerHTML = dk[i].trandate;//签单时间
+                    }else{
+                 	   sp5_t.innerHTML = "没有获取到签单时间";//签单时间
+                    }
+                     
+                     li5.appendChild(sp5);
+                     li5.appendChild(sp5_t);
+                     
+                     var li4 = document.createElement("li");
+                     li4.setAttribute("style", "border:0px;height:35px;border-bottom:0;border-top:0;")
+                  
+                     if ( level == 3 || level ==2) {
+                         if( dk[i].flow == 1 ) //案卷创建未完成
+                         {
+                             
+                             var sp4=document.createElement("span");
+                             sp4.setAttribute("class", "inp_label");
+      						if(dk[i].userid == userid){
+      							sp4.innerHTML = "补全资料";
+      	                        li4.setAttribute("onclick", "show_moreinfo('"+dk[i].fileno+"', 0)");
+      	                        div.setAttribute("onclick", "show_moreinfo('"+dk[i].fileno+"', 0)");
+                             }else{
+                             	sp4.innerHTML = "案卷查看";
+                                 li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                                 div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                             }
+                             
+                             var img=document.createElement("img");
+                             img.setAttribute("src", "img/right.png");
+                             img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                             li4.appendChild(sp4);
+                             li4.appendChild(img);
+                            
+                         } else {
+                             //li4.setAttribute("onclick", "ajlz_go('"+dk[i].fileno+"','"+dk[i].flow+"')");
+                             
+                            var sp4=document.createElement("span");
+                             sp4.setAttribute("class", "inp_label");
+                             if(dk[i].userid == userid){
+      							sp4.innerHTML = "案卷流转";
+      							li4.setAttribute("onclick", "ajlz_go('"+dk[i].fileno+"','2')");
+      	                        div.setAttribute("onclick", "ajlz_go('"+dk[i].fileno+"','2')");
+                             }else{
+                             	sp4.innerHTML = "案卷查看";
+                                 li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                                 div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                             }
+                             
+                        
+                             var img=document.createElement("img");
+                             img.setAttribute("src", "img/right.png");
+                             img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                             li4.appendChild(sp4);
+                             li4.appendChild(img);
+                         } 
+                     } else if ( level == '4' || level == '5' || level == '6') { //合作机构
+                         li4.setAttribute("onclick", "ajpj_go('"+dk[i].fileno+"')");
+                         div.setAttribute("onclick", "ajpj_go('"+dk[i].fileno+"')");
+                         var sp4=document.createElement("span");
+                         sp4.setAttribute("class", "inp_label");
+                         if(dk[i].push_type == 3)//正常流程
+                         {
+                         	sp4.innerHTML = "案卷完成请评价";
+                         }else{
+                         	sp4.innerHTML = "案卷处理中";
+                         }
+                         var img=document.createElement("img");
+                         img.setAttribute("src", "img/right.png"); 
+                         img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                         li4.appendChild(sp4);
+                         li4.appendChild(img);
+                     } else if( level == '0'){ //外部客户
+                         li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                         div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                         var sp4=document.createElement("span");
+                         sp4.setAttribute("class", "inp_label");
+                         sp4.innerHTML = "案卷详情";
+                         var img=document.createElement("img");
+                         img.setAttribute("src", "img/right.png");
+                         img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                         li4.appendChild(sp4);
+                         li4.appendChild(img);
+                     } else { //公司管理层，展示超时信息
+                         
+                         var sp4=document.createElement("span");
+                         sp4.setAttribute("class", "inp_label");
+                         if(dk[i].push_type == 1)//正常流程
+                         {
+                             sp4.innerHTML = "案卷详情";
+                             li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                             div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                         }else {//超时流程
+                             sp4.innerHTML = "案卷已超时";
+                             sp4.setAttribute("style", "color:#FF5151");
+                             li4.setAttribute("onclick", "timeout_go('"+dk[i].fileno+"')");
+                             div.setAttribute("onclick", "timeout_go('"+dk[i].fileno+"')");
+                         }
+                         
+                         var img=document.createElement("img");
+                         img.setAttribute("src", "img/right.png");
+                         img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                         li4.appendChild(sp4);
+                         li4.appendChild(img);
+                     }
+                     
+                     
+                     
+                     var liRow = document.createElement("li");
+                     
+                     liRow.setAttribute("style", "height:15px;border:0px;margin-top:1px;");
+                     var div_row = document.createElement("div");
+                     div_row.setAttribute("class", "row");
+                     div_row.setAttribute("style", "background:#f4f4f4;height:20px;");
+                     liRow.appendChild(div_row);
+                     
+                     table.appendChild(li1);
+                     table.appendChild(li2);
+                     table.appendChild(li3);
+                     table.appendChild(li5);
+                     table.appendChild(li4);
+                     //table.appendChild(liRow);
+                     div.appendChild(table);
+                     div.appendChild(liRow);
+                     div_content.appendChild(div);
+                }else{
+                    if( dk[i].jkrxm.match(x.value)){
+                    	 var div = document.createElement("div");
+                         div.setAttribute("class", "form_div");
+                        
+                         var table = document.createElement("table");
+                         table.setAttribute("class", "table_class_new ");
+                         table.setAttribute("style", "box-shadow: 0 0 1px 1px #BEC0C2;margin-top:5px;border-radius:5px;")
+                         var li1 = document.createElement("li");
+                         li1.setAttribute("style", "border:0;height:35px;border-radius:5px;")
+                         var sp1=document.createElement("span");
+                         sp1.setAttribute("class", "inp_label_wdjrxq");
+                         sp1.innerHTML = "客户姓名";
+                         var sp1_t=document.createElement("span");
+                         sp1_t.setAttribute("class", "inp_show_text_new1");
+                         var fileno = dk[i].fileno;
+                         sp1_t.innerHTML = dk[i].jkrxm;
+                         
+                         li1.appendChild(sp1);
+                         li1.appendChild(sp1_t);
+                       
+                         
+                         var li2 = document.createElement("li");
+                         li2.setAttribute("style", "height:35px;")
+                         var sp2=document.createElement("span");
+                         sp2.setAttribute("class", "inp_label_wdjrxq");
+                         sp2.innerHTML = "贷款类别";
+                         var sp2_t=document.createElement("span");
+                         sp2_t.setAttribute("class", "inp_show_text_new1");
+                         var loantype = dk[i].loantype;
+                         sp2_t.innerHTML = cpzl_map[loantype];
+                         li2.appendChild(sp2);
+                         li2.appendChild(sp2_t);
+                         
+                         var li3 = document.createElement("li");
+                         li3.setAttribute("style", "height:35px;border-bottom:0;")
+                         var sp3=document.createElement("span");
+                         sp3.setAttribute("class", "inp_label_wdjrxq");
+                         sp3.innerHTML = "当前流程";
+                         var sp3_t=document.createElement("div");
+                        sp3_t.setAttribute("class", "inp_show_text_new1");
+                         sp3_t.innerHTML = dk[i].flowname;//房产地址
+                         li3.appendChild(sp3);
+                         li3.appendChild(sp3_t);
+                         
+                         var li5 = document.createElement("li");
+                         li5.setAttribute("style", "height:35px;border-bottom:0;")
+                         var sp5=document.createElement("span");
+                         sp5.setAttribute("class", "inp_label_wdjrxq");
+                         sp5.innerHTML = "签单时间";
+                         var sp5_t=document.createElement("div");
+                        sp5_t.setAttribute("class", "inp_show_text_new1");
+                        if(dk[i].trandate && dk[i].trandate!="null"){
+                     	   sp5_t.innerHTML = dk[i].trandate;//签单时间
+                        }else{
+                     	   sp5_t.innerHTML = "没有获取到签单时间";//签单时间
+                        }
+                         
+                         li5.appendChild(sp5);
+                         li5.appendChild(sp5_t);
+                         
+                         var li4 = document.createElement("li");
+                         li4.setAttribute("style", "border:0px;height:35px;border-bottom:0;border-top:0;")
+                      
+                         if ( level == 3 || level ==2) {
+                             if( dk[i].flow == 1 ) //案卷创建未完成
+                             {
+                                 
+                                 var sp4=document.createElement("span");
+                                 sp4.setAttribute("class", "inp_label");
+          						if(dk[i].userid == userid){
+          							sp4.innerHTML = "补全资料";
+          	                        li4.setAttribute("onclick", "show_moreinfo('"+dk[i].fileno+"', 0)");
+          	                        div.setAttribute("onclick", "show_moreinfo('"+dk[i].fileno+"', 0)");
+                                 }else{
+                                 	sp4.innerHTML = "案卷查看";
+                                     li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                                     div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                                 }
+                                 
+                                 var img=document.createElement("img");
+                                 img.setAttribute("src", "img/right.png");
+                                 img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                                 li4.appendChild(sp4);
+                                 li4.appendChild(img);
+                                
+                             } else {
+                                 //li4.setAttribute("onclick", "ajlz_go('"+dk[i].fileno+"','"+dk[i].flow+"')");
+                                 
+                                var sp4=document.createElement("span");
+                                 sp4.setAttribute("class", "inp_label");
+                                 if(dk[i].userid == userid){
+          							sp4.innerHTML = "案卷流转";
+          							li4.setAttribute("onclick", "ajlz_go('"+dk[i].fileno+"','2')");
+          	                        div.setAttribute("onclick", "ajlz_go('"+dk[i].fileno+"','2')");
+                                 }else{
+                                 	sp4.innerHTML = "案卷查看";
+                                     li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                                     div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                                 }
+                                 
+                            
+                                 var img=document.createElement("img");
+                                 img.setAttribute("src", "img/right.png");
+                                 img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                                 li4.appendChild(sp4);
+                                 li4.appendChild(img);
+                             } 
+                         } else if ( level == '4' || level == '5' || level == '6') { //合作机构
+                             li4.setAttribute("onclick", "ajpj_go('"+dk[i].fileno+"')");
+                             div.setAttribute("onclick", "ajpj_go('"+dk[i].fileno+"')");
+                             var sp4=document.createElement("span");
+                             sp4.setAttribute("class", "inp_label");
+                             if(dk[i].push_type == 3)//正常流程
+                             {
+                             	sp4.innerHTML = "案卷完成请评价";
+                             }else{
+                             	sp4.innerHTML = "案卷处理中";
+                             }
+                             var img=document.createElement("img");
+                             img.setAttribute("src", "img/right.png"); 
+                             img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                             li4.appendChild(sp4);
+                             li4.appendChild(img);
+                         } else if( level == '0'){ //外部客户
+                             li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                             div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                             var sp4=document.createElement("span");
+                             sp4.setAttribute("class", "inp_label");
+                             sp4.innerHTML = "案卷详情";
+                             var img=document.createElement("img");
+                             img.setAttribute("src", "img/right.png");
+                             img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                             li4.appendChild(sp4);
+                             li4.appendChild(img);
+                         } else { //公司管理层，展示超时信息
+                             
+                             var sp4=document.createElement("span");
+                             sp4.setAttribute("class", "inp_label");
+                             if(dk[i].push_type == 1)//正常流程
+                             {
+                                 sp4.innerHTML = "案卷详情";
+                                 li4.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                                 div.setAttribute("onclick", "ajgz_go('"+dk[i].fileno+"')");
+                             }else {//超时流程
+                                 sp4.innerHTML = "案卷已超时";
+                                 sp4.setAttribute("style", "color:#FF5151");
+                                 li4.setAttribute("onclick", "timeout_go('"+dk[i].fileno+"')");
+                                 div.setAttribute("onclick", "timeout_go('"+dk[i].fileno+"')");
+                             }
+                             
+                             var img=document.createElement("img");
+                             img.setAttribute("src", "img/right.png");
+                             img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: 12px;background-size: 100% 100%;line-height:35px;");
+                             li4.appendChild(sp4);
+                             li4.appendChild(img);
+                         }
+                         
+                         
+                         
+                         var liRow = document.createElement("li");
+                         
+                         liRow.setAttribute("style", "height:15px;border:0px;margin-top:1px;");
+                         var div_row = document.createElement("div");
+                         div_row.setAttribute("class", "row");
+                         div_row.setAttribute("style", "background:#f4f4f4;height:20px;");
+                         liRow.appendChild(div_row);
+                         
+                         table.appendChild(li1);
+                         table.appendChild(li2);
+                         table.appendChild(li3);
+                         table.appendChild(li5);
+                         table.appendChild(li4);
+                         //table.appendChild(liRow);
+                         div.appendChild(table);
+                         div.appendChild(liRow);
+                         div_content.appendChild(div);
+                        
+                    }
+                }
+                
+
+            }
+            
+        
+        div_host.appendChild(div_content);
+    }
+    </script>
+    
+    <body style="background:#f4f4f4;overflow:auto;">
+        
+        <!-- 顶部固定，不能滚动 -->
+        <div class="topNavWrapper" >
+            <div class="topNav">
+                <div component-role="m11_top" class="top" >		
+                <div class="aui-col-xs-2" ></div>	
+                    <div class="aui-col-xs-8" style="border-radius:15px;height:35px;margin-top:10px;BACKGROUND-COLOR:rgba(123,123,123,1.0);text-align:center;"><input id="search_by" 
+                            data-role="none"  placeholder="按客户名搜索..."  style="height:30px;width:90%;line-height:30px;margin-top:-20px;BACKGROUND-COLOR:rgba(123,123,123,1.0);"></input></div>
+                        <div class="aui-col-xs-2" style="text-align:right;">
+                        <div class="rgt_search" onclick="search_by()"></div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <div class="container-fluid" style="margin-top: 30px;overflow:auto;">
+            
+            <div id="p1"   style="margin-top:5px;">
+                <div class="form_div">
+                    
+                </div>	
+            </div>
+            <div class="form_div" style="height:140px;margin-bottom: 100px;"></div>
+            
+        </div>
+    </body>
+</html>

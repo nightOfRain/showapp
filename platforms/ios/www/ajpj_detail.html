@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+                <link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+                    
+                    <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+                    <link rel="stylesheet" type="text/css" href="css/aui/aui.2.0.css" />
+                    <link rel="stylesheet" type="text/css" href="css/aui/api.css" />
+                    <link rel="stylesheet" type="text/css" href="css/aui/aui-list-swipe.css" />
+                    <link rel="stylesheet" type="text/css" href="css/aui/aui-flex.css" />
+                    
+                    
+                    
+                    <link href="css/lib/bootstrap/bootstrap-combined.min.css" rel="stylesheet">
+                        <link rel="stylesheet" type="text/css" href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+                        <link href="css/index.css" rel="stylesheet">
+                            <link rel="stylesheet" href="common/slick/slick.css">
+                                <link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+                                    <link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+                                        <link href="css/common.css" rel="stylesheet">
+                                            <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                                            <script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+                                            <script src="js/mobiscroll.custom-2.5.2.min.js" type="text/javascript" charset="utf-8"></script>
+                                            <script src="dev/js/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+                                            <script src="dev/js/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+                                            <script src="dev/js/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+                                            <script src="dev/js/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+                                            <script src="dev/js/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+                                            <script type="text/javascript" src="js/lib/zzljs/menu11.js"></script>
+                                            <script src="js/jquery.min.js"></script>
+                                            <script src="js/jquery.raty.js"></script>
+                                            <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                                            <style type="text/css">
+                                                .rgt_shut {
+                                                    width: 25px;
+                                                    height: 25px;
+                                                    float: right;
+                                                    margin-right: 20px;
+                                                    margin-top: 16px;
+                                                    background-size: 100% 100%;
+                                                    
+                                                    background-image: url("img/shutdown.png");
+                                                }
+                                            .rgt_dd {
+                                                width: 25px;
+                                                height: 25px;
+                                                float: left;
+                                                margin-left: 20px;
+                                                margin-top: 16px;
+                                                background-size: 100% 100%;
+                                                
+                                                
+                                            }
+                                            .span_ph{
+                                                width:100%;
+                                                text-align:center;
+                                                line-height:35px;
+                                                
+                                            }
+                                            .rgt_x {
+                                                
+                                               
+                                                float: right;
+                                               
+                                
+                                                font-size: 16px;
+                                                text-align: left;
+                                                color:#70E1FF
+                                            }
+                                            </style>
+                                            <script>
+                                                //初始化插件内容
+                                                var opt_datatime = {
+                                                    preset: 'date', //日期格式 date（日期）|datetime（日期加时间）
+                                                    theme: 'android-ics light', //皮肤样式
+                                                    display: 'modal', //显示方式
+                                                    mode: 'clickpick', //日期选择模式
+                                                    dateFormat: 'yyyymmdd', // 日期格式
+                                                    timeWheels:'HHii', //时间格式24小时
+                                                    timeFormat:'HH:ii', //时间格式24小时
+                                                    setText: '确定', //确认按钮名称
+                                                    cancelText: '取消',//取消按钮名籍我
+                                                    dateOrder: 'yyyymmdd', //面板中日期排列格式
+                                                    dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+                                                    yearText: '年', monthText: '月',  dayText: '日',  //面板中年月日文字
+                                                    endYear:2020, //结束年份
+                                                    showNow:true,
+                                                    nowText:'今天',
+                                                    hourText:'小时',
+                                                    minuteText:'分'
+                                                }
+                                            var thisURL;
+                                            var change_id = 1;
+                                            var  score_1=0;
+                                            var score_2=0;
+                                            var  score_3=0;
+                                            var score_4=0;
+                                            document.addEventListener("DOMContentLoaded", initial);
+                                            function initial() {
+                                                
+                                                thisURL = document.URL;
+                                                localStorage.setItem("thisURL", thisURL);
+                                                localStorage.setItem("acount", 2);
+                                        //        document.getElementsByTagName('body')[0].style.width = top.screenWidth+"px";
+                                        //        document.getElementsByTagName('body')[0].style.height = top.screenHeight+20+"px";
+                                                $('#star1').raty({
+                                                                 hints:['1','2','3','4','5'],
+                                                                 path:"img",
+	                                                             size:24,
+                                                                 click:function(score, evt){
+                                                                 score_1=score;
+                                                                 }});
+                                                                 $('#star2').raty({
+                                                                                  hints:['1','2','3','4','5'],
+                                                                                  path:"img",
+                                                                                  size:24,
+                                                                                  click:function(score, evt){
+                                                                                  score_2=score;
+                                                                                  }});
+                                                                 $('#star3').raty({
+                                                                     hints:['1','2','3','4','5'],
+                                                                     path:"img",
+                                                                     size:24,
+                                                                     click:function(score, evt){
+                                                                     score_3=score;
+                                                                     }});
+                                                                 $('#star4').raty({
+                                                                     hints:['1','2','3','4','5'],
+                                                                     path:"img",
+                                                                     size:24,
+                                                                     click:function(score, evt){
+                                                                     score_4=score;
+                                                                     }});
+                                            }
+
+                                            
+                                            
+                                            function pj_upload(){
+                                                var data = {};
+                                                data.pjr_userid = localStorage.getItem("userid");
+                                                data.fileno = localStorage.getItem("fileno");
+                                                data.myd1 = score_1;
+                                                data.myd2 = score_2;
+                                                data.myd3 = score_3;
+                                                data.myd4 = score_4;
+                                                if(score_1==0||score_2==0||score_3==0||score_4==0){
+                                                	top.alertInfo("提交前，请您先对我们的服务打个分.. ~_~ ！");
+                                                	return;
+                                                }
+                                                data.note = $("textarea").val();
+                                                //  alert("userid="+data.userid);
+                                                $.ajax({
+                                                       type : "post",
+                                                       url: "http://"+IP+":"+PORT+"/app/6024;",
+                                                       timeout: 5000,
+                                                       data : data,
+                                                       datatype : "json",
+                                                       success :  function(msg){
+                                                       
+                                                       top.alertInfo("感谢您对我们工作的支持，期待为您提供更贴心的服务.. ~_~ ！");
+                                                       },
+                                                       error:function(msg){
+                                                       
+                                                       top.alertInfo('通信失败');
+                                                       }
+                                                       });
+                                                       
+                                                       
+                                            }
+                              
+                                            
+                                                </script>
+                                            </head>
+    <body   style="background-color: #ffffff;overflow:auto;" >
+        
+ 
+
+        
+        <!-- 顶部固定，不能滚动 -->
+        <div class="topNavWrapper" >
+            <div class="topNav">
+                <div component-role="m11_top" class="top">
+                    <div class="back_ic" onClick="back_history();"></div>
+                    <span class="top_title">案卷评价</span>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="container-fluid"  style="width:100%;overflow:auto;margin-top:25px;background-color:#f4f4f4;">
+            
+                <div class="form_div_ph">
+                    <li style="height:45px;line-height:45px;border:0px;;border-bottom: 1px solid #d0d0d0;">
+                        <div  class="aui-col-xs-8" style="text-indent:20px;font-weight:bold;">案卷服务评价</div><div class="aui-col-xs-4" style="font-size:10px;text-align:right;color:#708090;">满意请给5星哦&nbsp&nbsp</div>
+                    </li>
+                    
+                    
+                    <li style="height:35px;line-height:35px;border:0px;">
+                        <div class="aui-col-xs-4"  style="text-indent:20px;">专业度</div><div class="aui-col-xs-8" id="star3"></div>
+                    </li>
+                 <li style="height:35px;line-height:35px;border:0px;">
+                        <div class="aui-col-xs-4"  style="text-indent:20px;">责任心</div><div class="aui-col-xs-8" id="star4"></div>
+                    </li>
+                    <li style="height:35px;line-height:35px;border:0px;">
+                        <div class="aui-col-xs-4"  style="text-indent:20px;">服务态度</div><div class="aui-col-xs-8" id="star1"></div>
+                    </li>
+                    <li style="height:35px;line-height:35px;border:0px;">
+                        <div class="aui-col-xs-4"  style="text-indent:20px;">办事效率</div><div class="aui-col-xs-8" id="star2"></div>
+                    </li>
+                    <div style="background-color: #f4f4f4;font-size: 15px;text-align: left;margin-left: 15px;margin-right: 15px;margin-top:10px;">
+                        <textarea style="width:100%;color:#5b5b5b;border:0px;background:#f4f4f4" rows="4" id="jbrly" placeholder="动动您尊贵的手指,为我们的服务做个评价吧!您的感受牵动'我'的心..  ~_~!"></textarea>
+                    </div>
+                    <li style="height:45px;line-height:45px;">
+                        <div class="rgt_x" style="color:#FF1493" onclick="pj_upload()" id="fileno_flow">案卷评价&nbsp&nbsp</div>
+                    </li>
+                </div>
+            
+
+
+
+        </div>
+    </body>
+    
+</html>

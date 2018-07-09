@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+		<link rel="stylesheet" href="css/common.css">
+	 <link rel="stylesheet" href="hello-mui/css/mui.min.css">
+        <link rel="stylesheet" href="css/frozen.css">
+        
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+	<link href="hello-mui/css/mui.picker.css" rel="stylesheet" />
+<link href="hello-mui/css/mui.poppicker.css" rel="stylesheet" />
+        <link rel="stylesheet" href="css/iconfont.css">
+        <link rel="stylesheet" href="hello-mui/css/app.css">
+<script src="hello-mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		
+     
+        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<style>
+           
+html, body {
+    position: relative;
+    height: 100%;
+}
+body {
+    background: #fff;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color:#000;
+    margin: 0;
+    padding: 0;
+}
+       
+
+.divcss5_w{ border:0px solid #000; width:45vw; height:43vw;overflow:hidden;padding:5px;} 
+.divcss5_w img{max-width:40vw;_width:expression(this.width > 40 ? "40vw" : this.width);}
+.divcss5_h{ border:0px solid #000; width:85px; height:90px;overflow:hidden;padding:5px;} 
+.divcss5_h img{max-height:80px;_height:expression(this.height > 80 ? "80px" : this.height);} 
+
+h5{
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-indent: 12px;
+}
+   
+.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
+	font-size: 15px;
+	margin-top:8px;
+	color: #333;
+}
+.Max_msg{
+    float:right;
+}
+img{
+	height:40vw;
+}
+input:focus{  
+    border-style:solid;  
+    border-color: #03a9f4;  
+    box-shadow: 0 0 15px #03a9f4;  
+}
+input .Primary{  
+    border-style:solid;  
+    border-color: #fe524e;  
+    box-shadow: 0 0 15px #fe524e;  
+}
+</style>
+<script type="text/javascript">
+var cert_id;//产权证号，同时也是图片存放目录
+var count = 0;
+var fileno='888888';
+var myArray = new Array();
+var des = new Array();
+var user_type;//用户级别
+var login_user;//当前用户
+var edit_flag = '1';//是否可以编辑标志 0-不可编辑 1-可编辑
+$(function() {
+	mui.init({
+    	swipeBack:true //启用右滑关闭功能
+    });
+	mui('.mui-scroll-wrapper').scroll({
+		deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+	});
+	mui(document.body).on('tap', '.mui-action-back ', function(e) {
+		this.click();
+		return false;
+	});
+	top.edit_flag = 1;
+ 	//动态给li添加点击事件
+ 	$("ul").on("click","img", function() {
+		
+		var index = $(this).index;
+		var len = $("ul img").length;
+		console.log("index = "+index+"len="+len);
+		if(index < (len - 1)){
+			show_photo($(this).index(), '2');
+		}
+		
+		return false;
+	}); 
+
+	initPage(); 
+});
+
+		function initPage(){
+			var thisURL = document.URL; 
+			var getenv = thisURL.split("?")[1];
+			fileno = getenv.split("=")[1];
+			
+			//新增检查
+			if(fileno == "888888"){
+				return;
+			}else{
+				var data = {};
+				data.fileno = fileno;
+				data.flag = '0';//企金
+				
+				top.http_comm("6086", data, doAfterInit);
+				
+				login_user = localStorage.getItem("user_id");
+				user_type = localStorage.getItem("user_type");
+			}
+		}
+		
+		function doAfterInit(msg){
+			var msg = typeof msg == 'object' ? msg : JSON.parse(msg);
+			
+			if(msg.data.ret_code == "0000"){
+				var responseData = msg.data;
+				$("#pawn_type").val(responseData.pawn_type);
+	        	$("#cert_id").val(responseData.cert_id);
+	        	$("#pawn_address").val(responseData.pawn_address);
+	        	$("#frozen_note").val(responseData.frozen_note);
+	        	$("#user_name").val(responseData.puser_name);
+	        	$("#area_no").val(responseData.farea_no);
+	        	$("#area").val(responseData.farea);
+	        	$("#reject_note").val(responseData.reject_note);
+	        	$("#conclusion").val(responseData.conclusion);
+/* 				 for(var key in responseData){
+ 		        	if($("#"+key).length > 0){
+		        		console.log("6086:key="+key+";value="+responseData[key]);
+		        		//选择项，需要根据代码做转换	
+		        		if(!key == "area_no"){ //后台把企金和零售一起返回了，把节点名改了，这样要单独处理下
+		        			 $("#"+key).val(responseData[key]);
+		        		}
+		    	       
+		        	} 
+					if(key == "pawn_type"){
+			        		console.log("6086:key="+key+";value="+responseData[key]);
+			        		$("#pawn_type").val(responseData[key]);
+			        }
+		        
+		        	if(key == "puser_name"){
+		        		console.log("6086:key="+key+";value="+responseData[key]);
+		        		$("#user_name").val(responseData[key]);
+		        	}
+		        	if(key == "farea_no"){
+		        		console.log("6086:key="+key+";value="+responseData[key]);
+		        		$("#area_no").val(responseData[key]);
+		        	}
+		        	if(key == "farea"){
+		        		console.log("6086:key="+key+";value="+responseData[key]);
+		        		$("#area").val(responseData[key]);
+		        	}
+		        } */
+				 
+
+
+				 var pawn_data = {};
+				 pawn_data.fileno = msg.data.fileno;
+				 pawn_data.pawn_images = msg.data.pawn_images;
+				 pawn_data.pawn_des = msg.data.pawn_des;
+				 pawn_data.note = msg.data.note;
+				 
+				 localStorage.setItem(fileno+"_pawndata", JSON.stringify(pawn_data));
+	    			
+    			//如果不是本人，就只能是管理员了
+    			top.writelog("user_id"+responseData.user_id+";login_user="+login_user+";stat="+msg.data.stat);
+				 if((responseData.user_id.toLowerCase())!= (login_user.toLowerCase())){
+					 if(msg.data.stat == '3' || msg.data.stat == '2'){//已完成或已驳回
+						 
+							$("input").attr("readonly", "readonly");
+							 $("#final_text").show();
+							$("#summit_btn").hide();
+							$("#back_div").show();
+							$("#back_div textarea").attr("readonly", "readonly");
+							$("#check_btn").show();
+							$("#check_button").html("查看检查信息");
+					 }else{
+						 $(".mui-pull-right").show();
+							$("input").attr("readonly", "readonly");
+							
+							$("#summit_btn").hide();
+							 $("#final_text").show();
+							$("#final_text textarea").attr("readonly", "readonly");
+							$("#check_btn").show();
+							$("#check_button").html("查看检查信息");
+					 }
+					
+					edit_flag = '0';
+				 }else{
+					 if(msg.data.stat == '3' || msg.data.stat == '1'){//已完成或已确认就不让再编辑
+						 $("input").attr("readonly", "readonly");
+						 $("#check_btn").show();
+						 $("#check_button").html("查看检查信息");
+						 $("#final_btn").show();
+						 $("#final_text textarea").attr("readonly", "readonly");
+						 $("#final_text").show();
+						 edit_flag = '0';
+					 }else if(msg.data.stat == '0'){
+						 $("#check_btn").show();
+						 $("#check_button").html("编辑检查信息");
+						 $("#final_btn").show();
+						
+						 $("#final_text").show();
+						 edit_flag = '1';
+					 }else{
+						 $("#check_btn").show();
+						 $("#check_button").html("编辑检查信息");
+				
+						 edit_flag = '1';
+						 $("#back_div").show();
+						$("#back_div textarea").attr("readonly", "readonly");
+					 }
+					 
+				 }
+	 		
+			}
+		}
+		
+
+
+
+
+		function upload_info(){
+
+			var data = {
+        			coordinate:top.coordinate,
+        			user_id:localStorage.getItem("user_id"),
+        			
+        		};
+			if(fileno == '888888'){
+				data.fileno='';
+			}else{
+				data.fileno = fileno;
+			}
+			var count = 0;
+			$("input").each(function(e){
+				var value = $(this).val();
+				var key = $(this).attr("id");
+				if(top.isEmpty(value)){
+					$("#"+key).addClass("Primary");
+					count++
+				}else{
+					data[key]=value;
+				}
+			});
+			if(count > 0){
+				mui.alert("请补充必输项后再次提交", "风险管理系统", null);
+				return;
+			}
+			
+
+			top.http_comm("6092", data, doAfterSummit)
+	        
+		}
+		
+		function doAfterSummit(msg){
+			var json = eval("("+msg+")");
+			if(json.data.ret_code == "0000"){
+				//流水号
+				fileno = json.data.fileno;
+				var btnArray = ['取消', '确定'];
+                mui.confirm('上传成功，是否开始现场勘察？', '风险管理系统', btnArray, function(e) {
+                    if (e.index == 1) {
+                    	
+                    	begin_check();
+                    	$("#check_btn").show();
+                    	
+                    } else {
+                    	$("#check_btn").show();
+                    }
+                })
+				
+							
+				return;
+			}else{
+				top.alertInfo(json.data.ret_info);
+			}
+		}
+
+
+        
+      //多行文本输入框剩余字数计算
+        function checkMaxInput(obj, maxLen) {
+            if (obj == null || obj == undefined || obj == "") {
+                return;
+            }
+            if (maxLen == null || maxLen == undefined || maxLen == "") {
+                maxLen = 100;
+            }
+            
+            var strResult;
+            var $obj = $(obj);
+            var newid = $obj.attr("id") + 'msg';
+            
+            if (obj.value.length > maxLen) { //如果输入的字数超过了限制
+                obj.value = obj.value.substring(0, maxLen); //就去掉多余的字
+                strResult = '<span id="' + newid + '" class=\'Max_msg\' >剩(' + (maxLen - obj.value.length) + ')字</span>'; //计算并显示剩余字数
+            }
+            else {
+                strResult = '<span id="' + newid + '" class=\'Max_msg\' >剩(' + (maxLen - obj.value.length) + ')字</span>'; //计算并显示剩余字数
+            }
+            
+            var $msg = $("#" + newid);
+            if ($msg.length == 0) {
+                $obj.after(strResult);
+            }
+            else {
+                $msg.html(strResult);
+            }
+        }
+      
+      function save_submit(){
+    	  
+      }
+		//管理员驳回检查
+		function reject_check(){
+			//驳回理由不能为空
+			if(top.isEmpty($("#reject_note").val())){
+				mui.alert("驳回理由不能为空", "风险管理系统", null);
+				return;
+			}
+			var data={};
+			data.fileno = fileno;
+			data.reject_note = $("#reject_note").val();
+			data.flag = '0';
+			top.http_comm("6093", data, doAfterReject);
+			
+		}
+		
+		//驳回后处理函数
+		function doAfterReject(){
+			var msg = typeof msg == 'object' ? msg : JSON.parse(msg);
+			
+			if(msg.data.ret_code == "0000"){
+				mui.alert("处理成功", "风险管理系统", null);
+				
+			}else{
+				mui.alert("处理失败", "风险管理系统", null);
+			}
+			//刷新父页面
+			parent.refresh();
+			//退回父页面 
+			back_history();
+		}
+		   //客户经理确认检查
+		function conclusion_check(){
+			//驳回理由不能为空
+			if(top.isEmpty($("#conclusion").val())){
+				mui.alert("驳回理由不能为空", "风险管理系统", null);
+				return;
+			}
+			var data={};
+			data.fileno = fileno;
+			data.conclusion = $("#conclusion").val();
+			data.flag = '0';
+			top.http_comm("6087", data, doAfterReject);
+			
+		}
+		
+		//客户经理确认检查处理函数
+		function doAfterReject(){
+			var msg = typeof msg == 'object' ? msg : JSON.parse(msg);
+			
+			if(msg.data.ret_code == "0000"){
+				mui.alert("处理成功,点击确认返回上一页面", "风险管理系统", function(){
+					//刷新父页面
+					parent.refresh();
+					//退回父页面 
+					back_history();
+				});
+				
+			}else{
+				mui.alert("处理失败", "风险管理系统", null);
+			}
+			
+		}
+		function begin_check(){
+			showNewFrame('survey_nohouse_check.html?fileno='+fileno+'&edit_flag=1', 'smask');
+		}
+		 //清空剩除字数提醒信息
+        function resetMaxmsg() {
+            $('.Max_msg').hide();
+        }
+		</script>
+    </head>                                
+	<body style="background-color: #fafafa;">
+        <header class="mui-bar mui-bar-nav head_color">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+			<h1 class="mui-title">抵押物检查-非住宅</h1>
+			<a  class="mui-icon mui-icon-undo mui-pull-right"  style="display:none" onclick="reject_check();"><font style="font-size:0.8em;">驳回</font></a>
+		</header>
+
+        <div class="mui-content mui-scroll-wrapper">
+            <div class="mui-scroll">
+            <!-- 获取坐标地址 -->
+	 			<iframe style="width:100%;border:0;margin-top:25px;" src="map_header.html" mce_src="map_header.html" name="tmp_iframe" id="tmp_iframe"></iframe>
+         
+            
+            	<div class="mui-content" style="margin-top:-30px;">
+					<form class="mui-input-group">
+						<div class="mui-input-row">
+							<label>客户名称</label>
+							<input type="text" placeholder="输入客户名称（全称）" id="user_name">
+						</div>
+						<div class="mui-input-row" onclick="search_show();">
+							<label>押品类型</label>
+							<input type="text" placeholder="抵押物类型" id="pawn_type" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>押品区域</label>
+							<input type="text" placeholder="点击选择抵押物区域" id="area_no" readonly="readonly">
+						</div>
+						<div class="mui-input-row">
+							<label>押品坐落</label>
+							<input type="text" placeholder="押品坐落" id="pawn_address">
+						</div>
+						<div class="mui-input-row" onclick="search_show();">
+							<label>押品面积</label>
+							<input type="number" placeholder="抵押范围面积" id="area" style="width:55%;float:left;">
+							<span style="font-size: 0.8em;color: #8e8e8e;line-height:40px;">m²</span>
+						</div>
+						<div class="mui-input-row" onclick="search_show();">
+							<label>产权证号</label>
+							<input type="text" placeholder="产权证号" id="cert_id">
+						</div>
+						<div class="mui-input-row" onclick="search_show();">
+							<label>冻结情况</label>
+							<input type="text" placeholder="查封冻结情况说明" id="frozen_note">
+						</div>
+					</form>
+				</div>
+				
+				<!-- 经办人留言信息 -->
+	            <div class="mui-content-padded" style="margin: 5px;display:none" id="final_text">
+	                <form class="mui-input-group" >
+	                <h5 style="text-indent:1em;color:#fe524e;">特殊事项说明</h5>
+	                    <div class="mui-input-row" style="height:105px;">
+	                        <textarea id="conclusion" rows="4" placeholder="特殊事项说明（500字以内）" maxlength='500' onkeydown="checkMaxInput(this,500)"
+	                            onkeyup="checkMaxInput(this,500)" onfocus="checkMaxInput(this,500)" onblur="checkMaxInput(this,500);resetMaxmsg()"></textarea>
+	                    </div>
+	                </form>
+	            </div>
+	            <div class="mui-content-padded" style="margin: 5px;display:none" id="back_div">
+	                <form class="mui-input-group" >
+	                <h5 style="text-indent:1em;color:#fe524e;">驳回理由</h5>
+	                    <div class="mui-input-row" style="height:105px;">
+	                        <textarea id="reject_note" rows="4" placeholder="驳回理由，注意事项（500字以内）" maxlength='500' onkeydown="checkMaxInput(this,500)"
+	                            onkeyup="checkMaxInput(this,500)" onfocus="checkMaxInput(this,500)" onblur="checkMaxInput(this,500);resetMaxmsg()"></textarea>
+	                    </div>
+	                </form>
+	            </div>
+				<div style="margin-top:10px;text-align:center;margin-bottom: 30px;" id="summit_btn">
+	                <button type="button" class="mui-btn  mui-btn-primary" style="width:90%" onclick="upload_info()">提交</button>
+	            </div>
+	            <div style="margin-top:10px;text-align:center;margin-bottom: 30px;display:none" id="check_btn">
+	                <button type="button" class="mui-btn  mui-btn-primary" style="width:90%" onclick="begin_check()" id="check_button">开始检查</button>
+	            </div>
+	            <div style="margin-top:30px;margin-bottom:100px;text-align:center;display:none;"  id="final_btn">
+	                <button type="button" class="mui-btn  mui-btn-primary" style="width:90%" onclick="conclusion_check();">最终确认</button>
+	            </div>
+	            <div class="div_footer">-页面是否可以滑动了-</div>
+			</div>
+		</div>
+
+		<script src="hello-mui/js/mui.picker.js"></script>
+		<script src="hello-mui/js/mui.poppicker.js"></script>
+		<script src="hello-mui/js/city.data.js" type="text/javascript" charset="utf-8"></script>
+		<script src="hello-mui/js/city.data-3.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+  			(function($, doc) {
+				$.init();
+				$.ready(function() {
+					//三级联示例 抵押物地址
+					var cityPicker3 = new $.PopPicker({
+						layer: 3
+					});
+					cityPicker3.setData(cityData3);
+					cityPicker3.pickers[0].setSelectedIndex(16);//默认湖北
+						
+					cityPicker3.pickers[1].setSelectedValue(1);//默认武汉
+					
+					
+					var area_no = doc.getElementById('area_no');
+					area_no.addEventListener('tap', function(event) {
+						cityPicker3.show(function(items) {
+							area_no.value = (items[0] || {}).text + " " + (items[1] || {}).text + " " + (items[2] || {}).text;
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+							area_no_all = (items[0] || {}).text + "-" + (items[1] || {}).text + "-" + (items[2] || {}).text;
+							area_no_s = (items[2] || {}).value;
+							
+							
+							
+							
+						});
+					}, false);
+					
+					
+					var pawnPicker = new $.PopPicker({
+						layer: 2
+					});
+					pawnPicker.setData(pawnData);
+					
+					var pawn_type = doc.getElementById('pawn_type');
+					//var userResult = doc.getElementById('userResult');
+					pawn_type.addEventListener('tap', function(event) {
+						pawnPicker.show(function(items) {
+							pawn_type.value = (items[0] || {}).text + " " + (items[1] || {}).text;	
+						
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+						
+				
+							
+						});
+					}, false);
+				});
+			})(mui, document);   
+		</script>
+	</body>
+	
+</html>

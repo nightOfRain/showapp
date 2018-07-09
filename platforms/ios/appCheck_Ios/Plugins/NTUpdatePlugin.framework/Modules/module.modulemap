@@ -1,0 +1,6 @@
+framework module NTUpdatePlugin {
+  umbrella header "NTUpdatePlugin.h"
+
+  export *
+  module * { export * }
+}

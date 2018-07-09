@@ -1,0 +1,6 @@
+framework module NTCameraPlugin {
+  umbrella header "NTCameraPlugin.h"
+
+  export *
+  module * { export * }
+}

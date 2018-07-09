@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<title></title>
+	<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+	<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+    
+	<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+	<link rel="stylesheet" href="hello-mui/css/app.css">
+	<link rel="stylesheet" href="hello-mui/css/iconfont.css">
+	<script src="hello-mui/js/mui.min.js"></script>
+	<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+	<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+  
+	<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+       <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+		 html, body {
+                 position: relative;
+                 height: 100%;
+             }
+         body {
+             background: #fff;
+             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+             font-size: 14px;
+             color:#000;
+             margin: 0;
+             padding: 0;
+             overflow:auto;
+          
+         }
+
+		.mui-spinner,
+			.mui-spinner-white {
+				margin-top: 12px
+			}
+			.active .mui-spinner-indicator {
+				background: #007AFF;
+			}
+		.mui-content{
+		background: #ffffff;
+		}
+
+        </style>
+ 		<script>
+			var thisURL; 
+			var json;
+			var radio_flag = 4;
+			$(function() {
+				//调整map高度
+				
+				mui.init({
+					pullRefresh: {
+						container: '#pullrefresh',
+						
+						down: {		
+							height: 50,
+							contentinit: '下拉可以刷新',
+							contentdown: '下拉可以刷新',
+							contentover: '释放立即刷新',
+							contentrefresh: '正在刷新...',
+							auto:false,
+							callback: pulldownRefresh
+						}					
+					},
+	
+                    });
+	            mui('.mui-scroll-wrapper').scroll({
+	                                             deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+	                                             });
+	            mui("#pullrefresh").on('tap', '.mui-card', function (event) {
+					this.click();
+					
+					});
+	        
+	            mui.init({
+	    			swipeBack:true //启用右滑关闭功能
+	    		});
+	            mui(document.body).on('tap', '.mui-action-back', function(e) {
+	        		this.click();
+	        		return false;
+	        	});
+
+
+	       //     initPage();				
+			});
+				
+			function initPage(){
+				var data = {
+						user_id:localStorage.getItem("user_id"),	
+					
+						user_type:localStorage.getItem("user_type"),
+				};			
+				
+				//top.writelog("6038="+JSON.stringify(data));
+				Http_ajax(showList, "app/6038", data);
+			}
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				setTimeout(function() {
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+					//initPage();
+				//	get_checkinfo_menu();
+				//	mui.toast("没有更多信息了");
+				}, 100);
+			}
+	
+			function showList(msg){
+				top.stop_process();
+				top.writelog("6038 recv:"+msg);
+				json=eval("("+msg+")");		
+				
+				if(json.data.list.length == 0){
+					mui.toast('您的需求没有新的变化');
+					return;
+				}
+				
+				var info_html = '';
+				for(var i = 0; i < json.data.list.length; i++){
+					
+					var type = json.data.list[i].type;
+					var num = json.data.list[i].fileno;
+					top.writelog("num="+num);
+					var imgurl;			
+						var info_status='';
+						var info_star = '';
+						var type_name = ''
+						
+						if(json.data.list[i].flag == 1){ //个人
+							type_name = "零售客户";
+						
+						}else{
+							type_name = "企金客户";
+						}
+						top.writelog("fileno="+num+";stat="+json.data.list[i].stat);
+						if(json.data.list[i].stat == 0){ //未发送短信
+							info_status = '当前状态：<font color="#3F813F">还未短信通知客户</font>';
+							imgurl = "img/unsend.png";
+						}else if( json.data.list[i].stat == 2 ){ //已回退
+							info_status = '被驳回：<font color="#ff6600">'+json.data.list[i].note+'</font>';
+							imgurl = "img/beback.png";
+						}else{
+							if(json.data.list[i].star < 1){
+								info_status = '当前状态：<font color="#049FF1">已经短信通知客户，请打分</font>';
+								imgurl = "img/dafen.png";
+							}else{
+								info_status = '当前状态：<font color="#43A102">已经处理完成</font>';
+								imgurl = "img/finish.png";
+							}							
+						}
+	
+			    		info_html += '<div class="mui-card" onclick="getfile_info(\''+num+'\',\''+json.data.list[i].stat+'\',\''+json.data.list[i].flag+'\')"><div class="mui-card-header mui-card-media"><img src="'+imgurl+'" />'					
+						+'<div class="mui-media-body">'+type_name+'<p>'+get_time_str(json.data.list[i].trandate)+'</p></div></div>'
+						+'<div class="mui-card-content" style="padding-left:50px;">'
+						+'<h5 style="color:black;">客户名称：'+json.data.list[i].customer+'</h5>'
+						+'<p style="margin:1px;font-size:12px;">'+info_status+'</p>'
+						+'<p style="margin:1px;font-size:12px;">摇号结果：'+json.data.list[i].assessmentName+'</p>'	
+						+'<p style="margin:1px;font-size:12px;">业务机构：'+json.data.list[i].orgnName+'</p>'	
+						+'</div></div>'
+						+'</div>';
+				}
+				
+				$("#info").html('');
+				$("#info").html(info_html+'<div style="height:100;color:#f4f4f4">填充空白</div>');
+		
+			}
+			
+			function getfile_info(num, flag, type){
+
+					showNewFrame('yaohao_query.html?fileno='+num, 'smask');
+			
+				
+			}
+			
+			function call_phone(){
+				top.alertInfo("测试版本，暂未开放拨号");
+			}
+			
+			function dismiss_badge(){
+				$(".mui-badge").hide();
+			}
+
+
+		</script>
+    </head>
+    
+<body>
+   	<header class="mui-bar mui-bar-nav head_color">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+		<h1 class="mui-title" style="font-weight:bold;">逾期信息</h1>
+	</header>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" href="#pullrefresh">
+				<span class="mui-icon iconfont icon-yuqi"></span>
+				<span class="mui-tab-label">预期信息</span>
+			</a>
+			<a class="mui-tab-item" href="#pullrefresh_dq" onclick="dismiss_badge();">
+				<span class="mui-icon iconfont icon-naozhong2-copy"><span class="mui-badge">3</span></span>
+				<span class="mui-tab-label">即将到期</span>
+			</a>	
+		</nav>
+	
+		<div class="mui-content">
+			<div  id="pullrefresh" class="mui-control-content mui-active" >				
+				<div  style="margin-top:30px;">
+					<div  id="info_yq">
+						<div class="mui-card" onclick="showNewFrame('zhengxin_yq.html', 'smask');">
+							<div class="mui-card-header mui-card-media">
+								<img src="img/dkyq.png" />
+								<div class="mui-media-body" >
+									小M
+									<p>到期日 2016-06-30 </p>
+								</div>							
+							</div>
+							<div class="mui-card-content" style="padding-left:50px;">
+								<h5 style="color:black;">武汉房地产有限公司</h5>
+								<p style="margin:1px;font-size:12px;">状态：已逾期</p>
+								<p style="margin:1px;font-size:12px;">编号：20170816161756</p>
+								
+							</div>
+							<div style="text-align:center;background:#fcfcfa;height:30px;line-height:30px;"><span style="color:#007aff">立即查看</span></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="pullrefresh_dq" class="mui-control-content" >				
+				<div style="margin-top:30px;">
+					<div  id="info_dq">
+						<div class="mui-card" onclick="call_phone();">
+							<ul class="mui-table-view">
+								<li class="mui-table-view-cell mui-media">
+									<a href="javascript:;">
+										<img class="mui-media-object mui-pull-left" src="img/jjdq.png">
+										<div class="mui-media-body">
+											XXXX有限公司
+											<p class='mui-ellipsis'>到期日:2017-08-27</p>
+										</div>
+									</a>
+								</li>
+							</ul>
+							<div class="mui-card-content" style="padding-left:50px;">											
+								<p style="margin:1px;font-size:12px;">证件号码：429006XXXXXXXXXXXXX</p>
+								<p style="margin:1px;font-size:12px;color:#0099CC;text-decoration:underline;" >联系方式：150XXXXXXXX</p>
+								<p style="margin:1px;font-size:12px;">状态：<font color="red">即将到期</font>  </p>
+								<p style="margin:1px;font-size:12px;">编号：20170816161756</p>							
+							</div>
+							<div style="text-align:center;background:#fcfcfa;height:30px;line-height:30px;"><span style="color:#007aff"></span></div>
+						</div>
+						<div class="mui-card" onclick="call_phone();">
+							<ul class="mui-table-view">
+								<li class="mui-table-view-cell mui-media">
+									<a href="javascript:;">
+										<img class="mui-media-object mui-pull-left" src="img/jjdq.png">
+										<div class="mui-media-body">
+											XXXX有限公司
+											<p class='mui-ellipsis'>到期日:2017-08-27</p>
+										</div>
+									</a>
+								</li>
+							</ul>
+							<div class="mui-card-content" style="padding-left:50px;">											
+								<p style="margin:1px;font-size:12px;">证件号码：429006XXXXXXXXXXXXX</p>
+								<p style="margin:1px;font-size:12px;color:#0099CC;text-decoration:underline;">联系方式：150XXXXXXXX</p>
+								<p style="margin:1px;font-size:12px;">状态：<font color="red">即将到期</font>  </p>
+								<p style="margin:1px;font-size:12px;">编号：20170816161756</p>							
+							</div>
+							<div style="text-align:center;background:#fcfcfa;height:30px;line-height:30px;"><span style="color:#007aff"></span></div>
+						</div>
+
+					</div>
+					<div style="height:200px;line-height:200px;color:#ffffff">风险管理</div>
+				</div>
+			</div>
+	</div>
+		
+</body>
+</html>

@@ -1,0 +1,6 @@
+framework module NTLocationPlugin {
+  umbrella header "NTLocationPlugin.h"
+
+  export *
+  module * { export * }
+}

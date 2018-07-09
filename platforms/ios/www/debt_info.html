@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+		
+        <link rel="stylesheet" href="css/frozen.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+		<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+		<link rel="stylesheet" href="hello-mui/css/app.css">
+		<script src="hello-mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+        <script src="lib/zepto.min.js"></script>
+        <script src="js/frozen.js"></script>
+                <style>
+           
+             html, body {
+                 position: relative;
+                 height: 100%;
+             }
+         body {
+             background: #fff;
+             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+             font-size: 14px;
+             color:#000;
+             margin: 0;
+             padding: 0;
+             -webkit-overflow-scrolling:touch;
+             overflow:auto
+         }
+       
+		ul{
+			padding:10px;
+			background: #ffffff;
+			margin-top:10px;
+		}
+
+        </style>
+ 		<script type="text/javascript">
+ 		var total_num = 0;
+ 		var total_amt = 0.00;
+ 		var debt;
+ 		$(function(){	
+			var thisURL = document.URL; 
+		//	localStorage.setItem("thisURL", thisURL);
+			
+			var getenv = thisURL.split('?')[1];
+			debt = getenv.split('=')[1] *1.00;
+			var data = {
+					customer:localStorage.getItem("customer"),
+					group_code:localStorage.getItem("group_code"),
+        		};		
+			Http_ajax(initPage, "app/6017", data);
+
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			mui('.mui-scroll-wrapper').scroll({
+		              deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+		              });
+			mui(document.body).on('tap', '.mui-action-back ', function(e) {
+				this.click();
+				return false;
+			});
+		});
+		
+ 		function initPage(msg){
+ 			
+			//	alert(msg);
+				top.stop_process();
+				var json = eval("("+msg+")");
+				top.debt_info = json.data.list;
+				showList();
+				if(debt != total_amt){
+					top.alertInfo("债务总额与明细不一致请核实");	
+				}
+ 		}
+		function showList(){
+		
+			
+		
+			
+			total_num = 0;
+ 		 	total_amt = 0.00;
+			var debt_info = top.debt_info;
+			$("#debt_info").html('');
+			var debt_info_html = '';
+			for(var i = 0; i < debt_info.length; i++){
+				debt_info_html +=  '<ul  onclick="show('+debt_info[i].ids+')"><li style="height:35px;" >'
+					 +'<div class="aui-col-xs-3"><span style="font-size:16px;font-weight:bold;">债务人：</span></div><div class="aui-col-xs-8"><span  style="font-size:14px;color:8e8e8e;">'+debt_info[i].debtor+'</span></div></li>'
+                   +'<li style="height:35px;"><div class="aui-col-xs-3"><span style="font-size:16px;font-weight:bold;">债务额：</span></div><div class="aui-col-xs-8"><span  style="font-size:16px;color:8e8e8e;">'+debt_info[i].debt+'万</span></div>'
+                   +'</li></ul>';
+                    
+                    total_num++;
+                    total_amt += debt_info[i].debt * 1.00;
+                    var data={};
+                    data.ids = debt_info[i].ids;
+                    data.debtor = debt_info[i].debtor;
+                    data.debt = debt_info[i].debt;
+             
+                    
+                    localStorage.setItem("debt_info_"+debt_info[i].ids, JSON.stringify(data));
+			}
+			
+			$("#debt_info").html(debt_info_html);
+			$("#total_num").html("总笔数:"+total_num);
+			$("#total_amt").html("总金额:"+total_amt+"万");
+			
+		}
+
+		function show(ids){
+			showNewFrame('debtinfo_modify.html?id='+ids, 'smask');
+		}
+		
+		function update_debt_info(){
+		//	alert("update_debt_info");
+		//alert("debt="+debt+";total="+total_amt);
+			if(debt != total_amt){
+				top.alertInfo("债务总额与明细不一致请核实");	
+			}
+			showList();
+		}
+		</script>
+    </head>                                
+	<body style="overflow:auto;background-color: #f4f4f4;">
+	
+		<header class="ui-header ui-header-positive ui-border-b">
+            <i class="ui-icon-return" onclick="back_history();"></i><div style="font-size:18px;font-weight:bold;text-align:center;">债务信息</div>
+        </header>
+    
+ 		<div class="container-fluid" >  
+			<div class="mui-content mui-scroll-wrapper" >                
+                <div class="mui-scroll top_head">
+				    <div  id="debt_info" style="margin-top:45px;padding:10px;">
+			
+			          
+						
+				       
+				
+					
+					</div>
+				    <div class="form_div">
+				    	<ul>
+				    		<li style="height:45px;line-height:45px;">
+				    			<div class="aui-col-xs-6">
+			               			<span style="font-size:15px;" id="total_num">总笔数</span>
+			               		</div>
+			               		<div class="aui-col-xs-6">
+			               			<span  style="font-size:15px;" id="total_amt">总金额</span>
+			               			
+			               		</div>
+				    		</li>
+				    	</ul>
+				    
+				    </div>
+				    <div class="demo-item">
+				        <div class="demo-block"> 
+				            <div class="ui-btn-wrap">
+				                <button class="ui-btn-lg" onclick="show('0')" >
+				                  	添加新的债务人信息
+				                </button>
+				            </div>
+				        </div>
+				    </div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+

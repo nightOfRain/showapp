@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+                <link href="css/lib/bootstrap/bootstrap-combined.min.css" rel="stylesheet">
+                    <link rel="stylesheet" type="text/css" href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+                    <link href="css/index.css" rel="stylesheet">
+                        <link rel="stylesheet" href="common/slick/slick.css">
+                            <link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+                                <link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+                                    <link href="css/common.css" rel="stylesheet">
+                                        
+                                        <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                                       
+                                        
+                                        <script type="text/javascript" src="js/lib/bootstrap/bootstrap.min.js"></script>
+                                      
+                                        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                                        <script type="text/javascript" src="js/lib/zzljs/menu11.js"></script>
+                                        <script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+                                
+                                        <style type="text/css">
+                                            .inp_text {
+                                                border: 0 !important;
+                                                background: none !important;
+                                                box-shadow: none !important;
+                                                line-height: 35px !important;
+                                                color: #5b5b5b !important;
+                                                width: 160px !important;
+                                                font-size: 15px;
+                                            }
+                                        .tp1
+                                        {
+                                            width:20px;
+                                            height:25px;
+                                            margin-left:30px;
+                                            
+                                        }
+                                        .tp2
+                                        {
+                                            width:20px;
+                                            height:20px;
+                                            margin-left:30px;
+                                            
+                                        }
+                                        html, body {
+                            position: relative;
+                            height: 100%;
+                        }
+                    body {
+                        background: #fff;
+                        font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+                        font-size: 14px;
+                        color:#000;
+                        margin: 0;
+                        padding: 0;
+                        overflow:auto;
+                    }
+                                        div,ul{margin: 0;padding: 0;}
+                                       
+                                      
+                                     
+                                     
+                                        td{
+                                            text-align: center;
+                                            height:120px;
+                                            
+                                        }
+                                        td img{
+                                            width: 60px;
+                                            height: 60px;
+                                            
+                                        }
+                                        
+                                            </style>
+                                        <script>
+                                            var thisURL;
+                                            var pos;
+                                            var level;
+                                           
+                                            document.addEventListener("DOMContentLoaded", initial);
+                                            function initial() {
+                                                thisURL = document.URL;
+                                                localStorage.setItem("thisURL", thisURL);
+                                                localStorage.setItem("acount", "0");
+                                              
+                                             
+                                                level = localStorage.getItem("level");
+                                                
+                                                pos = localStorage.getItem("accountPosition");
+                                                
+                                                
+                                                if( level == '0'){//只有案卷查询
+                                                    $("#table_customer").attr("style", "display:black;");
+                                                } else{
+                                                    
+                                                if( pos == 'A' || pos == 'B' || pos == 'J'){ //案卷创建
+                                                    $("#table_worker1").attr("style", "display:black;");
+                                                } else if(pos == 'X1' || pos == 'X2' || pos == 'X3' || pos == 'Y1' || pos == 'Y2' ){
+                                                    $("#table_hzjg").attr("style", "display:black;");
+                                                } else if(pos == 'FG'){//分公司股东
+                                                	$("#table_fgsgd").attr("style", "display:black;");
+                                                }
+                                                else{ //没有案卷创建
+                                                    $("#table_boss").attr("style", "display:black;");
+                                                }
+                                                }
+                                                
+                                            }
+                                        //获取当前位置
+       
+                                        
+                                        function go_aj(flag){
+                                            if( flag == '1') /*案卷创建*/			//登陆成功后查询该用户代办事件
+                                            {
+                                                parent.showNewFrame("ajcj.html", "smask");
+                                            }
+                                            else if( flag == '2') /*单笔查询*/
+                                            {
+                                                if(level == 0){
+                                                    parent.showNewFrame("ajcx_wbkh.html", "smask");
+                                                }else{
+                                                    parent.showNewFrame("ajcx.html?type=1", "smask");
+                                                }
+                                                
+                                            }
+                                            else if( flag == '3') /*多笔查询*/
+                                            {
+                                                parent.showNewFrame("ajcx.html?type=2", "smask");
+                                            }
+                                            else if( flag == '4') /*案卷统计*/
+                                            {
+                                                parent.showNewFrame("ajtj.html", "smask");
+                                            }
+                                            else if( flag == '5') /*财务查询*/
+                                            {
+                                                parent.showNewFrame("aj_cwcx.html", "smask");
+                                               
+                                            }
+                                            else if( flag == '6') /*还款计划*/
+                                            {
+                                                parent.showNewFrame("aj_hkjh.html", "smask");
+                                            }
+                                            else if( flag == '7') /*销售排名*/
+                                            {
+                                              //  parent.showNewFrame("aj_xsph.html", "smask");
+                                              parent.showNewFrame("aj_swiper.html", "smask");
+                                            }
+                                            else if( flag == '8') /*提成排名*/
+                                            {
+                                            //    parent.showNewFrame("aj_zhph.html", "smask");
+                                            parent.showNewFrame("ajtc.html", "smask");
+                                            }
+                                            else if( flag == '9') /*面签排名*/
+                                            {
+                                             //   parent.showNewFrame("aj_mqph.html", "smask");
+                                             parent.showNewFrame("fgs_gdcx.html", "smask");
+                                            }else if( flag == '10') /*分公司排名*/
+                                            {
+                                              //  parent.showNewFrame("aj_fgsph.html", "smask");
+                                              parent.showNewFrame("aj_swiper.html", "smask");
+                                            }
+                                            
+                                            
+                                        }
+                                        
+                                        function query_wbkh(){
+                                            parent.showNewFrame("ajcx_wbkh.html", "smask");
+                                        }
+                                        </script>
+                                        </head>
+   <body  style="background-image:Url('img/bj3.png');background-size:cover;overflow:hidden;" >
+        
+        <div class="topNavWrapper" >
+            <div class="topNav">
+                <div class="row" style="position:relative;z-index:11;">
+                    <div class="col-xs-12">
+                        <div component-role="m11_top" class="top" style="background-image:Url('img/head_1.png');">
+                        <!--    <span id="user_top" class="top_title"></span> --> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="container-fluid" style="height:580px; margin-top: 45px;overflow:auto">
+            <div style="margin-top: 13px;display:none"  id="table_customer" >
+                <table style="width:100%; " border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td   width="33%"><p align="center"><img src="img/ajcx.png" onclick="go_aj(2);" alt="" name="img1" width="60" height="60" id="img2" /></p><p align="center"><span>案卷查询</span>&nbsp;</p></td>
+                        <td><p align="center"><img src="img/hkjh.png" onclick="go_aj(6);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>还款计划</span></p></td>
+                        
+                    </tr>
+                    
+                </table>
+            </div>
+            <div style="margin-top: 13px;display:none"  id="fgsgd" >
+                <table style="width:100%; " border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                       <td  width="33%"><p align="center"><img src="img/ajtc.png" onclick="go_aj(9);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>分公司查询</span></p></td>  
+                    </tr>                    
+                </table>
+            </div>
+            <div style="margin-top: 13px;display:none"  id="table_worker1" >
+                <table style="width:100%; " border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td   width="33%" height="113" ><p align="center"><img src="img/ajcj.png" onclick="go_aj(1);" alt="" name="img1" width="60" height="60" id="img1" />
+                            </p><p align="center"><span>贷款面签</span>&nbsp;</p></td>
+                        <td   width="33%"><p align="center"><img src="img/ajcx.png" onclick="go_aj(2);" alt="" name="img1" width="60" height="60" id="img2" /></p><p align="center"><span>单笔查询</span>&nbsp;</p></td>
+                        <td  width="33%"><p align="center"><img src="img/ajcx_n.png" onclick="go_aj(3);" alt="" name="img1" width="60" height="60" id="img3" /> </p><p align="center"><span>多笔查询</span></p></td>
+                    </tr>
+                    <tr>
+                        <td  width="33%"><p align="center"><img src="img/ajtj.png" onclick="go_aj(4);" alt="" name="img1" width="60" height="60" id="img3" /> </p><p align="center"><span>案卷统计</span></p></td>
+                        <td><p align="center"><img src="img/cwsf.png" onclick="go_aj(5);" alt="" name="img1" width="60" height="60" /> </p><p align="center"><span>财务查询</span></p></td>
+                        <td><p align="center"><img src="img/hkjh.png" onclick="go_aj(6);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>还款计划</span></p></td>
+                    </tr>
+                    <tr>
+                        <td  width="33%"><p align="center"><img src="img/xsyj.png" onclick="go_aj(7);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>业绩排名</span></p></td>
+                        <td  width="33%"><p align="center"><img src="img/ajtc.png" onclick="go_aj(8);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>提成排名</span></p></td>
+                       
+                    </tr>
+                </table>
+            </div>
+            <div style="margin-top: 13px;display:none"  id="table_worker2" >
+                <table style="width:100%; " border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td   width="33%"><p align="center"><img src="img/ajcx.png" onclick="go_aj(2);" alt="" name="img1" width="60" height="60" id="img2" /></p><p align="center""><span>单笔查询</span>&nbsp;</p></td>
+                        <td  width="33%"><p align="center"><img src="img/ajcx_n.png" onclick="go_aj(3);" alt="" name="img1" width="60" height="60" id="img3" /> </p><p align="center"><span>多笔查询</span></p></td>
+                        <td  width="33%"><p align="center"><img src="img/xsyj.png" onclick="go_aj(7);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>业绩排名</span></p></td>
+                    </tr>
+                    <tr>
+                        <td  width="33%"><p align="center"><img src="img/ajtj.png" onclick="go_aj(4);" alt="" name="img1" width="60" height="60" id="img3" /> </p><p align="center"><span>案卷统计</span></p></td>
+                        <td><p align="center"><img src="img/cwsf.png" onclick="go_aj(5);" alt="" name="img1" width="60" height="60" /> </p><p align="center"><span>财务查询</span></p></td>
+                        <td><p align="center"><img src="img/hkjh.png" onclick="go_aj(6);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>还款计划</span></p></td>
+                    </tr>
+                      <tr>
+                     <td  width="33%"><p align="center"><img src="img/ajtc.png" onclick="go_aj(8);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>提成排名</span></p></td>
+                        
+                    </tr>
+                </table>
+            </div>
+            <div style="margin-top: 13px;display:none"  id="table_boss" >
+                <table style="width:100%; " border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        
+                        <td   width="33%"><p align="center"><img src="img/ajcx.png" onclick="go_aj(2);" alt="" name="img1" width="60" height="60" id="img2" /></p><p align="center"><span>单笔查询</span>&nbsp;</p></td>
+                        <td  width="33%"><p align="center"><img src="img/ajcx_n.png" onclick="go_aj(3);" alt="" name="img1" width="60" height="60" id="img3" /> </p><p align="center"><span>多笔查询</span></p></td>
+                        <td  width="33%"><p align="center"><img src="img/ajtj.png" onclick="go_aj(4);" alt="" name="img1" width="60" height="60" id="img3" /> </p><p align="center"><span>案卷统计</span></p></td>
+                    </tr>
+                    <tr>
+                        
+                        <td><p align="center"><img src="img/cwsf.png" onclick="go_aj(5);" alt="" name="img1" width="60" height="60" /> </p><p align="center"><span>财务查询</span></p></td>
+                        <td><p align="center"><img src="img/hkjh.png" onclick="go_aj(6);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>还款计划</span></p></td>
+                        <td  width="33%"><p align="center"><img src="img/xsyj.png" onclick="go_aj(7);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>业绩排名</span></p></td>
+                    </tr>
+                <tr>
+                     <td  width="33%"><p align="center"><img src="img/ajtc.png" onclick="go_aj(8);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>提成排名</span></p></td>
+                        
+                    </tr>
+                </table>
+            </div>
+            <div style="margin-top: 13px;display:none"  id="table_hzjg" >
+                <table style="width:100%; " border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        
+                        <td   width="33%"><p align="center"><img src="img/ajcx.png" onclick="go_aj(2);" alt="" name="img1" width="60" height="60" id="img2" /></p><p align="center"><span>单笔查询</span>&nbsp;</p></td>
+                        <td  width="33%"><p align="center"><img src="img/ajcx_n.png" onclick="go_aj(3);" alt="" name="img1" width="60" height="60" id="img3" /> </p><p align="center"><span>多笔查询</span></p></td>
+                        <td  width="33%"><p align="center"><img src="img/ajtj.png" onclick="go_aj(4);" alt="" name="img1" width="60" height="60" id="img3" /> </p><p align="center"><span>案卷统计</span></p></td>
+                    </tr>
+                    <tr>
+                        
+                        <td><p align="center"><img src="img/cwsf.png" onclick="go_aj(5);" alt="" name="img1" width="60" height="60" /> </p><p align="center"><span>财务查询</span></p></td>
+                        <td><p align="center"><img src="img/hkjh.png" onclick="go_aj(6);" alt="" name="img1" width="60" height="60"  /> </p><p align="center"><span>还款计划</span></p></td>
+                       
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
+        
+    </body>
+</html>

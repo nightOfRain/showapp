@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title></title>
+<link href="css/lib/bootstrap/bootstrap-combined.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" type="text/css"
+	href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+<link href="css/common.css" rel="stylesheet">
+<link href="css/index.css" rel="stylesheet">
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script src="js/lib/jQuery/jquery.mobile-1.4.3.js"
+	type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="js/lib/bootstrap/bootstrap.min.js"></script>
+
+
+<link rel="stylesheet" href="common/slick/slick.css">
+<script type="text/javascript" src="cordova.js"></script>
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", initial);
+var thisURL;
+function initial() {
+	thisURL = document.URL; 
+	localStorage.setItem("thisURL", thisURL);
+	
+	var getbuf = thisURL.split("?")[1];
+	get_zcp(getbuf);
+}
+
+/*根据子产品类型，取子产品信息*/
+function get_zcp(getbuf){
+	var buf0 = getbuf.split("&")[0];
+	var buf1 = getbuf.split("&")[1];
+	var buf2 = getbuf.split("&")[2];
+	var buf3 = getbuf.split("&")[3];
+	
+	
+}
+
+function show(msg){
+	var json=eval("("+msg+")");
+	//window.location.href='index.html?showflag=3'
+}
+</script>
+
+<body style="background-color: #FFFFFF;">
+<div class="top">
+		<div class="back_ic" onClick="history.go(-1);">	</div>	
+			<span class="top_title">金融网格服务平台</span>
+	</div>	
+	
+<div class="form_div">
+<table align="center" width="80%" style="background-color: #ffffff;">
+  <tr border="0" >
+    <th width="33%" rowspan="3" scope="col"><img src="img/cpjs_01.png" alt="" name="cpzs" width="50"  id="cpzs" /></th>
+    <th colspan="2" scope="col"><span  style="height: 30px;" id="cpmc">存款产品</span></th>
+  </tr>
+  <tr> 
+    <td><li style="height: 20px;"><span>期限  : 十年</span></li></td>   
+  </tr>
+  <tr >
+    <td><span  style="height:0px;">分类  : woqu </span></td>
+  </tr>
+</table>
+</div>
+<div><br></div>
+<div class="form_div">
+<table align="center" width="80%" style="background-color: #ffffff;">
+  <tr>
+    <th scope="col"><span align="left">内容介绍</span></th>
+  </tr>
+  <tr>
+    <td height="60px"><textarea cols="30" rows="5" readonly="readonly" border="0" ></textarea></td>
+  </tr>
+</table>
+
+
+</div>
+
+
+
+</body>
+<script>
+function go_cp(flag){
+	top.alertInfo(flag,'','温馨提示','确认');
+}
+</script>
+</div>
+
+<div style="text-align:center;clear:both;">
+<script src="/gg_bd_ad_720x90.js" type="text/javascript"></script>
+<script src="/follow.js" type="text/javascript"></script>
+</div>
+</body>
+</html>

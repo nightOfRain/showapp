@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+	<link href="css/common.css" rel="stylesheet">
+	<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script src="js/lib/jQuery/jquery.mobile-1.4.3.js"
+	type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<style>
+
+.auto_hidden {
+    width:204px;border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+    border-left: 1px solid #333;
+    border-right: 1px solid #333;
+    position:absolute;
+    display:none;
+}
+.auto_show {
+    width:204px;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+    border-left: 1px solid #333;
+    border-right: 1px solid #333;
+    position:absolute;
+    z-index:9999; /* 设置对象的层叠顺序 */
+    display:block;
+}
+.auto_onmouseover{
+    color:#ffffff;
+    background-color:highlight;
+    width:100%;
+}
+.auto_onmouseout{
+    color:#000000;
+    width:100%;
+    background-color:#ffffff;
+}
+.bot_btn_1{
+	text-shadow: none !important;
+	width: 80%;
+	text-align: center;
+	height:45px;
+	line-height: 45px;
+	color: #ffffff;
+	font-size: 20px;
+	margin: 10px auto;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	background-color: #cc0033;
+}
+</style>
+<script language="javascript">
+
+
+var getobj = function (id) {
+    return "string" == typeof id ? document.getElementById(id) : id;
+}
+var Bind = function(object, fun) {
+    return function() {
+        return fun.apply(object, arguments);
+    }
+}
+function AutoComplete(obj,autoObj,arr){
+    this.obj=getobj(obj);        //输入框
+    this.autoObj=getobj(autoObj);//DIV的根节点
+    this.value_arr=arr;        //不要包含重复值
+    this.index=-1;          //当前选中的DIV的索引
+    this.search_value="";   //保存当前搜索的字符
+}
+AutoComplete.prototype={
+    //初始化DIV的位置
+    init: function(){
+        this.autoObj.style.left = this.obj.offsetLeft + "px";
+        this.autoObj.style.top  = this.obj.offsetTop + this.obj.offsetHeight + "px";
+        this.autoObj.style.width= this.obj.offsetWidth - 2 + "px";//减去边框的长度2px  
+    },
+    //删除自动完成需要的所有DIV
+    deleteDIV: function(){
+        while(this.autoObj.hasChildNodes()){
+            this.autoObj.removeChild(this.autoObj.firstChild);
+        }
+        this.autoObj.className="auto_hidden";
+    },
+    //设置值
+    setValue: function(_this){
+        return function(){
+            _this.obj.value=this.seq;
+            _this.autoObj.className="auto_hidden";
+        }      
+    },
+    //模拟鼠标移动至DIV时，DIV高亮
+    autoOnmouseover: function(_this,_div_index){
+        return function(){
+            _this.index=_div_index;
+            var length = _this.autoObj.children.length;
+            for(var j=0;j<length;j++){
+                if(j!=_this.index ){      
+                    _this.autoObj.childNodes[j].className='auto_onmouseout';
+                }else{
+                    _this.autoObj.childNodes[j].className='auto_onmouseover';
+                }
+            }
+        }
+    },
+    //更改classname
+    changeClassname: function(length){
+        for(var i=0;i<length;i++){
+            if(i!=this.index ){      
+                this.autoObj.childNodes[i].className='auto_onmouseout';
+            }else{
+                this.autoObj.childNodes[i].className='auto_onmouseover';
+                this.obj.value=this.autoObj.childNodes[i].seq;
+            }
+        }
+    }
+    ,
+    //响应键盘
+    pressKey: function(event){
+        var length = this.autoObj.children.length;
+        //光标键"↓"
+        if(event.keyCode==40){
+            ++this.index;
+            if(this.index>length){
+                this.index=0;
+            }else if(this.index==length){
+                this.obj.value=this.search_value;
+            }
+            this.changeClassname(length);
+        }
+        //光标键"↑"
+        else if(event.keyCode==38){
+            this.index--;
+            if(this.index<-1){
+                this.index=length - 1;
+            }else if(this.index==-1){
+                this.obj.value=this.search_value;
+            }
+            this.changeClassname(length);
+        }
+        //回车键
+        else if(event.keyCode==13){
+            this.autoObj.className="auto_hidden";
+            this.index=-1;
+        }else{
+            this.index=-1;
+        }
+    },
+    //程序入口
+    start: function(event){
+        if(event.keyCode!=13&&event.keyCode!=38&&event.keyCode!=40){
+            this.init();
+            this.deleteDIV();
+            this.search_value=this.obj.value;
+            var valueArr=this.value_arr;
+            valueArr.sort();
+            if(this.obj.value.replace(/(^\s*)|(\s*$)/g,'')==""){ return; }//值为空，退出
+            try{ var reg = new RegExp("(" + this.obj.value + ")","i");}
+            catch (e){ return; }
+            var div_index=0;//记录创建的DIV的索引
+            for(var i=0;i<valueArr.length;i++){
+                if(reg.test(valueArr[i])){
+                    var div = document.createElement("div");
+                    div.className="auto_onmouseout";
+                    div.seq=valueArr[i];
+                    div.onclick=this.setValue(this);
+                    div.onmouseover=this.autoOnmouseover(this,div_index);
+                    div.innerHTML=valueArr[i].replace(reg,"<strong>$1</strong>");//搜索到的字符粗体显示
+                    this.autoObj.appendChild(div);
+                    this.autoObj.className="auto_show";
+                    div_index++;
+                }
+            }
+        }
+        this.pressKey(event);
+        window.onresize=Bind(this,function(){this.init();});
+    }
+}
+
+
+</SCRIPT>
+<body style="background:#f4f4f4;">
+<div class="topNavWrapper" >
+			<div class="topNav">
+				<div component-role="m11_top" class="top">				
+					<div class="back_ic" onClick="sethzjg();back_history();"></div>
+					<span class="top_title">合作机构</span>
+				</div>
+			</div>
+		</div>
+		<div class="form_div" style="margin-top:35px;">
+		<div align="center" style="background-color: #ffffff;text-indent:2em;text-overflow:ellipsis;font-size: 12px;margin-top:13px;margin-left:5px;color:#8e8e8e;">可根据输入自动补全</span></div>
+			<ul>
+				<li>
+					<div class="inp_label_s" style="width:140px;" >选择合作机构</div> 
+					 <input type="text" class="inp_text" data-role="none" placeholder="输入银行名称" id="o" onkeyup="autoComplete.start(event)"></div>
+    <div class="auto_hidden" id="auto" >
+				</li>
+			</ul>
+		</div>
+		
+<div class="bot_btn_1" onClick="lz_submit()" id="bnt_ajlz" >保存</div>
+<div class="container-fluid" style="height:480px;overflow:auto">
+	<div id="p1"  class="form_div" style="margin-top:10px;">		
+	</div>
+	<div class="form_div" style="height:40px;"></div>
+</div>
+<script>
+var hzjg_map={};
+function lz_submit(){
+	var obj=document.getElementById("o")
+	 var hzjg_mc = obj.value;
+	 var hzjg_id
+	 	for(var i=0; i < hzjg_map.length; i++){
+			 
+			 if( hzjg_mc == hzjg_map[i].hzjg_mc){
+				 hzjg_id = hzjg_map[i].hzjg_id;
+				 break;
+			 }
+				
+		 }
+		 alert("hzjg_id="+hzjg_id+",bankname="+hzjg_mc);
+		parent.set_hzjg(hzjg_id, hzjg_mc);
+		back_history();
+	 
+}
+function sethzjg(){
+	 var obj=document.getElementById("o")
+	 var hzjg_mc = obj.value;
+	 var hzjg_id
+	 	for(var i=0; i < hzjg_map.length; i++){
+			 
+			 if( hzjg_mc == hzjg_map[i].hzjg_mc){
+				 hzjg_id = hzjg_map[i].hzjg_id;
+				 break;
+			 }
+				
+		 }
+		 alert("hzjg_id="+hzjg_id+",bankname="+hzjg_mc);
+		parent.set_hzjg(hzjg_id, hzjg_mc);
+	//	back_history();
+}
+function hzjg_selected(hzjg_id, hzjg_mc){
+	alert("hzjg_id="+hzjg_id+",bankname="+hzjg_mc);
+	parent.set_bank(hzjg_id, hzjg_mc);
+	back_history();
+}
+var availableTags = [];
+document.addEventListener("DOMContentLoaded", initial);
+function initial() {
+	thisURL = document.URL; 
+//	var getenv = thisURL.split("?")[1];
+	
+//	var cpzl = getenv.split("=")[1];
+	setTags();
+	return;
+	
+	var data = {};
+//	data.loantype = cpzl;
+	data.userid = localStorage.getItem("userid");
+	top.start_process();
+	$.ajax({
+			type : "post",
+			url: "http://"+IP+":"+PORT+"/app/6021;",
+			timeout: 3000,
+			data : data,
+			datatype : "json",
+			success :function(msg){
+				top.stop_process();	
+				setTags(msg);
+			},
+			error:function(msg){
+				top.stop_process();
+				top.alertInfo('通信失败','','温馨提示','确认');
+			}
+		});
+	
+}
+function setTags(msg){
+
+	var	msg='{"data":[{ "hzjg_id":"10000090", "loantype":"8001","hzjg_mc":"建设银行硚口支行"},{ "hzjg_id":"10000091", "loantype":"8002","hzjg_mc":"工商银行十里铺支行"},{ "hzjg_id":"10000092", "loantype":"8003","hzjg_mc":"三峡银行湖北支行"},{ "hzjg_id":"10000093", "loantype":"8004","hzjg_mc":"湖北银行农业银行"},{ "hzjg_id":"10000094", "loantype":"8005","hzjg_mc":"汉口银行湖北分行"},{ "hzjg_id":"10000095", "loantype":"8006","hzjg_mc":"工商银行武昌支行"},{ "hzjg_id":"10000096", "loantype":"8007","hzjg_mc":"建设银行武昌支行"}]}';	
+//	var msg = localStorage.getItem("hzjg_info");
+	var json=eval("("+msg+")");
+//	var data = json.data.loan_bank;
+	if(document.getElementById('content') )
+		document.getElementById('p1').removeChild(document.getElementById('content'));
+	var div_host = document.getElementById("p1");
+	var div_content = document.createElement("div");
+	div_content.setAttribute("id", "content");
+	var data = json.data;
+	hzjg_map = json.data;
+	for(var i=0; i < data.length; i++){
+		availableTags[i] = data[i].hzjg_mc;
+		var ul = document.createElement("ul");   
+		var li = document.createElement("li"); 
+		li.setAttribute("onclick", "hzjg_selected('"+data[i].hzjg_id+"','"+data[i].hzjg_mc+"')");
+		
+
+		
+		var sp3_t=document.createElement("div");
+		sp3_t.setAttribute("style", "background-color: #ffffff;text-overflow:ellipsis;font-size: 12px;margin-top:13px;margin-left:5px;margin-right:45px;color:#8e8e8e;");
+		//sp3_t.setAttribute("contenteditable", "true");
+	//	sp3_t.setAttribute("disable", "disable");
+		sp3_t.innerHTML = data[i].hzjg_mc;
+		
+		var img=document.createElement("img");
+		img.setAttribute("src", "img/right.png");
+		img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: -20px;background-size: 100% 100%;");
+	//	var rgt = document.createElement("div");
+	//	rgt.setAttribute("class", "rgt");
+		
+		li.appendChild(sp3_t);
+		li.appendChild(img);
+		ul.appendChild(li);
+		
+		div_content.appendChild(ul);
+	}
+	div_host.appendChild(div_content);
+	
+
+}
+
+
+/*
+var availableTags = [
+                     "张珊",
+                     "张山",
+                     "张三",
+                     "李四",
+                     "厉鬼",
+                     "历史",
+                     "王五",
+                     "王武",
+                     "赵六",
+                     "赵楼",
+                     "嘻哈"];
+ */                    
+                   var autoComplete=new AutoComplete('o','auto',availableTags);
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            
+            <meta name="viewport"
+                content="width=device-width, initial-scale=1.0, user-scalable=no">
+                <!-- Link Swiper's CSS -->
+                <link href="css/lib/bootstrap/bootstrap-combined.min.css"
+                    rel="stylesheet">
+                    <link rel="stylesheet" type="text/css"
+                    
+                    href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+                    <link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+                        <link href="css/common.css" rel="stylesheet">
+                            <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+                            <link rel="stylesheet" type="text/css" href="css/aui/aui.2.0.css" />
+                            <link rel="stylesheet" type="text/css" href="css/aui/api.css" />
+                            <link rel="stylesheet" type="text/css" href="css/aui/aui-list-swipe.css" />
+                            <link rel="stylesheet" type="text/css" href="css/aui/aui-flex.css" />
+                            <link rel="stylesheet" href="dist/css/swiper.min.css">
+                                <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                                
+                                <script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+                                <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                                
+                                    <style>
+                                        html, body {
+                                            position: relative;
+                                            height: 100%;
+                                        }
+                                    body {
+                                        background: #fff;
+                                        font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+                                        font-size: 14px;
+                                        color:#000;
+                                        margin: 0;
+                                        padding: 0;
+                                    }
+
+                                    .span_ph{
+                                        
+                                        
+                                        line-height:35px;
+                                        color:#708090;
+                                        font-size:14px;
+                                        text-indent:1em;
+                                    }
+                                     .span_ph_b{
+                                        
+                                        font-weight: bold;
+                                        line-height:35px;
+                                        color:#708090;
+                                        font-size:16px;
+                                        text-indent:1em;
+                                    }
+                
+                                    
+                                    .swiper-container {
+                                        width: 100%;
+                                        height: 65%;
+                                    }
+                                    .swiper-slide {
+                                        text-align: center;
+                                        font-size: 18px;
+                                        background: rgba(240,255,240,0.5);
+                                        
+                                        
+                                    }
+                       
+                                    </style>
+                                    </head>
+    
+    
+    
+<body  style="background-color:#f0f0f0;overflow:auto;">
+        <div class="topNavWrapper" >
+            <div class="topNav">
+                <div component-role="m11_top" class="top">
+                    <div class="back_ic" onClick="parent.hideFrame('srfade');"></div>
+                    <span class="top_title">还款计划</span>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="container-fluid" style="margin-top:25px;height:630px;overflow:auto;overflow-x:hidden;">
+            
+            
+
+            <div class=" form_div_ph" id="qd_card">
+                <li>
+                    <div class="aui-col-xs-12" >
+                        <span class="span_ph_b"  id="xm">姓名 ：刘文杰</span>
+                    </div>
+                
+                </li>
+                <li>
+                    
+                    <div class="aui-col-xs-12" >
+                        <span class="span_ph"  id="bank_name">贷款银行：广大银行汉阳支行</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="aui-col-xs-6 " >
+                       <span class="span_ph"  id="loan_amt">贷款金额：50万</span>
+                    </div>
+                    <div class="aui-col-xs-6" >
+                        <span class="span_ph"  id="loan_lv">利率：3.5%</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="aui-col-xs-12" >
+                        <span class="span_ph"  id="loan_time">贷款日期：2016-09-31</span>
+                    </div>
+                  
+                </li>
+                <li>
+                    <div class="aui-col-xs-6 " >
+                        <span class="span_ph"  id="hksj">按揭时间：6月31号</span>
+                    </div>
+                    <div class="aui-col-xs-6" >
+                        <span class="span_ph"  id="mqhk">月供：2900元</span>
+                    </div>
+                </li>
+                <li >
+                    <div class="aui-col-xs-12"><span id="img_mf_tp_label" class="span_ph_b" >还款计划图片</span></div>
+                    
+                </li>
+            </div>
+        
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                <!--  
+                    <div class="swiper-slide" style="background-image:url(http://lorempixel.com/600/600/nature/1)"></div>
+                    <div class="swiper-slide" style="background-image:url(http://lorempixel.com/600/600/nature/2)"></div>
+                    <div class="swiper-slide" style="background-image:url(http://lorempixel.com/600/600/nature/3)"></div>
+                    <div class="swiper-slide" style="background-image:url(http://lorempixel.com/600/600/nature/4)"></div>
+                    <div class="swiper-slide" style="background-image:url(http://lorempixel.com/600/600/nature/5)"></div>
+                    <div class="swiper-slide" style="background-image:url(http://lorempixel.com/600/600/nature/6)"></div>
+                    -->
+                </div>
+                
+                <!-- Add Pagination -->
+                <div class="swiper-pagination"></div>
+                <!-- Add Arrows -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+            <div class="bot_btn_m" onClick="back_history();">返回</div>
+        
+        </div>
+
+
+<!-- Swiper JS -->
+<script src="dist/js/swiper.min.js"></script>
+<script type="text/javascript">
+    var images=[];
+    //var fileno;
+    document.addEventListener("DOMContentLoaded", initial);
+    function initial() {
+        var thisURL = document.URL;
+    //    document.getElementsByTagName('body')[0].style.width = top.screenWidth+"px";
+    //    document.getElementsByTagName('body')[0].style.height = top.screenHeight+20+"px";
+        
+        var getenv = thisURL.split('?')[1];
+        //fileno = getenv.split('=')[1];
+        /*
+        var data = {};
+        data.fileno = fileno;
+        
+        $.ajax({
+               type : "post",
+               timeout: 10000,
+               url: "http://"+IP+":"+PORT+"/app/6038",
+               data : data,
+               datatype : "json",
+               success : function(msg){
+                    //5alert(msg);
+               },
+               error:function(msg){
+               
+               alertInfo('登录失败');
+               }
+               });
+        */
+               showmessage();
+    }
+
+
+
+
+
+
+function showmessage(){
+    
+   var fileno = localStorage.getItem("hkjh_fileno");
+    var msg=localStorage.getItem("hkjh_"+fileno);
+    var data=eval("("+msg+")");
+    
+    $("#xm").html("姓名 ："+data.jkr_xm);
+    $("#bank_name").html("贷款银行 ："+data.bank_name);
+    $("#loan_amt").html("贷款金额 ："+data.loan_amt+"万");
+    $("#loan_time").html("贷款期限 ："+data.dk_qx+"年");
+    $("#loan_lv").html("利率 ："+data.dk_lv+"%");
+    $("#mqhk").html("按揭时间 ："+data.hk_aj);
+    $("#hksj").html("月供 ："+data.hk_sj+"元");
+    images = data.img_url.split('|');
+    $(".swiper-wrapper").html('');
+    
+    var fileno = localStorage.getItem("fileno");
+    var ht='';
+    for(var i = 0; i < images.length; i++){
+        
+        var imgurl = top.imgpath +fileno+"/"+images[i];
+        
+        ht+='<div class="swiper-slide"><img src="'+imgurl+'"></img></div>'
+    }
+    $(".swiper-wrapper").html(ht);
+    
+    mySwiper.update(true);
+    }
+var mySwiper = new Swiper('.swiper-container', {
+                          pagination: '.swiper-pagination',
+                          paginationClickable: true,
+                          nextButton: '.swiper-button-next',
+                          prevButton: '.swiper-button-prev',
+                          spaceBetween: 30,
+                          observer: true,
+                          observeParents: true,
+                          onSlideChangeEnd: function(swiper){
+                          
+                          
+                          }
+                          });
+                          
+                          function show_images(){
+                              $(".swiper-wrapper").html('');
+                              
+                              var fileno = localStorage.getItem("fileno");
+                              var ht='';
+                              for(var i = 0; i < images.length; i++){
+                                  
+                                  var imgurl = top.imgpath +fileno+"/"+images[i];
+                                  
+                                  ht+='<div class="swiper-slide"><img src="'+imgurl+'"></img></div>'
+                              }
+                              $(".swiper-wrapper").html(ht);
+                              
+                              mySwiper.update(true);
+                              
+                          }
+
+    </script>
+
+
+
+
+    </body>
+</html>

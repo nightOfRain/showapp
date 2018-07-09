@@ -1,0 +1,1373 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+    		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+	<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+   
+        <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />		
+<link rel="stylesheet" href="css/iconfont.css">
+<link rel="stylesheet prefetch" href="css/photoswipe.css">
+<link rel="stylesheet prefetch" href="css/default-skin/default-skin.css">
+     <link rel="stylesheet" href="css/frozen.css">
+        <link rel="stylesheet" href="css/demo.css">
+<script src="hello-mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+
+		
+        <script src="lib/zepto.min.js"></script>
+        <script src="js/frozen.js"></script>
+        <script src="js/echo/echo.min.js"></script>
+        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+         <style>
+             html, body {
+                 position: relative;
+                 height: 100%;
+             }
+         body {
+             background: #fff;
+             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+             font-size: 14px;
+             color:#000;
+             margin: 0;
+             padding: 0;
+         }
+         .edit_info{}
+         .edit_div{
+         	height:30px;
+         	line-height:30px;
+         	padding-left:40px;
+         }
+         figcaption{
+         	text-align:center;
+         	font-size:14px;
+         	display:none;
+         }
+         
+         
+        </style>
+ 		<script>
+			//img { width: 100%; height: 100%; background: url(img/loading.gif) 50% no-repeat;}
+			var fileno;
+			var file_path;
+		
+			$(function() {		
+				
+				var thisURL = document.URL; 
+				localStorage.setItem("thisURL", thisURL);
+				var getenv = thisURL.split('?')[1];
+				localStorage.setItem("list_flag", '1');
+				fileno = getenv.split('=')[1];
+				top.newfileno = 1;
+				top.edit_flag = 1;
+				var data = {
+						fileno:fileno
+						
+				};
+				
+				/*
+				setTimeout(function(){		
+					
+					Echo.init({
+						offset: 0,
+						throttle: 0
+					});
+					
+				}, 2000);
+				*/
+				Http_ajax(done_check_info, "app/6011", data);
+				
+				$("input").attr("readonly", "readonly");
+				mui.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				mui('.mui-scroll-wrapper').scroll({
+	                deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+	                });
+				document.getElementById("promptBtn").addEventListener('tap', function(e) {
+				//	e.detail.gesture.preventDefault(); //修复iOS 8.x平台存在的bug，使用plus.nativeUI.prompt会造成输入法闪一下又没了
+					var btnArray = ['取消', '确定'];
+					mui.prompt('请录入该次检查结论，确认后该笔记录将不可再修改', '结论不得少于20字', '检查确认', btnArray, function(e) {
+						if (e.index == 1) {
+						//	info.innerText = '谢谢你的评语：' + e.value;
+							if(e.value.length < 20){
+								mui.toast("结论不得少于20字");
+								this.click();
+							}else{
+								var data = {
+										fileno:localStorage.getItem("fileno"),
+										note:e.value
+					        		};		
+								Http_ajax(function(msg){
+									top.writelog("6023="+msg);
+									top.stop_process();
+									
+									back_history();
+								}, "app/6023", data);
+							}
+						} else {
+							//info.innerText = '你点了取消按钮';
+						}
+					});
+					//document.querySelector('.mui-popup-input input').type='tel';
+				});
+				
+
+			});    
+			
+			function update_button(flag){
+				
+				scroll_auto();
+				var check_jour_one = top.data.check_step_one;
+				var check_jour_two = top.data.check_step_two;
+				var check_jour_three = top.data.check_step_three;
+				var check_jour_four = top.data.check_step_four;
+				var check_jour_five = top.data.check_step_five;
+				var check_jour_six = top.data.check_step_six;
+
+				
+				
+				
+			//	$("#trandate").val(check_jour.trandate);//发生时间
+			//	$("#is_warning").val(check_jour.is_warning);//该客户是否有预警信息 0-无，1-有
+				if( flag == '1'){
+					//客户经营地址是否变化0-没有变化，1-变化了
+					if(check_jour_one.is_chance == 1){
+						$("#address_des").html(check_jour_one.address_des);//经营场所地址
+						$("#is_chance").html("是");
+						add_pic(check_jour_one.address_img, '1', check_jour_one.address_des);
+					}else{
+						$("#is_chance").html("否");
+						$("#address_des").attr("style", "display:none");
+						add_pic(check_jour_one.address_img, '1', "经营场所无变化");
+					}
+					
+					
+				
+					$("#step_one").show();
+					$("#busibess_date").html(check_jour_one.trandate);//发生时间
+
+				}else if(flag == '2'){
+					var gallery = document.getElementById('gallery_6');
+					gallery.innerHTML='';
+					if(check_jour_two.office_flag == '1'){ //没有生产线
+					//	$("#office_check").show();				  	
+						$("#office_des").html("<font color='#4499ee'>办公环境检查：</font>"+check_jour_two.office_des);//办公环境是否正常进行：文字描述
+						
+						add_pic_step_two(check_jour_two.office_img, "办公环境检查");
+					}else{
+					//	$("#office_check").hide();			   				
+					}
+					
+					if(check_jour_two.beltline_flag == '1'){ //没有生产线
+					//	$("#line_check").show();				  	
+						add_pic_step_two(check_jour_two.beltline_img, "生成线检查");
+						$("#beltline_des").html("<font color='#4499ee'>生成线检查：</font>"+check_jour_two.beltline_des);//生产线开工是否充足：文字描述
+					}else{
+						//$("#line_check").hide();			   				
+					}
+					
+					if(check_jour_two.stock_flag == '1'){ //没有生产线
+					//	$("#stock_check").show();				  	
+						$("#stock_des").html("<font color='#4499ee'>库存量检查：</font>"+check_jour_two.stock_des);//库存量情况：文字描述
+						
+						add_pic_step_two(check_jour_two.stock_img, "库存量检查");
+					}else{
+					//	$("#stock_check").hide();			   				
+					}
+					
+					if(check_jour_two.process_flag == '1'){ //没有生产线
+					//	$("#process_check").show();				  	
+						$("#process_des").html("<font color='#4499ee'>项目进度检查：</font>"+check_jour_two.process_des);//项目建设进度：文字描述
+						
+						add_pic_step_two(check_jour_two.process_img, "项目进度检查");
+					}else{
+					//	$("#process_check").hide();			   				
+					}
+					
+					if(check_jour_two.wandp_flag == '1'){ //没有生产线
+					//	$("#wandp_check").show();				  	
+						add_pic_step_two(check_jour_two.wandp_img, "水电检查");
+						$("#wandp_des").html("<font color='#4499ee'>水电检查：</font>"+check_jour_two.wandp_des);//生产线开工是否充足：文字描述
+					}else{
+					//	$("#wandp_check").hide();			   				
+					}
+					if(check_jour_two.logistics_flag == '1'){ //没有生产线
+					//	$("#logistics_check").show();				  	
+						add_pic_step_two(check_jour_two.logistics_img, "销售单据检查");
+						$("#logistics_des").html("<font color='#4499ee'>销售单据检查：</font>"+check_jour_two.logistics_des);//生产线开工是否充足：文字描述
+					}else{
+					//	$("#logistics_check").hide();			   				
+					}
+					
+					
+
+					$("#other_des").html(check_jour_two.other_des);//其他文字描述
+					$("#other_img").val(check_jour_two.other_img);//其他图片URL
+					$("#office_date").html(check_jour_two.trandate);//发生时间
+					add_pic_step_two(check_jour_two.other_img, check_jour_two.other_des);
+					$("#step_two").show();
+				}else if(flag == '3'){
+					$("#check_date").val(check_jour_three.check_date);//检查日期YYYY-DD
+					$("#sales").val(check_jour_three.sales);//销售额单位（元）
+					$("#margin").val(check_jour_three.margin);//净利润单位（元）
+					$("#debt").val(check_jour_three.debt);//净利润单位（元）
+			
+					//我想把第三步图片合起来展示，在相册里加文字区分图片
+					var gallery = document.getElementById('gallery_7');
+					gallery.innerHTML='';
+					add_pic_step_three(check_jour_three.balance_img, "资产负债表");							
+					add_pic_step_three(check_jour_three.cash_img, "现金流量表");				
+					add_pic_step_three(check_jour_three.margin_img, "利润表");
+					add_pic_step_three(check_jour_three.remarks_img, "附注");
+					$("#finance_date").html(check_jour_three.trandate);//发生时间
+					$("#step_three").show();
+				}else if(flag == '4'){
+					$("#sales_lastyear").html(check_jour_four.sales_lastyear);//上年年末销售额
+					$("#ratal_lastyear").html(check_jour_four.ratal_lastyear);//上年年末纳税申报额度
+					$("#sales_lastquarter").html(check_jour_four.sales_lastquarter);// '上季度销售额
+					$("#ratal_lastquarter").html(check_jour_four.ratal_lastquarter);//  '上季度申报额度
+					$("#sales_now").html(check_jour_four.sales_now);//本月档期销售额
+					$("#ratal_now").html(check_jour_four.ratal_now);//本月档期申报额度
+					$("#finance_note").html(check_jour_four.note);
+					add_pic(check_jour_four.ratal_img, '11', "纳税申报检查");
+					
+					//检查财务申报是否有差异0-无 1-有
+					if( check_jour_four.ratal_flag == 0 ){
+						$("#ratal_flag").html("否");
+					}else{
+						$("#ratal_flag").html("是");
+					}
+					
+					$("#ratal_note").val(check_jour_four.ratal_note);//差异原因
+					$("#taxes_date").html(check_jour_four.trandate);//发生时间
+					$("#step_four").show();
+				}else if(flag == '5'){
+					add_pic(check_jour_five.bankcheck_img, '12', "银行对账检查");
+					$("#bank_date").html(check_jour_five.trandate);//发生时间
+					$("#bank_note").html(check_jour_five.note);
+					$("#step_five").show();
+				}else if(flag == '6'){
+					//抵押物是否存在查封冻结等权利受限情况0-否 1-是
+					if(check_jour_six.pawn_cool == 0){
+						$("#pawn_cool").html("否");
+					}else{
+						$("#pawn_cool").html("是");
+					}
+					
+					//抵押物当期估值是否较授信时估值法师较大变化0-否 1-是
+					if(check_jour_six.pawn_worth == 0){
+						$("#pawn_worth").html("否");
+					}else{
+						$("#pawn_worth").html("是");
+					}
+					
+					$("#expire_date").html(check_jour_six.expire_date);//抵质押权利凭证到期日期：YYYY年MM月DD日
+					//权利凭证是否即将到期或已过期0-否 1-是
+					if(check_jour_six.pawn_overdue == 0){
+						$("#pawn_overdue").html("否");
+					}else{
+						$("#pawn_overdue").html("是");
+					}
+					
+					$("#pawn_note").html(check_jour_six.address);
+					add_pic(check_jour_six.pawn_img, '13',"抵押物现状检查");
+					$("#pawn_date").html(check_jour_six.trandate);//发生时间
+					$("#step_six").show();
+				}
+				//$("img.lazy").lazyload({effect: "fadeIn"});
+				
+			}
+			function scroll_auto(){
+				
+				//	$("body").attr("style", "overflow:scroll");
+					if($("body").css("overflow") == "auto"){
+						$("body").attr("style", "overflow:scroll");
+					}else{
+						$("body").attr("style", "overflow:auto");
+					}
+				}
+			function done_check_info(msg){
+				
+				top.stop_process();
+				top.writelog(msg);
+				var json=eval("("+msg+")");
+				
+				top.data = json.data;
+				var check_jour = json.data.check_jour;
+				var check_jour_one = json.data.check_step_one;
+				var check_jour_two = json.data.check_step_two;
+				var check_jour_three = json.data.check_step_three;
+				var check_jour_four = json.data.check_step_four;
+				var check_jour_five = json.data.check_step_five;
+				var check_jour_six = json.data.check_step_six;
+				$("#customer").html(check_jour.customer);//客户姓名
+				$("#group_code").html(check_jour.group_code);//组织机构代码
+				
+				localStorage.setItem("customer",check_jour.customer);
+				localStorage.setItem("group_code", check_jour.group_code);
+				localStorage.setItem("fileno", check_jour.fileno);
+				file_path = check_jour.group_code;
+				$("#address_gps").html(check_jour.address);//GPS地址
+		
+	
+				
+				if(!check_jour_one){
+					$("#step_one").hide();
+					top.writelog("step_one is not exits:");
+				}else{
+					$("#step_one").show();
+					//客户经营地址是否变化0-没有变化，1-变化了
+					if(check_jour_one.is_chance == 1){
+						$("#address_des").html(check_jour_one.address_des);//经营场所地址
+						$("#is_chance").html("是");
+						add_pic(check_jour_one.address_img, '1', check_jour_one.address_des);
+					}else{
+						$("#is_chance").html("否");
+						$("#address_des").attr("style", "display:none");
+						add_pic(check_jour_one.address_img, '1', "经营场所无变化");
+					}
+					
+					$("#busibess_date").html(check_jour_one.TRANDATE);//发生时间
+
+				}
+				if(!check_jour_two){
+					$("#step_two").hide();
+				}else{
+					var gallery = document.getElementById('gallery_6');
+					gallery.innerHTML='';
+					$("#step_two").show();
+					if(check_jour_two.office_flag == '1'){ //没有生产线
+					//	$("#office_check").show();				  	
+						$("#office_des").html("<font color='#4499ee'>办公环境检查：</font>"+check_jour_two.office_des);//办公环境是否正常进行：文字描述
+						add_pic_step_two(check_jour_two.office_img, "办公环境检查");
+					}else{
+					//	$("#office_check").hide();			   				
+					}
+					
+					if(check_jour_two.beltline_flag == '1'){ //没有生产线
+					//	$("#line_check").show();				  	
+						add_pic_step_two(check_jour_two.beltline_img, "生产线开工情况");
+						$("#beltline_des").html("<font color='#4499ee'>生产线开工情况：</font>"+check_jour_two.beltline_des);//生产线开工是否充足：文字描述
+					}else{
+					//	$("#line_check").hide();			   				
+					}
+					
+					if(check_jour_two.stock_flag == '1'){ //没有生产线
+					//	$("#stock_check").show();				  	
+						$("#stock_des").html("<font color='#4499ee'>库存量检查：</font>"+check_jour_two.stock_des);//库存量情况：文字描述
+						
+						add_pic_step_two(check_jour_two.stock_img, "库存量检查");
+					}else{
+						//$("#stock_check").hide();			   				
+					}
+					
+					if(check_jour_two.process_flag == '1'){ //没有生产线
+					//	$("#process_check").show();				  	
+						$("#process_des").html("<font color='#4499ee'>项目建设进度：</font>"+check_jour_two.process_des);//项目建设进度：文字描述
+						
+						add_pic_step_two(check_jour_two.process_img, "项目建设进度");
+					}else{
+						//$("#process_check").hide();			   				
+					}
+					
+					if(check_jour_two.wandp_flag == '1'){ //没有生产线
+					//	$("#wandp_check").show();				  	
+						add_pic_step_two(check_jour_two.wandp_img, "水电检查");
+						$("#wandp_des").html("<font color='#4499ee'>水电检查：</font>"+check_jour_two.wandp_des);//生产线开工是否充足：文字描述
+					}else{
+					//	$("#wandp_check").hide();			   				
+					}
+					if(check_jour_two.logistics_flag == '1'){ //没有生产线
+						//$("#logistics_check").show();				  	
+						add_pic_step_two(check_jour_two.logistics_img, "销售单据检查");
+						$("#logistics_des").html("<font color='#4499ee'>销售单据检查：</font>"+check_jour_two.logistics_des);//生产线开工是否充足：文字描述
+					}else{
+						//$("#logistics_check").hide();			   				
+					}
+					
+					
+
+					$("#other_des").html("<font color='#4499ee'>其他检查</font>"+check_jour_two.other_des);//其他文字描述
+					$("#other_img").val(check_jour_two.other_img);//其他图片URL
+					$("#office_date").html(check_jour_two.TRANDATE);//发生时间
+					add_pic_step_two(check_jour_two.other_img, check_jour_two.other_des);
+
+				}
+				if(!check_jour_three){
+					$("#step_three").hide();
+				}else{
+					$("#step_three").show();
+					$("#check_date").val(check_jour_three.check_date);//检查日期YYYY-DD
+					$("#sales").val(check_jour_three.sales);//销售额单位（元）
+					$("#margin").val(check_jour_three.margin);//净利润单位（元）
+					$("#debt").val(check_jour_three.debt);//债务
+					
+					//我想把第三步图片合起来展示，在相册里加文字区分图片
+					var gallery = document.getElementById('gallery_7');
+					gallery.innerHTML='';
+					add_pic_step_three(check_jour_three.balance_img, "资产负债表");							
+					add_pic_step_three(check_jour_three.cash_img, "现金流量表");				
+					add_pic_step_three(check_jour_three.margin_img, "利润表");
+					add_pic_step_three(check_jour_three.remarks_img, "附注");
+					
+					
+					$("#finance_date").html(check_jour_three.TRANDATE);//发生时间
+
+				}
+				if(!check_jour_four){
+					$("#step_four").hide();
+				}else{
+					$("#step_four").show();
+					$("#sales_lastyear").html(check_jour_four.sales_lastyear);//上年年末销售额
+					$("#ratal_lastyear").html(check_jour_four.ratal_lastyear);//上年年末纳税申报额度
+					$("#sales_lastquarter").html(check_jour_four.sales_lastquarter);// '上季度销售额
+					$("#ratal_lastquarter").html(check_jour_four.ratal_lastquarter);//  '上季度申报额度
+					$("#sales_now").html(check_jour_four.sales_now);//本月档期销售额
+					$("#ratal_now").html(check_jour_four.ratal_now);//本月档期申报额度
+					$("#finance_note").html(check_jour_four.note);
+					add_pic(check_jour_four.ratal_img, '11', "纳税申报检查");
+					
+					//检查财务申报是否有差异0-无 1-有
+					if( check_jour_four.ratal_flag == 0 ){
+						$("#ratal_flag").html("否");
+					}else{
+						$("#ratal_flag").html("是");
+					}
+					
+					$("#ratal_note").val(check_jour_four.ratal_note);//差异原因
+					$("#taxes_date").html(check_jour_four.TRANDATE);//发生时间
+
+				}
+				if(!check_jour_five){
+					$("#step_five").hide();
+				}else{
+					$("#step_five").show();
+					add_pic(check_jour_five.bankcheck_img, '12', "银行对账检查");
+					$("#bank_date").html(check_jour_five.TRANDATE);//发生时间
+					$("#bank_note").html(check_jour_five.note);
+				}
+				if(!check_jour_six){
+					$("#step_six").hide();
+				}else{
+					$("#step_six").show();
+					//抵押物是否存在查封冻结等权利受限情况0-否 1-是
+					if(check_jour_six.pawn_cool == 0){
+						$("#pawn_cool").html("否");
+					}else{
+						$("#pawn_cool").html("是");
+					}
+					
+					//抵押物当期估值是否较授信时估值法师较大变化0-否 1-是
+					if(check_jour_six.pawn_worth == 0){
+						$("#pawn_worth").html("否");
+					}else{
+						$("#pawn_worth").html("是");
+					}
+					
+					$("#expire_date").html(check_jour_six.expire_date);//抵质押权利凭证到期日期：YYYY年MM月DD日
+					//权利凭证是否即将到期或已过期0-否 1-是
+					if(check_jour_six.pawn_overdue == 0){
+						$("#pawn_overdue").html("否");
+					}else{
+						$("#pawn_overdue").html("是");
+					}
+					
+					$("#pawn_note").html(check_jour_six.address);
+					add_pic(check_jour_six.pawn_img, '13',"抵押物现状检查");
+					$("#pawn_date").html(check_jour_six.TRANDATE);//发生时间
+					
+				}
+				if(check_jour.is_finish == '1'){ //已经确认的流水不可再编辑
+					$(".edit_info").hide();
+					$("#check_note_div").show();
+					$("#check_note").html(check_jour.note);
+				}
+			
+				//$("img.lazy").lazyload({effect: "fadeIn"});
+
+				
+			}
+			function add_pic(img_url, num, title){
+				var gallery = document.getElementById('gallery_'+num);
+				gallery.innerHTML='';
+				if(!img_url || (img_url && img_url.length < 10)) //没有图片名称会小于10
+				{
+					var figure = document.createElement("figure");
+					figure.setAttribute("class", "aui-col-xs-3");
+					
+					var div = document.createElement("div");
+					div.setAttribute("class", "divcss4");
+				
+					var a = document.createElement("a");
+					a.setAttribute("href", "img/noimg.png");
+					var img = document.createElement("img");
+					img.src = "img/noimg.png";
+					
+					var figcaption = document.createElement("figcaption");
+				
+					top.writelog(num+"="+i+":"+img.src);
+					a.appendChild(img);
+					div.appendChild(a);
+					
+					figure.appendChild(div);
+					figure.appendChild(figcaption)
+				    gallery.appendChild(figure);
+					
+				}else{
+					var images = img_url.split('|');
+					
+					
+					
+					for(var i = 0; i < images.length; i++){
+										
+						var figure = document.createElement("figure");
+						figure.setAttribute("class", "aui-col-xs-3");
+						
+						var div = document.createElement("div");
+						div.setAttribute("class", "divcss4");
+					
+						var a = document.createElement("a");
+						a.setAttribute("href", top.imgpath+file_path+"/"+images[i]);
+						var img = document.createElement("img");
+						
+						/*
+						img.setAttribute("class", "lazy");
+						img.setAttribute("data-echo", top.imgpath+file_path+"/" + images[i]);
+						img.src = "img/blank.gif";
+						*/
+						img.src = top.imgpath+file_path+"/" + images[i];
+						
+						top.writelog(num+"="+":"+img.src);
+						checkPicurl(img.src);
+						var figcaption = document.createElement("figcaption");
+						figcaption.innerHTML = title;
+						
+						a.appendChild(img);
+						div.appendChild(a);
+						
+						figure.appendChild(div);
+						figure.appendChild(figcaption)
+					    gallery.appendChild(figure);
+					}
+				}
+							
+			}
+			function add_pic_step_three(img_url, title){
+				if(img_url.length < 2){
+					return;
+				}else{
+					var gallery = document.getElementById('gallery_7');
+			//		gallery.innerHTML='';
+	
+					var images = img_url.split('|');
+	
+					for(var i = 0; i < images.length; i++){
+										
+						var figure = document.createElement("figure");
+						figure.setAttribute("class", "aui-col-xs-3");
+						
+						var div = document.createElement("div");
+						div.setAttribute("class", "divcss4");
+					
+						var a = document.createElement("a");
+						a.setAttribute("href", top.imgpath+file_path+"/"+images[i]);
+						var img = document.createElement("img");
+						/*
+						img.setAttribute("class", "lazy");
+						img.setAttribute("data-echo", top.imgpath+file_path+"/" + images[i]);
+						img.src = "img/blank.gif";
+						*/
+						img.src = top.imgpath+file_path+"/" + images[i];
+						//top.writelog(num+"="+":"+img.src);
+						checkPicurl(img.src);
+						var figcaption = document.createElement("figcaption");
+						figcaption.innerHTML = title;
+						
+						a.appendChild(img);
+						div.appendChild(a);
+						
+						figure.appendChild(div);
+						figure.appendChild(figcaption)
+					    gallery.appendChild(figure);
+					}
+				}
+							
+			}
+			function add_pic_step_two(img_url, title){
+				if(img_url.length < 2){
+					return;
+				}else{
+					var gallery = document.getElementById('gallery_6');
+					//		gallery.innerHTML='';
+							top.writelog("add_pic_step_two="+img_url);
+							
+							var images = img_url.split('|');
+
+							for(var i = 0; i < images.length; i++){
+												
+								var figure = document.createElement("figure");
+								figure.setAttribute("class", "aui-col-xs-3");
+								
+								var div = document.createElement("div");
+								div.setAttribute("class", "divcss4");
+							
+								var a = document.createElement("a");
+								a.setAttribute("href", top.imgpath+file_path+"/"+images[i]);
+								var img = document.createElement("img");
+								img.src = top.imgpath+file_path+"/" + images[i];
+								/*
+								img.setAttribute("class", "lazy");
+						img.setAttribute("data-echo", top.imgpath+file_path+"/" + images[i]);
+						img.src = "img/blank.gif";
+						*/
+								//top.writelog(num+"="+":"+img.src);
+								checkPicurl(img.src);
+								var figcaption = document.createElement("figcaption");
+								figcaption.innerHTML = title;
+								
+								a.appendChild(img);
+								div.appendChild(a);
+								
+								figure.appendChild(div);
+								figure.appendChild(figcaption)
+							    gallery.appendChild(figure);
+							}
+				}
+				
+				
+							
+			}
+			function edit_info(step){
+					
+					switch(step){
+						case '1':
+							showNewFrame('business_place.html', 'smask');
+							break;
+						case '2':
+							showNewFrame('office_check.html', 'smask');
+							break;
+						case '3':
+							showNewFrame('finance_check.html', 'smask');
+							break;
+						case '4':
+							showNewFrame('taxes_check.html', 'smask');
+							break;
+						case '5':
+							showNewFrame('bank_check.html', 'smask');
+							break;
+						case '6':
+							showNewFrame('pawn_check.html', 'smask');
+							break;
+						default:
+							break;
+					
+					}				
+			}
+			
+			function check_is_over(){
+				top.confirmInfo("确认后该笔记录将不可再修改，是否确认？", function(msg){
+					if(msg == 1){//确认
+						var data = {
+								fileno:localStorage.getItem("fileno"),
+								
+			        		};		
+						Http_ajax(function(msg){
+							
+							top.stop_process();
+							
+							back_history();
+						}, "app/6023", data);
+					}
+				})
+			}
+		</script>
+    </head>
+    
+<body style="overflow:auto;width:100%;">
+
+    
+		<header class="ui-header ui-header-positive ui-border-b">
+            <i class="ui-icon-return" onclick="parent.hideFrame('hmask');top.scroll_auto();"></i><div style="font-size:18px;font-weight:bold;text-align:center;">现场检查明细</div>
+        </header>
+<div class="container-fluid">
+	<div class="mui-content mui-scroll-wrapper" >
+
+    <div class="mui-scroll">
+	<section id="list" style="margin-top:45px;">
+	    <div class="demo-item">
+	        <div class="demo-block">
+	        <!-- 
+	       		 <ul class="ui-row">
+	       		 	<li class="ui-col ui-col-50"><span style="font-weight:bold;color:#777" id="user_name">现场人员姓名</span></li>
+	       		 	<li class="ui-col ui-col-50"><span style="font-weight:bold;color:#777" id="inst_name">经营机构</span></li>	
+	       		 </ul>
+	       	 -->
+	      		<div class="ui-form ui-border-t">
+	      		 	<div class="ui-form-item ui-form-item-l ui-border-b">
+		                 <label class="ui-border-r">
+		                           	 客户名称
+		                 </label>
+	                     <p class="ui-txt-info" style="padding-left: 115px;font-size:14px;" id="customer">联动查询结果</p>	
+	                                            
+	                </div>
+	                <div class="ui-form-item ui-form-item-l ui-border-b">
+		                 <label class="ui-border-r">
+		                          	  机构代码
+		                 </label>
+	                     <p class="ui-txt-info" style="padding-left: 115px;font-size:14px;" id="group_code">联动查询结果</p>	                      
+	                </div>                
+	                <div class="ui-form-item ui-form-item-l ui-border-b" style="display:none;">
+                        <label>
+                           	 注册地址
+                        </label>
+                        <p class="ui-txt-info" style="padding-left: 115px;font-size:14px;" id="address">联动查询结果</p> 
+                    </div>
+                    <div class="ui-form-item ui-form-item-l ui-border-b" style="display:none;">
+                        <label>
+                          	  行业分类
+                        </label>
+                        <p class="ui-txt-info" style="padding-left: 115px;font-size:14px;" id="category">联动查询结果</p> 
+                    </div>
+                    <div class="ui-form-item ui-form-item-l ui-border-b">
+                        <label>
+                          	  检查地址
+                        </label>
+                        <p class="ui-txt-info" style="padding-left: 115px;font-size:14px;" id="address_gps">联动查询结果</p> 
+                    </div>
+	            </div>
+	            
+	        </div>
+	     </div> 
+	 </section>  
+
+	 
+          
+	<div class="demo-item" style="background-color: #ffffff">        
+        <div class="demo-block" style="background-color: #ffffff">        
+        	
+        	<div class="demo-desc" >客户经营场所检查</div>
+        	<div id="step_one" style="display:none">
+            <div  id="business_place" style="padding-left:40px;padding-bottom:20px;">                             	
+               	<div class="ui-whitespace" style="background-color: #ffffff">					
+				       	
+				        <div class="ui-txt-default">客户经营场所是否发生了变化?<span id="is_chance" style="color:#FFBB1C"></span></div>		        					
+					    
+				     	<div style="font-size: 15px;text-align: left;" >
+		                       <p id="address_des" ></p>
+		                </div>	       				
+							
+		        </div>
+		        <div class="contain" style="margin: 0 0 0;background-color: #ffffff;">
+					<ul >
+						<li style="display:inline-block;width:100%;">
+							<div class="my-gallery" style="width:100%;padding-left:15px;" data-pswp-uid="1"  id="gallery_1">	
+																																												
+							</div>	
+																
+						</li>
+					</ul>
+				</div>   
+			 </div>
+			 </div>
+			 <div class="edit_div">
+            	<p style="float:left;padding-left:10px;font-size:14px;padding-top:10px;" id="busibess_date">还未录入</p>
+            	<div class="edit_info" style="float:right;padding-right:20px;" onclick="edit_info('1')"><img src="img/edit.png" />
+            	</div> 
+			 </div>
+			             
+           
+            <div class="demo-desc" style="margin-top:10px;border-top: 1px solid #d0d0d0;">生产经营情况检查</div>
+            <div id="step_two" style="display:none">
+      
+			<div id="other_check" style="padding-left:40px;padding-bottom:20px;">				
+		      	<div class="ui-whitespace" style="background-color: #ffffff;margin-top:10px;">									    
+		       			<!--   <div class="ui-txt-highlight" >办公环境检查、生产线开工、库存量、项目建设进度、销售单据、水电等情况检查</div>	-->		       				     							
+		        </div>
+				<div style="font-size: 15px;text-align: left;">
+					<p id="office_des" ></p>
+					<p  id="beltline_des" ></p>
+					<p  id="stock_des" ></p>
+					<p  id="process_des" ></p>
+					<p  id="wandp_des" ></p>
+					<p  id="logistics_des" ></p>
+                    <p id="other_des" ></p>
+                </div>
+		        <div class="contain" style="margin: 0 0 0;background-color: #ffffff;">
+					<ul >
+						<li style="display:inline-block;width:100%;">		        						
+							<div class="my-gallery" style="width:100%;padding-left:15px;" data-pswp-uid="6"  id="gallery_6">																																													
+							</div>																						
+						</li>
+					</ul>
+				</div>  
+			 </div>
+           </div>
+           <div class="edit_div">
+           		<p style="float:left;padding-left:10px;font-size:14px;padding-top:10px;"  id="office_date">还未录入</p>
+           		<div class="edit_info" style="float:right;padding-right:20px;" onclick="edit_info('2')"><img src="img/edit.png" /></div> 	             
+           </div>
+            <div class="demo-desc" style="margin-top:10px;border-top: 1px solid #d0d0d0;">财务报表检查</div>
+            <div id="step_three" style="display:none">
+            <div  id="finance_check" style="padding-left:40px;padding-bottom:20px;">
+                
+               	
+               	 <section id="list" >
+				    <div class="demo-item">
+				        <div class="demo-block">
+				        	<div class="ui-form ui-border-t">
+				      		 	<div class="ui-form-item ui-form-item-l ui-border-b">
+					                 <label class="ui-border-r">
+					                           	 检查日期
+					                 </label>
+				                     <input type="text"  placeholder="请输入客户姓名" id="check_date" readonly="readonly"/>			                                            
+				                </div>
+				                <div class="ui-form-item ui-form-item-l ui-border-b">
+					                 <label class="ui-border-r">
+					                           	 销售额/万
+					                 </label>
+				                     <input type="text"  placeholder="请输入销售额，单位（万）" id="sales"/>			                                            
+				                </div>
+				                <div class="ui-form-item ui-form-item-l ui-border-b">
+					                 <label class="ui-border-r">
+					                           	净利润/万
+					                 </label>
+				                     <input type="text"  placeholder="请输入净利润，单位（万）" id="margin"/>			                                            
+				                </div>
+				                <div class="ui-form-item ui-form-item-l ui-border-b">
+			                 <label class="ui-border-r">
+			                           	负债额/万
+			                 </label>
+		                     <input type="text"  placeholder="请输入负债额，单位（万）" id="debt"/>			                                            
+		                </div>
+		                <div class="demo-block" id="div_query_back">
+				            <ul class="ui-list ui-list-pure ui-border-b">
+					            <li class="ui-border-t" onclick="showNewFrame('debt_info_show.html', 'smask')">
+					                <h2 class="ui-arrowlink"><span style="color:#00a5e0;font-size: 15px">详细债务人信息</span></h2>
+					            </li>	
+					             <li class="ui-border-t" onclick="showNewFrame('retal_info.html', 'smask')" id="ratal_info">
+					                <h2 class="ui-arrowlink"><span style="color:#00a5e0;font-size: 15px">查看纳税信息</span></h2>
+					            </li>				
+				            </ul>
+				        </div>
+						      </div>
+						  </div>
+					</div>
+				</section>
+		      	<div class="ui-whitespace" style="background-color: #ffffff;">
+						        
+				     	<div style="font-size: 15px;text-align: left;margin-top:10px;">
+		                       <p id="finance_note" ></p>
+		                </div>
+		
+					
+		
+		        </div>
+		        <div class="contain" style="margin: 0 0 0;background-color: #ffffff;">
+		        	
+							<ul >
+								<li style="display:inline-block;width:100%;">
+				        			
+							
+									<div class="my-gallery" style="width:100%;padding-left:15px;" data-pswp-uid="7"  id="gallery_7">	
+																							
+																									
+									</div>	
+																				
+								</li>
+							</ul>
+				</div>
+
+           </div>
+           </div>
+           <div class="edit_div">
+                <p style="float:left;padding-left:10px;font-size:14px;padding-top:10px;" id="finance_date">还未录入</p>
+                <div class="edit_info" style="float:right;padding-right:20px;" onclick="edit_info('3')"><img src="img/edit.png" /></div> 
+           </div>
+            <div class="demo-desc" style="margin-top:10px;border-top: 1px solid #d0d0d0;">纳税申报检查</div>
+            <div id="step_four" style="display:none">
+            <div id="taxes_check" style="padding-left:40px;padding-bottom:20px;" >
+               
+              	 
+            	 <div >
+					<p style="text-align:center;">上年度、上季度、及本月当期销售额和净利润。单位:万元</p>
+					<ul>
+						<li>
+							<div class="aui-col-xs-3"><span>&nbsp&nbsp</span></div><div class="aui-col-xs-3"><span>上年度</span></div><div class="aui-col-xs-3"><span>上季度</span></div><div class="aui-col-xs-3"><span>本月当期</span></div>
+						</li>
+						<li>
+							<div class="aui-col-xs-3"><span>销售额</span></div><div class="aui-col-xs-3"><span id="sales_lastyear"></span></div><div class="aui-col-xs-3"><span id="sales_lastquarter"></span></div><div class="aui-col-xs-3"><span  id="sales_now"></span></div>
+						</li>
+						<li>
+							<div class="aui-col-xs-3"><span>纳税额</span></div><div class="aui-col-xs-3"><span  id="ratal_lastyear"></span></div><div class="aui-col-xs-3"><span id="ratal_lastquarter"></span></div><div class="aui-col-xs-3"><span  id="ratal_now"></span></div>
+						</li>
+					</ul>
+				</div>
+				<br>
+		      	<div class="ui-whitespace" style="background-color: #ffffff;">
+					
+				    			        
+					   <div class="ui-txt-default" >检查财务报表与纳税申报是否有差异?<span id="ratal_flag" style="color:#FFBB1C"></span></div>					
+					 
+				     	<div style="font-size: 15px;text-align: left;margin-top:10px;" id="note">
+		                       <p  id="retal_note" ></p>
+		                </div>
+
+					
+		
+		        </div>
+		        <div class="contain" style="margin: 0 0 0;background-color: #ffffff;">
+							<ul >
+								<li style="display:inline-block;width:100%;">
+				        			
+							
+									<div class="my-gallery" style="width:100%;padding-left:15px;" data-pswp-uid="11"  id="gallery_11">	
+																							
+																									
+									</div>	
+																			
+								</li>
+							</ul>
+				</div>
+            </div>
+         	</div>
+         	<div class="edit_div">
+         		<p style="float:left;padding-left:10px;font-size:14px;padding-top:10px;" id="taxes_date">还未录入</p>
+         		<div class="edit_info" style="float:right;padding-right:20px;" onclick="edit_info('4')"><img src="img/edit.png" /></div> 
+           </div>
+           	<div class="demo-desc" style="margin-top:10px;border-top: 1px solid #d0d0d0;">银行对账</div>
+           	<div id="step_five" style="display:none">
+            <div  id="bank_check" style="padding-left:40px;padding-bottom:20px;">                               	
+          		<div class="ui-whitespace" style="background-color: #ffffff">
+				
+				
+				     	<div style="font-size: 15px;text-align: left;margin-top:10px;">
+		                       <p  id="bank_note" ></p>
+		                </div>
+												
+				
+		
+		        </div>
+		        <div class="contain" style="margin: 0 0 0;background-color: #ffffff;">
+							<ul >
+								<li style="display:inline-block;width:100%;width:100%;">
+				        			
+							
+									<div class="my-gallery" style="width:100%;padding-left:15px;" data-pswp-uid="12"   id="gallery_12">	
+																							
+																									
+									</div>	
+																		
+								</li>
+							</ul>
+				</div>
+           </div>
+          	</div>
+          	<div class="edit_div">
+               <p style="float:left;padding-left:10px;font-size:14px;padding-top:10px;" id="bank_date">还未录入</p>
+               <div class="edit_info" style="float:right;padding-right:20px;" onclick="edit_info('5')"><img src="img/edit.png" /></div> 
+            </div>
+            <div class="demo-desc" style="margin-top:10px;border-top: 1px solid #d0d0d0;">抵押物检查</div>
+            <div id="step_six" style="display:none">
+            <div  id="pawn_check" style="padding-left:40px;">
+                
+                   
+                <div class="ui-whitespace" style="background-color: #ffffff">
+                
+
+				        	<div class="ui-txt-default" >抵押物是否存在查封冻结等权利受限情况?<span id="pawn_cool" style="color:#FFBB1C"></span></div>		        					      
+					  		
+				        	<div class="ui-txt-default" >抵押物当期估值是否较授信时估值法师较大变化?<span id="pawn_worth" style="color:#FFBB1C"></span></div>		        				
+					 	
+				        	<div class="ui-txt-default" >权利凭证是否即将到期或已过期?<span id="pawn_overdue" style="color:#FFBB1C"></span></div>		        	
+					  
+		
+				     	
+						<div class="ui-form ui-border-t">
+			      		 	<div class="ui-form-item ui-form-item-l ui-border-b">
+				                 <label class="ui-border-r">
+				                           	 凭证到期日
+				                 </label>
+			                     <span  id="expire_date" style="padding-left:115px;"></span>				                                            
+			                </div>
+				  		</div>
+				  		<div style="font-size: 15px;text-align: left;margin-top:10px;">
+		                       <p  id="pawn_note"  ></p>
+		                </div>
+					
+		
+		        </div>
+		        <div class="contain" style="margin: 0 0 0;background-color: #ffffff;">
+							<ul >
+								<li style="display:inline-block;width:100%;">				        										
+									<div class="my-gallery" style="width:100%;padding-left:15px;" data-pswp-uid="13"  id="gallery_13">	
+																																																
+									</div>																					
+								</li>
+							</ul>
+				</div>
+           </div> 
+            </div>  
+            <div class="edit_div">
+            	<p   style="float:left;padding-left:10px;font-size:14px;padding-top:10px;" id="pawn_date">还未录入</p> 
+            	<div class="edit_info" style="float:right;padding-right:20px;" onclick="edit_info('6')"><img src="img/edit.png" /></div>
+            </div> 
+                                 
+       		<div class="demo-item edit_info" id="check_is_btn" style="margin-top:30px;border-top: 1px solid #d0d0d0;">
+		        <div class="demo-block"> 
+		            <div class="ui-btn-wrap">
+		                <button class="ui-btn-lg"  id='promptBtn' >
+		                  	现场检查确认
+		                </button>
+		            </div>
+		        </div>
+		    </div>
+      		<div style="font-size: 15px;text-align: left;margin-top:10px;display:none" id="check_note_div">
+      			<p style="text-align:center">现场检查结论</p>
+		        <p  id="check_note"></p>
+		    </div>
+        </div>
+    </div>
+	
+
+</div>
+</div></div>
+        
+
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+	<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+	
+	    <!-- Background of PhotoSwipe. 
+	         It's a separate element as animating opacity is faster than rgba(). -->
+	    <div class="pswp__bg"></div>
+	
+	    <!-- Slides wrapper with overflow:hidden. -->
+	    <div class="pswp__scroll-wrap">
+	
+	        <!-- Container that holds slides. 
+	            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+	            Don't modify these 3 pswp__item elements, data is added later on. -->
+	        <div class="pswp__container">
+	            <div class="pswp__item"></div>
+	            <div class="pswp__item"></div>
+	            <div class="pswp__item"></div>
+	        </div>
+	
+	        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+	        <div class="pswp__ui pswp__ui--hidden">
+	
+	            <div class="pswp__top-bar">
+	
+	                <!--  Controls are self-explanatory. Order can be changed. -->
+	
+	                <div class="pswp__counter"></div>
+	
+	                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+	<!-- 
+	                <button class="pswp__button pswp__button--share" title="Share"></button>
+	 -->
+	                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+	
+	                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+	
+	                <!-- element will get class pswp__preloader--active when preloader is running -->
+	                <div class="pswp__preloader">
+	                    <div class="pswp__preloader__icn">
+	                      <div class="pswp__preloader__cut">
+	                        <div class="pswp__preloader__donut"></div>
+	                      </div>
+	                    </div>
+	                </div>
+	            </div>
+	
+	            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+	                <div class="pswp__share-tooltip"></div> 
+	            </div>
+	
+	            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+	            </button>
+	
+	            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+	            </button>
+	
+	            <div class="pswp__caption">
+	                <div class="pswp__caption__center"></div>
+	            </div>
+	
+	        </div>
+	
+	    </div>
+
+	</div>
+	
+	</body>
+	<script src="js/jquery.min.js"></script>
+<script src="js/photoswipe.js"></script>
+<script src="js/photoswipe-ui-default.min.js"></script>
+<script type="text/javascript">
+var gallery_pswp;
+function close_back(){
+	console.log("click close");
+	gallery_pswp.close();
+}
+
+
+	var initPhotoSwipeFromDOM = function(gallerySelector) {
+
+    // 解析来自DOM元素幻灯片数据（URL，标题，大小...）
+    // (children of gallerySelector)
+    var parseThumbnailElements = function(el) {
+        var thumbElements = el.childNodes,
+            numNodes = thumbElements.length,
+            items = [],
+            figureEl,
+            linkEl,
+            size,
+            item,
+			divEl;
+
+        for(var i = 0; i < numNodes; i++) {
+
+            figureEl = thumbElements[i]; // <figure> element
+
+            // 仅包括元素节点
+            if(figureEl.nodeType !== 1) {
+                continue;
+            }
+			divEl = figureEl.children[0];
+            linkEl = divEl.children[0]; // <a> element
+			
+
+           var size = localStorage.getItem(linkEl.getAttribute('href'));
+					var width = size.split(',')[0];
+					var height = size.split(',')[1];
+            item = {
+	                  src: linkEl.getAttribute('href'),
+	                  w: parseInt(width, 10),
+	                  h: parseInt(height, 10)
+	              };
+		 /*
+            size = linkEl.getAttribute('data-size').split('x');
+
+            // 创建幻灯片对象
+            item = {
+                src: linkEl.getAttribute('href'),
+                w: parseInt(size[0], 10),
+                h: parseInt(size[1], 10)
+            };
+
+*/
+
+            if(figureEl.children.length > 1) {
+                // <figcaption> content
+                item.title = figureEl.children[1].innerHTML; 
+            }
+
+            if(linkEl.children.length > 0) {
+                // <img> 缩略图节点, 检索缩略图网址
+                item.msrc = linkEl.children[0].getAttribute('src');
+            } 
+
+            item.el = figureEl; // 保存链接元素 for getThumbBoundsFn
+            items.push(item);
+        }
+
+        return items;
+    };
+
+    // 查找最近的父节点
+    var closest = function closest(el, fn) {
+    	
+        return el && ( fn(el) ? el : closest(el.parentNode, fn) );
+    };
+
+    // 当用户点击缩略图触发
+    var onThumbnailsClick = function(e) {
+        e = e || window.event;
+        e.preventDefault ? e.preventDefault() : e.returnValue = false;
+
+        var eTarget = e.target || e.srcElement;
+
+        // find root element of slide
+        var clickedListItem = closest(eTarget, function(el) {
+            return (el.tagName && el.tagName.toUpperCase() === 'FIGURE');
+        });
+
+        if(!clickedListItem) {
+            return;
+        }
+
+        // find index of clicked item by looping through all child nodes
+        // alternatively, you may define index via data- attribute
+        var clickedGallery = clickedListItem.parentNode,
+            childNodes = clickedListItem.parentNode.childNodes,
+            numChildNodes = childNodes.length,
+            nodeIndex = 0,
+            index;
+
+        for (var i = 0; i < numChildNodes; i++) {
+            if(childNodes[i].nodeType !== 1) { 
+                continue; 
+            }
+
+            if(childNodes[i] === clickedListItem) {
+                index = nodeIndex;
+                break;
+            }
+            nodeIndex++;
+        }
+
+
+
+        if(index >= 0) {
+            // open PhotoSwipe if valid index found
+            openPhotoSwipe( index, clickedGallery );
+        }
+        return false;
+    };
+
+    // parse picture index and gallery index from URL (#&pid=1&gid=2)
+    var photoswipeParseHash = function() {
+        var hash = window.location.hash.substring(1),
+        params = {};
+
+        if(hash.length < 5) {
+            return params;
+        }
+
+        var vars = hash.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            if(!vars[i]) {
+                continue;
+            }
+            var pair = vars[i].split('=');  
+            if(pair.length < 2) {
+                continue;
+            }           
+            params[pair[0]] = pair[1];
+        }
+
+        if(params.gid) {
+            params.gid = parseInt(params.gid, 10);
+        }
+
+        return params;
+    };
+
+    var openPhotoSwipe = function(index, galleryElement, disableAnimation, fromURL) {
+    	
+    	localStorage.setItem("open_flag", '1');
+
+        var pswpElement = document.querySelectorAll('.pswp')[0],
+            gallery,
+            options,
+            items;
+
+        items = parseThumbnailElements(galleryElement);
+
+        // 这里可以定义参数
+        options = {
+          barsSize: { 
+            top: 100,
+            bottom: 100
+          }, 
+		   fullscreenEl : false,
+			shareButtons: [
+			{id:'wechat', label:'分享微信', url:'#'},
+			{id:'weibo', label:'新浪微博', url:'#'},
+			{id:'download', label:'保存图片', url:'{{raw_image_url}}', download:true}
+			],
+
+            // define gallery index (for URL)
+            galleryUID: galleryElement.getAttribute('data-pswp-uid'),
+
+            getThumbBoundsFn: function(index) {
+                // See Options -> getThumbBoundsFn section of documentation for more info
+                var thumbnail = items[index].el.getElementsByTagName('img')[0], // find thumbnail
+                    pageYScroll = window.pageYOffset || document.documentElement.scrollTop,
+                    rect = thumbnail.getBoundingClientRect(); 
+
+                return {x:rect.left, y:rect.top + pageYScroll, w:rect.width};
+            }
+
+        };
+
+        // PhotoSwipe opened from URL
+        if(fromURL) {
+            if(options.galleryPIDs) {
+                // parse real index when custom PIDs are used 
+                for(var j = 0; j < items.length; j++) {
+                    if(items[j].pid == index) {
+                        options.index = j;
+                        break;
+                    }
+                }
+            } else {
+                // in URL indexes start from 1
+                options.index = parseInt(index, 10) - 1;
+            }
+        } else {
+            options.index = parseInt(index, 10);
+        }
+
+        // exit if index not found
+        if( isNaN(options.index) ) {
+            return;
+        }
+
+        if(disableAnimation) {
+            options.showAnimationDuration = 0;
+        }
+
+        // Pass data to PhotoSwipe and initialize it
+        gallery_pswp = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
+        gallery_pswp.init();
+        gallery_pswp.listen('close', function() {
+    		console.log("close"+gallery_pswp.getCurrentIndex());  
+    		localStorage.setItem("open_flag", '0');
+    	});
+    };
+
+    // loop through all gallery elements and bind events
+    var galleryElements = document.querySelectorAll( gallerySelector );
+
+    for(var i = 0, l = galleryElements.length; i < l; i++) {
+        galleryElements[i].setAttribute('data-pswp-uid', i+1);
+        galleryElements[i].onclick = onThumbnailsClick;
+    }
+
+    // Parse URL and open gallery if it contains #&pid=3&gid=1
+    var hashData = photoswipeParseHash();
+    if(hashData.pid && hashData.gid) {
+        openPhotoSwipe( hashData.pid ,  galleryElements[ hashData.gid - 1 ], true, true );
+    }
+	};
+
+	// execute above function
+	initPhotoSwipeFromDOM('.my-gallery');
+
+	
+	$(".my-gallery>figure>div").each(function(){
+		$(this).height($(this).width());
+	});
+	
+	function more(obj,id) {
+ 		if ($('#txt'+id).is(":hidden")) {
+ 			$('#p'+id).hide();
+ 	 		$('#txt'+id).show();
+ 	 		obj.innerHTML='收起';
+ 		} else {
+ 			$('#p'+id).show();
+ 	 		$('#txt'+id).hide();
+ 	 		obj.innerHTML='全文';
+ 		}
+ 	}
+	
+</script>
+</html>

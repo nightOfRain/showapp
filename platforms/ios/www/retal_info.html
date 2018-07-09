@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+		<link href="css/common.css" rel="stylesheet">
+  
+		<link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+
+		<link rel="stylesheet" href="css/iconfont.css">
+		<link rel="stylesheet prefetch" href="css/photoswipe.css">
+		<link rel="stylesheet prefetch" href="css/default-skin/default-skin.css">
+		<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+		<link rel="stylesheet" href="css/frozen.css">
+		<link rel="stylesheet" href="css/demo.css">
+		<link rel="stylesheet" href="hello-mui/css/app.css">
+		<script src="hello-mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		
+        <script src="js/frozen.js"></script>
+        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+           
+             html, body {
+                 position: relative;
+                 height: 100%;
+             }
+         body {
+             background: #fff;
+             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+             font-size: 14px;
+             color:#000;
+             margin: 0;
+             padding: 0;
+         }
+       
+        	.img_lit{
+                      
+                        width: 80px;
+                       	height: 80px;
+                        
+                    }
+         	.divcss5_w{ border:0px solid #000; width:90px; height:85px;overflow:hidden;padding:5px;} 
+			.divcss5_w img{max-width:80px;_width:expression(this.width > 80 ? "80px" : this.width);}
+			.divcss5_h{ border:0px solid #000; width:85px; height:90px;overflow:hidden;padding:5px;} 
+			.divcss5_h img{max-height:80px;_height:expression(this.height > 80 ? "80px" : this.height);} 
+        </style>
+ 		<script type="text/javascript">
+ 		var fileno;
+
+		$(function() {
+			//调整map高度
+			thisURL = document.URL; 
+			localStorage.setItem("thisURL", thisURL);
+			show_retal();
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			mui('.mui-scroll-wrapper').scroll({
+		              deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+		              });
+			mui(document.body).on('tap', '.mui-action-back ', function(e) {
+				this.click();
+				return false;
+			});
+		});
+	
+		function show_retal(){
+			var msg = localStorage.getItem("retal_info");
+			
+			var retal_info =JSON.parse(msg);
+			$("#retal_info").html('');
+			var retal_html = '';
+			
+			for(var i = 0; i < retal_info.length; i++){
+				retal_html += '<li><div class="aui-col-xs-4"><span style="font-size:14px;">'+retal_info[i].ratal_date+'</span></div><div class="aui-col-xs-3">'
+							+'<span>'+retal_info[i].sales+'</span></div><div class="aui-col-xs-3"><span>'+retal_info[i].ratal+'</span></div>'
+							+'<div class="aui-col-xs-2"><span>'+retal_info[i].margin+'</span></div></li>';
+					
+			}
+			$("#retal_info").html(retal_html);
+		}
+
+		
+		</script>
+    </head>                                
+	<body style="background-color: #f4f4f4;">
+
+		<header class="mui-bar mui-bar-nav head_color">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+			<h1 class="mui-title">纳税申报检查</h1>
+		</header>
+		<div class="container-fluid" >  
+			<div class="mui-content mui-scroll-wrapper" >               
+                <div class="mui-scroll top_head">
+					<div class="form_div_35" style="margin-top:45px;">
+						<p style="text-align:center;">历年销售额、净利润及纳税额记录。单位:万元</p>
+						<ul>
+							<li>
+								<div class="aui-col-xs-4"><span>日期</span></div><div class="aui-col-xs-3"><span>销售额</span></div><div class="aui-col-xs-3"><span>纳税额</span></div><div class="aui-col-xs-2"><span>净利润</span></div>
+							</li>
+					
+						</ul>
+						<ul id="retal_info"></ul>
+					</div>
+      			</div>
+      		</div>
+		</div>
+</body>
+	
+</html>

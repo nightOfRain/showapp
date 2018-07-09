@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title></title>
+                <link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+                    <link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+                       
+                        
+                        <link rel="stylesheet prefetch" href="dist/photoswipe.css">
+                            <link rel="stylesheet prefetch" href="dist/default-skin/default-skin.css">
+                                <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                                <script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+                                <script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+                                <script src="js/jquery.min.js"></script>
+                                <script src="dist/photoswipe.min.js"></script>
+                                <script src="dist/photoswipe-ui-default.min.js"></script>
+                                
+                                <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                                <style>
+                                    
+                                    html, body {
+                                        position: relative;
+                                        height: 100%;
+                                    }
+                                body {
+                                    background: #fff;
+                                    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+                                    font-size: 14px;
+                                    color:#000;
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                                
+                                
+                                
+                                .nextandlast{
+                                    
+                                    z-index:9998;background-color:rgba(1,1,1,1.0); width:100%; height:50px; line-height:50px;position: fixed;  top:0px;
+                                    
+                                }
+                                .left{float:left;
+                                    width:20%;
+                                    margin-top:6px;
+                                    margin-left: 0px;
+                                    font-weight:bold;
+                                    background-color:rgba(240,255,240,0.0);
+                                    z-index:9999;
+                                    color:#ffffff;}
+                                .back{float:left;margin-left: 3px;
+                                    width:25px;
+                                    height:25px;
+                                    margin-top:12px;
+                                    background-size: 100% 100%;
+                                    background-image: url("img/back.png");
+                                    z-index:10000;}
+                                .center{float:left;width:60%;margin-top:3px;line-height:50px;font-weight:bold;background-color:rgba(240,255,240,0.0);z-index:9999;text-align:center;color:#f4f4f4;}
+                                .right{float:right;width:20px;height:20px;margin-right: 10px;margin-top:20px;font-weight:bold;background-color:rgba(240,255,240,0.0);z-index:9999;color:#f4f4f4;background-size: 100% 100%;
+                                    background-image: url("img/delete.png");
+                                }
+                                .div_bottom{
+                                    
+                                    z-index:9999;background-color:#d0d0d0; width:100%; height:160px; position: fixed;  bottom:0px;text-align:center;
+                                    
+                                }
+                                .div_bottom li{
+                                    height: 50px;
+                                    width: 100%;
+                                    background-color: #ffffff;
+                                    
+                                    list-style-type: none;
+                                    font-size:16px;
+                                    font-weight:bold;
+                                    margin: 0px;
+                                    line-height:50px;
+                                    text-align:center;
+                                    border-top: 1px solid #d0d0d0;
+                                    border-bottom: 1px solid #d0d0d0;
+                                }
+                                .div_back{
+                                    
+                                    z-index:9998;background-color:rgba(208,208,208,0.3);width:100%;height:100%;position: fixed;top:0px;
+                                }
+                                .button {
+                                    border: 1px solid #bbb;
+                                    border-radius: 1px;
+                                    box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+                                    width: 300px;
+                                    background: #f3f3f3;
+                                    background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%);
+                                    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e5e5e5));
+                                    background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%);
+                                    background: -o-linear-gradient(top, #ffffff 0%,#e5e5e5 100%);
+                                    background: -ms-linear-gradient(top, #ffffff 0%,#e5e5e5 100%);
+                                    background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%);
+                                }
+                                </style>
+                                <script type="text/javascript">
+                                    var fileno;
+                                   
+                                    var note_flag = 1;
+                                 
+                                    var images=[];
+                                    var gallery;
+                                 
+                                    var items=[];
+                                    var num = 0;
+                                    var is_open = 0;
+                                    var intervalid;
+                                    $(function() {
+                                      
+                                      thisURL = document.URL;
+                                      localStorage.setItem("thisURL", thisURL);
+                                      
+                                      var buf = thisURL.split('?')[1];
+                                      var getenv = buf.split('&');
+                                      index = getenv[0].split('=')[1];
+                                      num = getenv[1].split('=')[1];
+                                      top.writelog("showimage[num]="+num);
+                                      is_open = 0;
+                            
+                                      items = top.items_curr;
+                                  
+                                      
+                                      intervalid = setInterval(function(){
+                                                               if(is_open == 0){
+                                                               openPhotoSwipe();
+                                                               }
+                                                               
+                                                               
+                                                               }, 300);
+                                      //  openPhotoSwipe();
+                                      
+                                      });
+                                      var openPhotoSwipe = function() {
+                                          var pswpElement = document.querySelectorAll('.pswp')[0];
+                                          
+                                          // build items array
+                                          
+                                          if(is_open == 0){
+                                              is_open = 1;
+                                              clearInterval(intervalid);
+                                          }
+                                          
+                                          // define options (if needed)
+                                          var options = {
+                                              arsSize: {
+                                                  top: 100,
+                                                  bottom: 100
+                                              },
+                                              preventHide: true,
+                                              fullscreenEl : false,
+                                              closeOnVerticalDrag:false,
+                                              pinchToClose:false,
+                                              closeOnScroll:false,
+                                              history: false,
+                                              focus: false,
+                                              captionAndToolbarHide:true,
+                                              showAnimationDuration: 0,
+                                              hideAnimationDuration: 0,
+                                              index :  parseInt(index, 10)
+                                              
+                                          };
+                                          
+                                          gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
+                                          gallery.init();
+                                          gallery.listen('close', function() {
+                                                              //$(".nextandlast").hide();
+                                                              top.writelog("close"+gallery.getCurrentIndex());
+                                                         
+                                            });
+                                                              
+                                            var count = gallery.getCurrentIndex();
+                                            count++;
+                                            $("#title").html(count+'/'+items.length);
+                                                              
+                                            gallery.listen('afterChange', function() {
+                                                                                  top.writelog(gallery.getCurrentIndex());
+                                                                                  var count = gallery.getCurrentIndex();
+                                                                                  count++;
+                                                                                  $("#title").html(count+'/'+items.length);
+                                                                                  });
+                                                                                  gallery.framework.bind( gallery.scrollWrap /* bind on any element of gallery */, 'pswpTap', function(e) {
+                                                                                                      top.writelog('tap', e, e.detail);
+                                                                                                      // e.detail.origEvent  // original event that finished tap (e.g. mouseup or touchend)
+                                                                                                      // e.detail.target // e.target of original event
+                                                                                                      // e.detail.releasePoint // object with x/y coordinates of tap
+                                                                                                      // e.detail.pointerType // mouse, touch, or pen
+                                                                                                      });
+                                      };
+                                function button_hide(){
+                                    $(".div_back").hide();
+                                }
+                                function is_delete(){
+                                    
+                                    $(".div_back").show();
+                                }
+                                function delete_img(){
+                                    $(".div_back").hide();
+                                    top.writelog("delete index=:"+gallery.getCurrentIndex());
+                                    var ind = gallery.getCurrentIndex();
+                                    top.writelog("item.size="+items.length)
+                                    parent.updateItem(num,ind);
+                                    
+                                    if( items.length == '1'){
+                                        top.writelog("why>?????");
+                                        items.splice(num, 1);
+                                        back_history();
+                                        return;
+                                    }
+                                    if(ind == (items.length - 1)){
+                                       // myArray.splice(num, 1);
+                                       top.writelog("can be herer");
+                                       items.splice(num, 1);
+                                        back_history();
+                                        return;
+                                    }
+                                    
+                                    items.splice(num, 1);
+                                    gallery.invalidateCurrItems();
+                                    // updates the content of slides
+                                    gallery.updateSize(true);
+                                    
+                                }
+                                    </script>
+                                </head>
+    <body style="background-color: #f4f4f4;">
+        <!-- 顶部固定，不能滚动 -->
+        <div class="nextandlast" >
+        <div class="left " onClick="back_history();"><div class="back"></div>返回</div>
+        <div id="title" class="center"></div>
+        <!-- <div class="right" onclick="is_delete()"></div> -->
+        </div>
+        <div class='div_back' style="display:none;">
+            <div class="div_bottom">
+                <p style="text-align:center">是否删除该图片？</p>
+                <ul>
+                    <li onclick="delete_img()">删除</li>
+                    <li onclick="button_hide();" style="margin-top:10px;" >取消</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Root element of PhotoSwipe. Must have class pswp. -->
+        <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+            
+            <!-- Background of PhotoSwipe.
+             It's a separate element, as animating opacity is faster than rgba(). -->
+            <div class="pswp__bg"></div>
+            
+            <!-- Slides wrapper with overflow:hidden. -->
+            <div class="pswp__scroll-wrap">
+                
+                <!-- Container that holds slides. PhotoSwipe keeps only 3 slides in DOM to save memory. -->
+                <div class="pswp__container">
+                    <!-- don't modify these 3 pswp__item elements, data is added later on -->
+                    <div class="pswp__item"></div>
+                    <div class="pswp__item"></div>
+                    <div class="pswp__item"></div>
+                </div>
+                
+                <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+                <div class="pswp__ui pswp__ui--hidden">
+                    
+                    <div class="pswp__top-bar">
+                        
+                        <!--  Controls are self-explanatory. Order can be changed. -->
+                      
+                        <div class="pswp__counter"></div>
+                          <!--
+                         <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                         
+                         <button class="pswp__button pswp__button--share" title="Share"></button>
+                         -->
+                        
+                        <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                        
+                        <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                        
+                        <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                        <!-- element will get class pswp__preloader--active when preloader is running -->
+                        <div class="pswp__preloader">
+                            <div class="pswp__preloader__icn">
+                                <div class="pswp__preloader__cut">
+                                    <div class="pswp__preloader__donut"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                        <div class="pswp__share-tooltip"></div>
+                    </div>
+                    
+                    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+                    </button>
+                    
+                    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+                    </button>
+                    
+                    <div class="pswp__caption">
+                        <div class="pswp__caption__center"></div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+        </div>
+        
+    </body>
+    
+    
+</html>

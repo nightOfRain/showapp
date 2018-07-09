@@ -1,0 +1,6 @@
+framework module NTDataDictionary {
+  umbrella header "NTDataDictionary.h"
+
+  export *
+  module * { export * }
+}

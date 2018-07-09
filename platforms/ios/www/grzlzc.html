@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<link href="css/lib/bootstrap/bootstrap-combined.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+<link href="css/index.css" rel="stylesheet">
+<link rel="stylesheet" href="common/slick/slick.css">
+<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+<link href="css/common.css" rel="stylesheet">
+
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script type="text/javascript" src="js/lib/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="cordova.js"></script> 
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="js/jquery.js"></script> 
+<script type="text/javascript" src="js/jquery.md5.js"></script>
+                            </head>
+    <style>
+        .bot_btn_1{
+            text-shadow: none !important;
+            width: 80%;
+            text-align: center;
+            height:45px;
+            line-height: 45px;
+            color: #ffffff;
+            font-size: 20px;
+            margin: 10px auto;
+        }
+    </style>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", initial);
+        var thisURL;
+        function initial() {
+            thisURL = document.URL;
+    		localStorage.setItem("acount", "0");
+            localStorage.setItem("hiscount", "1");
+            localStorage.setItem("pagenum", "0")
+            //	$(".top_title").html("湖北金融服务网格化信息网"+localStorage.getItem("dizhi"));
+            
+        }
+     
+    </script>
+    <body style="background:#f4f4f4;overflow:auto;">
+        
+        <div class="topNavWrapper" >
+            <div class="topNav">
+                <div component-role="m11_top" class="top">
+                    <div class="back_ic" onClick="his_back();"></div>
+                    <span class="top_title" id="top_title">用户注册</span>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <div class="row" style="background:#f4f4f4;height:22px;"></div>
+        
+        <div>
+            <div class="form_div" style="margin-top:10px;">
+                <ul>
+                    <li ><div class="inp_label">手机号</div><input type="text"  placeholder="请输入您的手机号" class="inp_text" style="margin-top:3px;outline:none;" id="sjh" data-role="none" maxlength="11" onKeyUp="value=value.replace(/[\W]/g,'');" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+                        </li>
+                </ul>
+            </div>
+            <div class="bot_btn_1" id="yzms" style="background-color: #336699;" onClick="getyzm()">获取验证码</div>
+            <div class="form_div">
+                <ul>
+                    <li ><div class="inp_label" >验证码</div><input type="text" class="inp_text" id="yzm" placeholder="请输入短信验证码" style="margin-top:3px;outline:none;" data-role="none"  onKeyUp="value=value.replace(/[\W]/g,'');" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+                        </li>
+                </ul>
+            </div>
+            <div class="row" style="background:#f4f4f4;height:15px;"></div>
+            <div class="form_div">
+                <ul>
+                    <li><span class="inp_label">真实姓名</span><input type="text" placeholder="请输入您的真实姓名" class="inp_text" style="margin-top:3px;outline:none;" id="zsxm" data-role="none"  ></li>
+                    <li><div class="inp_label">证件号</div><input type="text" placeholder="请输入您的有效证件号" class="inp_text" style="margin-top:3px;outline:none;" id="zjh" data-role="none" maxlength="18" onKeyUp="value=value.replace(/[\W]/g,'');" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))" ></li>
+                </ul>
+            </div>
+            <div class="row" style="background:#f4f4f4;height:15px;"></div>
+            <div class="form_div">
+                <ul>
+                    <li><div class="inp_label">密码</div><input type="password"  placeholder="密码不得低于6位" class="inp_text" style="margin-top:3px;outline:none;" id="mm" data-role="none"  ></li>
+                    <li><div class="inp_label">确认密码</div><input type="password" placeholder="请重新输入密码" class="inp_text" style="margin-top:3px;outline:none;" id="mm1" data-role="none"  ></li>
+                </ul>
+            </div>
+            <div><div class="bot_btn"  id="tj" style="background-color: #FF6317;" onclick="zltj()">注册</div></div>
+        </div>
+        
+        <script type="text/javascript">
+            var yzm_flag = 0;
+            function getyzm(){
+                var sjh = $("#sjh").val();
+                if( sjh.length < 11)
+                {
+                    alertInfo('手机号码长度不对');
+                    return;
+                }
+                if( yzm_flag == 1)
+                return;
+                // 发短信请求
+                var data = {
+                    "userid" : $("#sjh").val(),
+                };
+                $.ajax({
+                       type : "post",
+                       url: "http://"+IP+":"+PORT+"/app/6003",
+                       data : data,
+                       datatype : "json",
+                       success : function(msg) {
+                       yzms.setAttribute("style", "background-color: #C4C400;");
+                       },
+                       error:function(msg){
+                       alertInfo('注册失败');
+                       }
+                       });
+                       
+                       // 添加倒计时
+                       var t = 60 ; //默认60秒后重新获取验证码
+                       var yzms = document.getElementById('yzms');
+                       yzm_flag = 1;
+                       yzms.setAttribute("style", "background-color: #CDCD9A;");
+                       $("#yzms").attr("disabled", "disabled");
+                       //yzms.disabled=true;
+                       for(i=1;i<=t;i++) {
+                           window.setTimeout("update_p(" + i + ","+t+")", i * 1000);
+                       }
+            }
+        
+        function update_p(num,t) {
+            var yzms = document.getElementById('yzms');
+            if(num == t) {
+                yzms.innerHTML = '获取验证码';
+                $("#yzms").attr("disabled", "");
+                yzm_flag = 0;
+            }
+            else {
+                printnr = t-num;
+                yzms.innerHTML = '(' + printnr + ')秒后重新获取';
+            }
+        }
+        
+        /*
+         * 身份证15位编码规则：dddddd yymmdd xx p
+         * dddddd：6位地区编码
+         * yymmdd: 出生年(两位年)月日，如：910215
+         * xx: 顺序编码，系统产生，无法确定
+         * p: 性别，奇数为男，偶数为女
+         *
+         * 身份证18位编码规则：dddddd yyyymmdd xxx y
+         * dddddd：6位地区编码
+         * yyyymmdd: 出生年(四位年)月日，如：19910215
+         * xxx：顺序编码，系统产生，无法确定，奇数为男，偶数为女
+         * y: 校验码，该位数值可通过前17位计算获得
+         *
+         * 前17位号码加权因子为 Wi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 ]
+         * 验证位 Y = [ 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ]
+         * 如果验证码恰好是10，为了保证身份证是十八位，那么第十八位将用X来代替
+         * 校验位计算公式：Y_P = mod( ∑(Ai×Wi),11 )
+         * i为身份证号码1...17 位; Y_P为校验码Y所在校验码数组位置
+         */
+        function validateIdCard(idCard){
+            var b = true;
+            //15位和18位身份证号码的正则表达式
+            var regIdCard=/^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/;
+            
+            //如果通过该验证，说明身份证格式正确，但准确性还需计算
+            if(regIdCard.test(idCard)){
+                if(idCard.length==18){
+                    var idCardWi=new Array( 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 ); //将前17位加权因子保存在数组里
+                    var idCardY=new Array( 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ); //这是除以11后，可能产生的11位余数、验证码，也保存成数组
+                    var idCardWiSum=0; //用来保存前17位各自乖以加权因子后的总和
+                    for(var i=0;i<17;i++){
+                        idCardWiSum+=idCard.substring(i,i+1)*idCardWi[i];
+                    }
+                    var idCardMod=idCardWiSum%11;//计算出校验码所在数组的位置
+                    var idCardLast=idCard.substring(17);//得到最后一位身份证号码
+                    //如果等于2，则说明校验码是10，身份证号码最后一位应该是X
+                    if(idCardMod==2){
+                        if(idCardLast=="X"||idCardLast=="x"){
+                            //alertInfo("通过验证啦！");
+                        }else{
+                            alertInfo('身份证号码错误！');
+                            b = false;
+                        }
+                    }else{
+                        //用计算出的验证码与最后一位身份证号码匹配，如果一致，说明通过，否则是无效的身份证号码
+                        if(idCardLast==idCardY[idCardMod]){
+                            //alertInfo("通过验证啦！");
+                        }else{
+                            alertInfo('身份证号码错误！');
+                            b = false;
+                        }
+                    }
+                } 
+            }else{
+                alertInfo('身份证格式不正确!');
+                b = false;
+            }
+            return b;
+        }
+     
+    	 function start_process(){
+ 	    	//MyProcess.start();
+ 	    	NTUI.beginLoaded();
+ 	    	
+ 	    }
+ 	    
+ 	    function stop_process(){
+ 	    	NTUI.onLoaded();
+ 	    	//MyProcess.stop();
+ 	    }
+ 	 function alertInfo(message){
+ 		 navigator.notification.alert(message, null, "世纪源金融", "确定");
+ 	    }
+        function zltj(){
+            
+            var password = $("#mm").val();
+            var citycode = localStorage.getItem("citycode");
+            var mm1 = $("#mm1").val();
+            var zjh = $("#zjh").val();
+            var name = $("#zsxm").val();
+            var sjh = $("#sjh").val();
+            var yzm = $("#yzm").val();
+            
+            if( sjh.length < 11)
+            {
+                alertInfo('手机号码长度不对');
+                return;
+            }
+            if( yzm.lenght < 6)
+            {
+                alertInfo('验证码输入错误');
+                return;
+            }
+            if( name == ' ')
+            {
+                alertInfo('真实姓名不能为空');
+                return;
+            }
+            if( zjh == ' ' )
+            {
+                alertInfo('证件号不能为空');
+                return;
+            }else{
+                
+            }
+            if( password.length < 6)
+            {
+                alertInfo("密码小于6位")
+                return;
+            }
+            if ( password != mm1 )
+            {
+                alertInfo("密码不一致")
+                return;
+            }
+            
+            /*
+             var data = {
+             "userid" : $("#sjh").val(),
+             "yzm" : $("#yzm").val(),
+             "username" : $("#zsxm").val(),			
+             "cerdno" : $("#zjh").val(),
+             "password" : $.md5(password)
+             };
+             */
+            var data={};
+            data.userid = $("#sjh").val();
+            data.yzm = $("#yzm").val();
+            data.username = $("#zsxm").val();
+            data.cerdno = $("#zjh").val();
+            data.password = $.md5(password);
+            
+            start_process();
+            $.ajax({
+                   type : "post",
+                   url: "http://"+IP+":"+PORT+"/app/6002",
+                   data : data,
+                   datatype : "json",
+                   success : jugelog,
+                   error:function(msg){
+                	   stop_process();
+                   alertInfo('注册失败');
+                   }
+                   });
+                   
+                   
+                  
+        }
+        
+        function jugelog(msg){
+        	stop_process();
+            var json=eval("("+msg+")");
+            
+            
+            if( json.stat == '0') //登陆成功
+            {
+                alertInfo("注册成功");
+                his_back();	
+                
+            }
+            else{
+                alertInfo("注册失败");
+            }
+        }
+        function his_back(){
+            localStorage.setItem("hiscount", "0");
+            window.location.href = "login_new.html";
+        }
+        </script>  
+    </body>  
+</html>

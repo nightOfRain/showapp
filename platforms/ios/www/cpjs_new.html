@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+                <link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+                    
+                    
+                    
+                    
+                    
+                    <link href="css/lib/bootstrap/bootstrap-combined.min.css" rel="stylesheet">
+                        <link rel="stylesheet" type="text/css" href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+                        <link href="css/index.css" rel="stylesheet">
+                            <link rel="stylesheet" href="common/slick/slick.css">
+                                <link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+                                    <link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+                                        <link href="css/common.css" rel="stylesheet">
+                                            <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+                                            <link rel="stylesheet" type="text/css" href="css/aui/aui.2.0.css" />
+                                            <link rel="stylesheet" type="text/css" href="css/aui/api.css" />
+                                            <link rel="stylesheet" type="text/css" href="css/aui/aui-list-swipe.css" />
+                                            <link rel="stylesheet" type="text/css" href="css/aui/aui-flex.css" />
+                                    
+                                            <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                                            <script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+                                       
+                                            <script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+                                            <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                                        
+                                        <style type="text/css">
+                                            .title1{
+                                                text-shadow: none !important;
+                                                color: white;
+                                                line-height: 40px;
+                                                text-align: center;
+                                                height: 40px;
+                                                width: 100%;
+                                                background-color: #129bf0;
+                                                background-size: 100% 100%;
+                                                background-repeat: no-repeat;
+                                                display: -webkit-flex;
+                                                display: flex;
+                                                -webkit-align-items: center;
+                                                align-items: center;
+                                            }
+                                        html, body {
+                                            position: relative;
+                                            height: 100%;
+                                        }
+                                        body {
+                                            background: #fff;
+                                            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+                                            font-size: 14px;
+                                            color:#000;
+                                            margin: 0;
+                                            padding: 0;
+                                        }
+                                        div,ul{margin: 0;padding: 0;}
+                                        .topNavWrapper {
+                                            width: 100%;
+                                            text-align: left;
+                                            height: 31px;
+                                            margin: 0px auto;
+                                            z-index:100;
+                                            _position: relative ;
+                                            _top:0px;
+                                        }
+                                        .topNav {
+                                            width: 100%;
+                                            float: left;
+                                            display: block;
+                                            z-index: 100;
+                                            overflow: visible;
+                                            position: fixed;
+                                            top: 0px; /* position fixed for IE6 */
+                                            _position: absolute;
+                                            _top: expression(documentElement.scrollTop + "px");
+                                            background-repeat: no-repeat;
+                                            background-position: right;
+                                            height: 31px;
+                                            line-height: 31px;
+                                            color:#fff;
+                                            background-color:#444;
+                                            text-align:center;
+                                        }
+                                        .duiqi {
+                                            text-align: center;
+                                        }
+                                        .content_font {
+                                            border:0 none;
+                                            box-shadow:none;
+                                            resize：none;
+                                            font-size:17px;
+                                            text-align:justify;
+                                            margin-top:10px;
+                                            letter-spacing:2px;
+                                            color:#2894FF;
+                                            font-family:Arial,Helvetica,sans-serif,SimSun;
+                                        }
+                                        .span_ph_l{
+                                            width:100%;
+                                            text-align:left;
+                                            margin-left:10px;
+                                            color:#2F4F4F;
+                                            font-size:17px;
+                                            white-space:nowrap;
+                                            text-overflow:ellipsis;
+                                            -o-text-overflow:ellipsis;
+                                            overflow: hidden;
+                                            font-weight: bold;
+                                        }
+                                        .span_ph_s{
+                                            width:100%;
+                                            text-align:left;
+                                            margin-left:10px;
+                                            color:#4682B4;
+                                            font-size:13px;
+                                            white-space:nowrap;
+                                            text-overflow:ellipsis;
+                                            -o-text-overflow:ellipsis;
+                                            overflow: hidden;
+                                           
+                                        }
+                                            </style>
+    </head>
+    
+    
+    <body style="background:#f4f4f4;overflow:auto;">
+        <div id="cp_new" >
+            <div class="topNavWrapper" >
+                <div class="topNav">
+                    <div component-role="m11_top" class="top">
+                        <div class="back_ic" style="margin-top:-4px;" onClick="back_history();">	</div>
+                        <span class="top_title">产品介绍</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="cont" class="container-fluid" style="height:620px;overflow:auto;margin-top:30px;">
+                <div id="cont_text"></dov>
+            </div>
+        </div>
+        
+        
+        
+    </body>
+    <script type="text/javascript">
+        
+        var msg={};
+        var thisURL;
+        var cp_flag;
+        
+        document.addEventListener("DOMContentLoaded", initial);
+        function initial() {
+            var thisURL = document.URL;  
+          //  document.getElementsByTagName('body')[0].style.width = top.screenWidth+"px";
+          //  document.getElementsByTagName('body')[0].style.height = top.screenHeight+20+"px";
+            var getenv = thisURL.split('?')[1];
+            cp_flag = getenv.split('=')[1];
+          //  cp_flag = 1;
+            /*
+             var back = localStorage.getItem("cpjs_back");
+             if(back != 1){
+             comm();
+             }else{
+             localStorage.setItem("cpjs_back",0);
+             getMsg(top.cpjs_data);
+             }
+             */
+            comm();
+            
+            //	$(".top_title").html(top.title);
+        }
+    
+    function comm(){
+        
+        var data = {};
+        data.producttype = cp_flag;
+        //	
+        top.start_process();
+        $.ajax({
+               type : "post",
+               url: "http://"+IP+":"+PORT+"/app/6015;",
+               timeout: 5000,
+               data : data,
+               datatype : "json",
+               success :function(msg){
+            	   top.stop_process();
+               showinfo(msg);
+               },
+               error:function(msg){
+            	   top.stop_process();
+               top.alertInfo('网络超时，请稍后再试');
+               }
+               });
+               
+    }
+    function showinfo(msg){
+	
+        json=eval("("+msg+")");
+        
+        var data = json.data;
+        var cp_info = '';
+     
+        for(var i=0;i<data.length;i++){
+            var info={};
+            
+            info.id=data[i].productno;
+            info.cpbh=data[i].productno;
+            info.cpmc = data[i].pname;
+            info.cpbt = data[i].pintroduction;
+            info.cpnr = data[i].pinfo;
+            info.cptp1 = data[i].picon;
+            info.cptp2 = data[i].ppicture;
+            info.note = data[i].note;
+            localStorage.setItem("cpjs"+info.cpbh,JSON.stringify(info));
+            //alert("cptp1="+msg.data[i].cptp1);
+         //   creatT(i,data[i].productno,data[i].pintroduction, data[i].picon, data[i].pintroduction);
+         cp_info += '<li class="aui-list-view-cell aui-img" style="height:80px;" onclick="goto_map(\''+data[i].productno+'\');">'
+         +'<img class="aui-img-object aui-pull-left" style="height:55px;margin: 5px auto;" src="'+top.productPath+data[i].picon+'"></img>'
+         +'<div class="aui-img-body">'
+         +'<p class="aui-ellipsis-1 list_font" style="margin-top:5px;"><span class="span_ph_l">'+data[i].pname+'</span></p>'
+         +'<p class="aui-ellipsis-1 list_font" style="margin-top:5px;"><span class="span_ph_s">'+data[i].pintroduction+'</span></p>'
+         +'</div></li>';
+        }
+        cp_info += '<br><br><br><br><br><br>';
+        $("#cont_text").html(cp_info);
+    }
+    
+    
+    function goto_map(id){
+        showNewFrame("tplb.html?id="+id,'smask');
+    }
+    function creatT(i,id,zcbt,zctp,zcnr){
+        var cont = document.getElementById("cont");
+        var div1 = document.createElement("div");
+        div1.setAttribute("class","form_div");
+        div1.setAttribute("style","margin-top:5px;margin-bottom:10px;height:60px;");
+        
+        //与明细页面分两个页面
+        var url1 = "showNewFrame('tplb.html?id="+id+"','smask');";
+        div1.setAttribute("onClick",url1); 
+        
+        
+        
+        var table = document.createElement("table");
+        table.setAttribute("style", "width:100%;border:0;height:50px;margin-top:5px;")
+        var tr = document.createElement("tr");
+        
+        var th1 = document.createElement("th");
+        th1.setAttribute("style", "width:75%")
+        var divp = document.createElement("div");
+        divp.setAttribute("style", "margin-left:5px;margin-right:10px;")
+        var p = document.createElement("textarea");
+        p.setAttribute("id", "outline_"+i);
+        p.setAttribute("class","ui-input-text ui-shadow-inset ui-corner-all ui-textinput-autogrow content_font");
+        p.setAttribute("style", "color:#2894FF;background-color: #f4f4f4;	user-select: none;disabled:disabled;resize:none;");
+        p.setAttribute("disabled", "disabled");
+        p.innerHTML=zcbt;
+        divp.appendChild(p)
+        
+        th1.appendChild(divp);
+        
+        var th2 = document.createElement("th");
+        th2.setAttribute("style", "width:25%");
+        var divm = document.createElement("div");
+        divm.setAttribute("style", "margin-left:10px;margin-right:5px;")
+        var img1 = document.createElement("img");
+        img1.setAttribute("src",top.productPath+zctp);
+        /* img1.setAttribute("src","img/1.jpg");  //测试   */
+        img1.setAttribute("style","height:60px;width:100%");
+        divm.appendChild(img1);
+        th2.appendChild(divm);
+        
+        
+        tr.appendChild(th2);
+        tr.appendChild(th1);
+        table.appendChild(tr);
+        
+        div1.appendChild(table);
+        cont.appendChild(div1);
+    }
+    </script>
+</html>

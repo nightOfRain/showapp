@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">       
+        <link rel="stylesheet" href="css/common.css">        
+		<link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+		<link rel="stylesheet" href="css/iconfont.css">
+		<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+		<link rel="stylesheet" href="css/frozen.css">
+		<link rel="stylesheet" href="css/demo.css">
+		<link rel="stylesheet" href="hello-mui/css/app.css">
+		<script src="hello-mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		
+       
+        <script src="js/frozen.js"></script>
+        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+           
+             html, body {
+                 position: relative;
+                 height: 100%;
+             }
+         body {
+             background: #fff;
+             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+             font-size: 14px;
+             color:#000;
+             margin: 0;
+             padding: 0;
+             -webkit-overflow-scrolling:touch;
+             overflow:auto
+         }
+       
+
+
+        </style>
+ 		<script type="text/javascript">
+ 		var fileno;
+ 		var gallery_html='';
+		var note_flag = 1;
+		var myArray = new Array();
+		var myArray_offline = new Array();
+		
+		var count = 0;
+		
+		
+		
+		$(function() {				
+			
+			//调整map高度
+			var thisURL = document.URL; 
+				localStorage.setItem("thisURL", thisURL);
+			localStorage.setItem("thisURL", thisURL);
+			fileno = localStorage.getItem("fileno");
+			count = 0;
+			top.writelog("fileno="+fileno);
+			//scroll_auto();
+			
+			//选择器控制
+			$("input[name=radio]").click(function(){
+				  showCont();
+				 });
+			//setTimeout("loading();", 3000);
+			initPage();
+			mui.init({
+                swipeBack:true //启用右滑关闭功能
+                });
+      		mui('.mui-scroll-wrapper').scroll({
+            	deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+            });
+      		mui(document.body).on('tap', '.mui-action-back ', function(e) {
+				this.click();
+                                  return false;
+			});
+		}); 
+
+		function initPage(){
+			
+			if(!top.data.check_step_one){
+				$("#radio_1").attr("checked", true);
+				return;
+			}else{
+				var file_path = localStorage.getItem("group_code");
+				var fileno = localStorage.getItem("fileno");
+				
+				if(top.data.check_step_one.is_chance == '0'){
+					$("#radio_0").attr("checked", true);
+					
+					$("#note").hide();
+				}else{
+					$("#radio_1").attr("checked", true);
+					
+				}
+    			$("#address_des").val(top.data.check_step_one.address_des);
+    			
+
+    		//	top.writelog("initPage:images="+localStorage.getItem(fileno+"_1_offline_myArray"));
+    			//var tmp_images = localStorage.getItem(fileno+"_1_offline_myArray");
+    			myArray_offline = JSON.parse(localStorage.getItem(fileno+"_1_offline_myArray"));
+				top.writelog("initPage:myArray_offline="+myArray_offline);
+    			var file_path = localStorage.getItem("group_code");
+    			
+    				for(var j = 0; j < myArray_offline.length; j++){
+    					if(myArray_offline[j].length > 0){
+    						var imgurl =  myArray_offline[j];
+        					add_pic_init(imgurl);
+    					}else{
+    						myArray_offline.splice(j,1);
+    					}
+    					
+    				}
+			}
+			
+		}
+		function showCont(){
+			 switch($("input[name=radio]:checked").attr("id")){
+			  case "radio_0":
+			   		$("#note").hide();
+			   		note_flag = 0;
+			   break;
+			  case "radio_1":
+				  note_flag = 1;
+				  	$("#note").show();
+			   break;
+			  default:
+			   break;
+			 }
+			
+		}
+		function pz(){
+            
+            top.capturePhoto_offline(offline_done);
+  
+            // showinfo();
+        }
+		function add_pic_init(server_url){
+			
+			
+			
+			var gallery = document.getElementById('gallery_2');
+				
+			var figure = document.createElement("figure");
+			figure.setAttribute("class", "aui-col-xs-3");
+			
+			var div = document.createElement("div");
+			div.setAttribute("class", "divcss5");
+		
+			var img = document.createElement("img");
+			img.src = server_url;
+           
+            checkPicurl(server_url);
+            var figcaption = document.createElement("figcaption");
+            img.setAttribute("onclick", "show_photo('"+count+"','2')");
+            
+            count++;
+			div.appendChild(img);
+			
+			figure.appendChild(div);
+			figure.appendChild(figcaption)
+		    gallery.appendChild(figure);
+			
+				
+		}
+		function offline_done(local_url){
+            top.writelog("offline_business_check localurl:"+local_url);
+			//添加照片到数组
+			myArray_offline.push(local_url);
+			
+			var gallery = document.getElementById('gallery_2');
+			
+			var figure = document.createElement("figure");
+			figure.setAttribute("class", "aui-col-xs-3");
+			
+			var div = document.createElement("div");
+			div.setAttribute("class", "divcss5");
+		
+			var img = document.createElement("img");
+			img.src = local_url;
+            var imgurl = local_url;
+			checkPicurl(imgurl);
+			var figcaption = document.createElement("figcaption");
+            img.setAttribute("onclick", "show_photo('"+count+"','2')");
+           
+           count++;
+			div.appendChild(img);
+			
+			figure.appendChild(div);
+			figure.appendChild(figcaption)
+		    gallery.appendChild(figure);
+							
+		}
+	
+		function upload_info(){
+			
+			if(myArray_offline.length < 2){
+				top.alertInfo("至少要上传两张客户经验场所图片");
+				return;
+			}
+
+			
+			var images_offline = '';
+			if(myArray_offline.length > 0 ){
+				
+				for(var j = 0; j < myArray_offline.length; j++){
+					var imgname = myArray_offline[j];
+					myArray.push(imgname.substr(imgname.lastIndexOf('/') + 1));
+				}
+				if(images_offline == ''){
+					images_offline =  myArray_offline.join('|');
+				}else{
+					images_offline += '|' + myArray_offline.join('|');
+				}								
+			}
+            
+            var notes = $("#address_des").val();
+            if(note_flag == '1'){
+                if(notes.length < 9){
+                    top.alertInfo("经营场所检查描述不得少于10字");
+                    return;
+                }
+            }
+            
+			localStorage.setItem(fileno+"_1_offline_myArray", JSON.stringify(myArray_offline));
+			localStorage.setItem(fileno+"_1_offline_images", images_offline);
+			
+			top.writelog("myArray_offline = "+myArray_offline);
+			top.writelog("images_offline = "+images_offline);
+			var data = {   			
+        			is_chance : note_flag,
+        			address_des:$("#address_des").val(),
+        			address_img:myArray.join('|'),
+        			fileno : localStorage.getItem("fileno"),
+        			coordinate:top.coordinate,
+        			address:top.address_gps,
+        			trandate:get_trandate()
+        		};
+			//alert(JSON.stringify(data));
+			localStorage.setItem("offline_"+fileno, '1'); //用于home_offline的begin_file方法判断是否有本地离线数据
+			top.alertInfo("离线保存成功，请尽快上传");
+			top.data.check_step_one = data;
+			localStorage.setItem(fileno+"_data_offline", JSON.stringify(top.data));
+			back_history();
+			parent.update_button('1');
+
+	        
+		}
+		
+        function checkPicurl(url){
+            
+            var img = new Image();
+            img.src = url;
+            img.onerror = function(){
+                top.writelog(url+" 图片加载失败，请检查url是否正确");
+                return false;
+            };
+            
+            if(img.complete){
+                	top.writelog("complete[url]="+url+":"+img.width+","+img.height);
+                localStorage.setItem(url, img.width+","+img.height)
+            }else{
+                img.onload = function(){
+                    top.writelog("onload[url]="+url+":"+img.width+","+img.height);
+                    localStorage.setItem(url, img.width+","+img.height);
+                    
+                    img.onload=null;//避免重复加载
+                }
+            }
+            
+        }
+    function show_photo(index, num){
+        top.items_curr = [];
+        top.writelog("index="+index+";num="+num);
+        for(var i = 0; i < myArray_offline.length; i++){
+            
+            var imgurl = myArray_offline[i];
+            
+            var size = localStorage.getItem(imgurl);
+            var width = size.split(',')[0];
+            var height = size.split(',')[1];
+           top.writelog("i="+i+";url="+imgurl+"[size]="+size);
+            var item = {
+                src: imgurl,
+                w: parseInt(width, 10),
+                h: parseInt(height, 10)
+            };
+            item.title = "客户经营场所检查";
+            top.items_curr.push(item);
+        }
+        showNewFrame('showimage.html?index='+index+'&num='+num, 'smask');
+    }
+		
+        function updateItem(num, ind){
+            myArray_offline.splice(ind, 1);
+            top.writelog("ind="+ind+"after delete:"+myArray_offline);
+            var gallery = document.getElementById('gallery_2');
+            var list = document.getElementsByTagName('figure');
+            
+            gallery.removeChild(list[ind]);
+        }
+		</script>
+    </head>                                
+	<body style="overflow:hidden;background-color: #f4f4f4;height:100%;">
+		<header class="mui-bar mui-bar-nav head_color">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+			<h1 class="mui-title">客户经营场所检查</h1>
+		</header>
+
+		<div class="container-fluid" >
+    		<div class="mui-content mui-scroll-wrapper" >                
+                <div class="mui-scroll top_head">
+				      	<section class="ui-container" style="background-color: #ffffff">
+							<section id="form">
+						        <div class="demo-item">		
+						        	<div class="demo-desc" style="margin-left: 10px;;font-size:18px;">客户经营场所是否发生了变化</div>		        
+							        <div class="demo-block">
+							            <div class="ui-form ui-border-t">
+							                <form action="#">
+							                    <div class="ui-form-item ui-form-item-radio ui-border-b">				                        
+							                        <label class="ui-radio" for="radio">
+							                            <input type="radio" name="radio" id="radio_1"/>
+							                        </label>
+							                        <p>是</p>
+							                    </div>
+							                    <div class="ui-form-item ui-form-item-radio ui-border-b">
+							                        
+							                        <label class="ui-radio" for="radio">
+							                            <input type="radio"  name="radio" id="radio_0"/>
+							                        </label>
+							                        <p>否</p>
+							                    </div>
+							                </form>
+							            </div>
+							        </div>
+							    </div>
+						     	<div style="font-size: 15px;text-align: left;margin-top:10px;" id="note">
+				                       <textarea style="width:90%;color:#5b5b5b;border:1px;background:#ffffff;margin-left: 15px;margin-right: 15px;" rows="4" id="address_des" placeholder="客户经营场所检查（不的少于10字）"></textarea>
+				                </div>
+							
+						  
+								<div class="demo-item" >
+				       				 <div class="demo-desc" style="text-align:center;font-size:18px;">现场拍照上传,2-4张图片（照片要带有企业名称）</div>
+				       			</div>
+				       			
+							
+				
+							</section>
+				
+				        </section>
+				        <div class="contain" style="margin: 0 0 0;background-color: #ffffff;border-bottom: 1px solid #d0d0d0;">
+									<ul style="width:100%;">
+										<li style="display:inline-block;width:100%;">
+						        			<!--data-pswp-uid 是每个gallery的id不能重复-->
+									
+											<div class="my-gallery" data-pswp-uid="2" style="width:100%;" id="gallery_2">	
+																									
+																											
+											</div>	
+												<div class="aui-col-xs-3"><div class="divcss5"><img src="img/add.png" onclick="pz();"/></div></div>											
+										</li>
+									</ul>
+						</div>
+				
+				      	   <section class="ui-container" >
+							<section id="form">
+								<div class="demo-item" >			       
+							        <div class="demo-block"> 
+							            <div class="ui-btn-wrap">
+							       
+							                <button class="ui-btn-lg ui-btn-primary"  style="margin-top:20px;" onclick="upload_info();">
+							                  	  保存
+							                </button>
+							            </div>
+							
+							        </div>
+							    </div>
+							   </section>
+							  </section>  
+							<div style="height:200px;"><p style="color:#f4f4f4">现场检查</p></div> 
+				</div>
+		</div>
+	</div>
+	</body>
+
+</html>

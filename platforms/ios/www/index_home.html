@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+	<head>	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="format-detection" content="telephone=no">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+		<link href="css/lib/mfp/mfp.css" rel="stylesheet">
+	<link href="css/lib/slick/slick.css" rel="stylesheet">
+	<link href="css/lib/menu11/menu11.css" rel="stylesheet">
+	<link rel="stylesheet" href="css/frozen.css">
+        <link rel="stylesheet" href="demo.css">
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/lib/slick/slick.min.js"></script>
+	
+	<script type="text/javascript" src="js/lib/slick/slickinit.js"></script>
+	
+	<script type="text/javascript" src="js/lib/menu11/menu11.js"></script>
+	
+	<script type="text/javascript" src="js/lib/menu11/menu11_com.js"></script>
+        
+       
+        <script type="text/javascript" src="http://tajs.qq.com/stats?sId=37342703" charset="UTF-8"></script>
+        
+        <script src="lib/zepto.min.js"></script>
+        <script src="js/frozen.js"></script>
+    </head>
+    
+    <body style="overflow:auto">
+        
+
+    
+<div class="container-fluid">
+<header class="ui-header ui-header-positive ui-border-b">
+            <h1>货后检查系统 </h1>
+        </header>
+
+<section id="list">
+    <div class="demo-item">
+        <div class="demo-block">
+       		 <ul class="ui-row">
+       		 	<li class="ui-col ui-col-33">现场人员姓名</li>
+       		 	<li class="ui-col ui-col-33">经营机构</li>
+       		 	<li class="ui-col ui-col-33">客户经理</li>
+       		 </ul>
+      		<div class="ui-form ui-border-t">
+      		 	<div class="ui-form-item ui-form-item-l ui-border-b">
+                 <label class="ui-border-r">
+                            客户姓名
+                 </label>
+                        <input type="text" placeholder="请输入客户姓名" />
+                        
+                    </div>
+                <div class="ui-form-item ui-form-item-l ui-border-b">
+                 <label class="ui-border-r">
+                            机构代码
+                 </label>
+                        <input type="text" placeholder="请输入组织机构代码" />
+                        
+                    </div>
+
+                   
+                   <div class="ui-form-item ui-form-item-l ui-border-b">
+                        <label>
+                            注册地址
+                        </label>
+                        <input type="text" placeholder="联动查询结果" />
+                        
+                    </div>
+                    <div class="ui-form-item ui-form-item-l ui-border-b">
+                        <label>
+                            行业分类
+                        </label>
+                        <input type="text" placeholder="联动查询结果" />
+                    </div>
+                     <div class="demo-block">
+             <ul class="ui-list ui-list-pure ui-border-b">
+            <li class="ui-border-t" onclick="parent.showNewFrame('test.html','smask')" >
+                <h2 class="ui-arrowlink"><span> 现场地址</span><span class="ui-panel-subtitle">根据GPS回显，可修改1</span><span class="ui-panel-title-tips">调整</span></h2>
+           	</li>
+            </ul>
+        </div>
+            </div>
+            
+        </div>
+        <div class="demo-block">
+            <ul class="ui-list ui-list-pure ui-border-b">
+            <li class="ui-border-t" data-href="list.html">
+                <h2 class="ui-arrowlink"><span>股东信息</span><span class="ui-panel-title-tips">查看</span></h2>
+            </li>
+            </ul>
+        </div>
+    </div>
+    <div class="demo-item">
+        <p class="demo-desc">预警信息提示</p>
+        <div class="demo-block">
+            <section class="ui-panel ui-panel-simple ui-border-tb">
+                <h2 ><span> 预警级别</span><span class="ui-panel-subtitle">二级预警</span></h2>
+            </section>
+        </div>
+         <div class="demo-block">
+            <section class="ui-panel ui-panel-simple ui-border-tb">
+                <h2 ><span>预警日期</span><span class="ui-panel-subtitle">2017-01-18</span></h2>
+            </section>
+        </div>
+          <div class="demo-block">
+            <section class="ui-panel ui-panel-simple ui-border-tb">
+                <h2 ><span>指标</span><span class="ui-panel-subtitle">2项：超额融资、他行分类关注</span></h2>
+            </section>
+        </div>       
+ <div class="demo-block">
+ <ul class="ui-list ui-list-pure ui-border-b">
+            <li class="ui-border-t" data-href="list_1.html">
+                <h2 class="ui-arrowlink"><span>失信信息</span><span class="ui-panel-subtitle">0条</span><span class="ui-panel-title-tips">查看</span></h2>
+            </li>
+       
+            <li class="ui-border-t" data-href="list_2.html">
+                <h2 class="ui-arrowlink"><span>被执行人信息</span><span class="ui-panel-subtitle">1条</span><span class="ui-panel-title-tips">查看</span></h2>
+            </li>
+        
+            <li class="ui-border-t" data-href="list_3.html">
+                <h2 class="ui-arrowlink"><span>法院公告</span><span class="ui-panel-subtitle">3条</span><span class="ui-panel-title-tips">查看</span></h2>
+            </li>
+        
+            <li class="ui-border-t" data-href="list_4.html">
+                <h2 class="ui-arrowlink"><span>	裁判文书</span><span class="ui-panel-subtitle">11条</span><span class="ui-panel-title-tips">查看</span></h2>
+            </li>
+        
+         
+           </ul>
+        </div>
+
+
+    </div>
+    
+     
+        
+
+ <section id="list">
+    <div class="demo-item">
+    <p class="demo-desc">现场检查</p>
+        <div class="demo-block">
+            <ul class="ui-list ui-list-pure ui-border-b">
+            <li class="ui-border-t" data-href="form.html">
+                  <h2 class="ui-arrowlink"><span class="ui-panel-subtitle">客户经营场所检查</span></h2>
+                </li>
+                <li class="ui-border-t" data-href="form_1.html">
+                  <h2 class="ui-arrowlink"><span class="ui-panel-subtitle">生产经营情况检查</span></h2>
+                </li>
+                <li class="ui-border-t" data-href="form_2.html">
+                  <h2 class="ui-arrowlink"><span class="ui-panel-subtitle">财务报表检查</span></h2>
+                </li>
+                <li class="ui-border-t" data-href="form_3.html">
+                  <h2 class="ui-arrowlink"><span class="ui-panel-subtitle">纳税申报检查</span></h2>
+                </li>
+                <li class="ui-border-t" data-href="form_4.html">
+                  <h2 class="ui-arrowlink"><span class="ui-panel-subtitle">银行对账</span></h2>
+                </li>
+                <li class="ui-border-t" data-href="form_5.html">
+                  <h2 class="ui-arrowlink"><span class="ui-panel-subtitle">抵押物现状查询</span></h2>
+                </li>
+             </ul>
+         </div>
+     </div>
+</section>
+</div>
+
+ 
+        </section><!-- /.ui-container-->
+        <script>
+        $('.ui-list li,.ui-tiled li').click(function(){
+            if($(this).data('href')){
+                location.href= $(this).data('href');
+            }
+        });
+        $('.ui-header .ui-btn').click(function(){
+            location.href= 'index.html';
+        });
+        </script>
+    </body>
+</html>

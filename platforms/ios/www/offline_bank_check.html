@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">     
+        <link rel="stylesheet" href="css/common.css">
+        <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+		<link rel="stylesheet" href="css/iconfont.css">
+		<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+		<link rel="stylesheet" href="css/frozen.css">
+		<link rel="stylesheet" href="css/demo.css">
+		<link rel="stylesheet" href="hello-mui/css/app.css">		
+
+		<script src="hello-mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		
+     
+        <script src="js/frozen.js"></script>
+        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+           
+             html, body {
+                 position: relative;
+                 height: 100%;
+             }
+         body {
+             background: #fff;
+             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+             font-size: 14px;
+             color:#000;
+             margin: 0;
+             padding: 0;
+         }
+       
+        	.img_lit{
+                      
+                        width: 80px;
+                       	height: 80px;
+                        
+                    }
+         	.divcss5_w{ border:0px solid #000; width:90px; height:85px;overflow:hidden;padding:5px;} 
+			.divcss5_w img{max-width:80px;_width:expression(this.width > 80 ? "80px" : this.width);}
+			.divcss5_h{ border:0px solid #000; width:85px; height:90px;overflow:hidden;padding:5px;} 
+			.divcss5_h img{max-height:80px;_height:expression(this.height > 80 ? "80px" : this.height);} 
+        </style>
+ 		<script type="text/javascript">
+ 		var fileno;
+ 		var count = 0;
+ 		var myArray_offline = new Array();
+ 		var myArray = new Array();
+		$(function() {
+			//调整map高度
+			var thisURL = document.URL; 
+				localStorage.setItem("thisURL", thisURL);
+			localStorage.setItem("thisURL", thisURL);
+			fileno = localStorage.getItem("fileno");
+			count = 0;
+			
+
+			initPage();
+			mui.init({
+                swipeBack:true //启用右滑关闭功能
+                });
+      		mui('.mui-scroll-wrapper').scroll({
+                deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+                });
+      		mui(document.body).on('tap', '.mui-action-back ', function(e) {
+				this.click();
+                                  return false;
+			});
+		});
+		function initPage(){
+			if(top.data.check_step_five){
+		
+				var data = top.data.check_step_five;
+				
+    			$("#jbrly").val(data.note);
+    			myArray_offline = JSON.parse(localStorage.getItem(fileno+"_5_offline_myArray"));
+    			//myArray = bankcheck_img.split('|');
+    			
+    	
+    			var file_path = localStorage.getItem("group_code");
+    			
+    				for(var j = 0; j < myArray_offline.length; j++){
+    					if(myArray_offline[j].length > 0){
+    						var imgurl =  myArray_offline[j];
+        					add_pic_init(imgurl);
+    					}else{
+    						myArray_offline.splice(j,1);
+    					}
+    					
+    				}
+	
+			}
+		}
+		function add_pic_init(server_url){
+			
+			
+			
+			var gallery = document.getElementById('gallery_2');
+				
+			var figure = document.createElement("figure");
+			figure.setAttribute("class", "aui-col-xs-3");
+			
+			var div = document.createElement("div");
+			div.setAttribute("class", "divcss5");
+		
+			var img = document.createElement("img");
+			img.src = server_url;
+           
+            checkPicurl(server_url);
+            var figcaption = document.createElement("figcaption");
+            img.setAttribute("onclick", "show_photo('"+count+"','2')");
+            
+            count++;
+			div.appendChild(img);
+			
+			figure.appendChild(div);
+			figure.appendChild(figcaption)
+		    gallery.appendChild(figure);
+			
+
+	
+							
+		}
+		function pz(){
+            
+            top.capturePhoto_offline(offline_done);
+
+        }
+		function offline_done(local_url){
+            top.writelog("offline_bank_check localurl:"+local_url);
+			//为对应数组添加元素
+			myArray_offline.push(local_url);
+			//添加照片到数组
+		//	myArray.push(server_url);
+			var gallery = document.getElementById('gallery_2');
+			
+			var figure = document.createElement("figure");
+			figure.setAttribute("class", "aui-col-xs-3");
+			
+			var div = document.createElement("div");
+			div.setAttribute("class", "divcss5");
+		
+			var img = document.createElement("img");
+			img.src = local_url;
+            var imgurl = local_url;
+            checkPicurl(imgurl);
+            var figcaption = document.createElement("figcaption");
+            img.setAttribute("onclick", "show_photo('"+count+"','2')");
+            
+            count++;
+			div.appendChild(img);
+			
+			figure.appendChild(div);
+			figure.appendChild(figcaption)
+		    gallery.appendChild(figure);
+							
+		}
+	
+		function save_info_offline(){
+			if(myArray_offline.length == 0){
+				top.alertInfo("至少要上传一张银行对账检查图片");
+				return;
+			}
+			
+			var images_offline = '';
+			if(myArray_offline.length > 0 ){
+				
+				for(var j = 0; j < myArray_offline.length; j++){
+					var imgname = myArray_offline[j];
+					myArray.push(imgname.substr(imgname.lastIndexOf('/') + 1));
+				}
+				if(images_offline == ''){
+					images_offline =  myArray_offline.join('|');
+				}else{
+					images_offline += '|' + myArray_offline.join('|');
+				}								
+			}	
+			localStorage.setItem(fileno+"_5_offline_myArray",JSON.stringify( myArray_offline));
+			localStorage.setItem(fileno+"_5_offline_images", images_offline);
+			
+			var notes = $("#jbrly").val();
+			
+			if(notes.length < 9){
+				top.alertInfo("备注信息不得少于10字");
+				return;
+			}
+			var data = {
+        			fileno : fileno,
+        			bankcheck_img:myArray.join('|'),
+        			note:notes,
+        			coordinate:top.coordinate,
+        			address:top.address_gps,
+        			trandate:get_trandate()
+        		};
+			localStorage.setItem("offline_"+fileno, '1'); //用于home_offline的begin_file方法判断是否有本地离线数据
+			top.alertInfo("离线保存成功，请尽快上传");
+			top.data.check_step_five = data;
+			localStorage.setItem(fileno+"_data_offline", JSON.stringify(top.data));
+			back_history();
+			parent.update_button('5');
+			
+
+		}
+        function checkPicurl(url){
+            
+            var img = new Image();
+            img.src = url;
+            img.onerror = function(){
+                top.writelog(url+" 图片加载失败，请检查url是否正确");
+                return false;
+            };
+            
+            if(img.complete){
+                top.writelog("complete[url]="+url+":"+img.width+","+img.height);
+                localStorage.setItem(url, img.width+","+img.height)
+            }else{
+                img.onload = function(){
+                    top.writelog("onload[url]="+url+":"+img.width+","+img.height);
+                    localStorage.setItem(url, img.width+","+img.height);
+                    
+                    img.onload=null;//避免重复加载
+                }
+            }
+            
+        }
+        function show_photo(index, num){
+            top.items_curr = [];
+            top.writelog("index="+index+";num="+num);
+            for(var i = 0; i < myArray_offline.length; i++){
+                
+                var imgurl = myArray_offline[i];
+                
+                var size = localStorage.getItem(imgurl);
+                var width = size.split(',')[0];
+                var height = size.split(',')[1];
+                top.writelog("i="+i+";url="+imgurl+"[size]="+size);
+                var item = {
+                    src: imgurl,
+                    w: parseInt(width, 10),
+                    h: parseInt(height, 10)
+                };
+                item.title = "银行对账校验";
+                top.items_curr.push(item);
+            }
+            showNewFrame('showimage.html?index='+index+'&num='+num, 'smask');
+        }
+        function updateItem(num, ind){
+            myArray_offline.splice(ind, 1);
+            top.writelog("ind="+ind+"after delete:"+myArray_offline);
+            var gallery = document.getElementById('gallery_2');
+            var list = document.getElementsByTagName('figure');
+            
+            gallery.removeChild(list[ind]);
+        }
+		</script>
+    </head>                                
+	<body style="background-color: #f4f4f4;">
+
+		<header class="mui-bar mui-bar-nav head_color">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+			<h1 class="mui-title">银行对账校验</h1>
+		</header>
+
+    	<div class="container-fluid" >
+    		<div class="mui-content mui-scroll-wrapper" >                
+                <div class="mui-scroll top_head">
+				      	<section class="ui-container" style="background-color: #ffffff">
+							<section id="form">
+						
+						     	<div style="font-size: 15px;text-align: left;">
+				                       <textarea style="width:90%;color:#5b5b5b;border:0px;background:#ffffff;margin-left: 15px;margin-right: 15px;" rows="4" id="jbrly" placeholder="备注信息，不得少于20字"></textarea>
+				                </div>
+							
+						  
+								<div class="demo-item" >
+				       				 <div class="demo-desc" style="text-align:center;font-size:18px;">主要往来银行当期对账单信息核查拍照</div>
+				       			</div>
+				       			
+							
+				
+							</section>
+				
+				        </section>
+				        <div class="contain" style="margin: 0 0 0;background-color: #ffffff;border-bottom: 1px solid #d0d0d0;">
+									<ul style="width:100%;">
+										<li style="display:inline-block;width:100%;">
+						        			<!--data-pswp-uid 是每个gallery的id不能重复-->
+									
+											<div class="my-gallery" data-pswp-uid="2" style="width:100%;" id="gallery_2">	
+																									
+																											
+											</div>	
+											<div class="aui-col-xs-3"><div class="divcss5"><img src="img/add.png" onclick="pz('1');"/></div></div>											
+										</li>
+									</ul>
+						</div>
+				
+				      	   <section class="ui-container" >
+							<section id="form">
+								<div class="demo-item" >			       
+							        <div class="demo-block"> 
+							            <div class="ui-btn-wrap">
+							            	
+							                <button class="ui-btn-lg ui-btn-primary"  style="margin-top:20px;" onclick="save_info_offline()">
+							                  	  保存
+							                </button>
+							            </div>
+							
+							        </div>
+							    </div>
+							   </section>
+							  </section> 
+						<div style="height:200px;"><p style="color:#f4f4f4">现场检查</p></div>	  
+					</div>
+			</div> 
+	</div>	
+	
+	</body>
+
+</html>

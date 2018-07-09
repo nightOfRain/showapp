@@ -1,0 +1,743 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/circle_reset.css">
+
+<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+<link rel="stylesheet" href="hello-mui/css/app.css">
+<link rel="stylesheet" href="css/circle_style.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="css/frozen.css">
+<link rel="stylesheet" href="css/demo.css">
+<link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+
+<script src="hello-mui/js/mui.min.js"></script>
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+<script type="text/javascript" src="js/nt_zuobiao.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=kZ76MkTNOIQ1VnidegnnxbKc"></script>
+
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<style>
+    html, body {
+        position: relative;
+        height: 100%;
+    }
+body {
+    background: #fff;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color:#000;
+    margin: 0;
+    padding: 0;
+    overflow:auto;
+    
+}
+.button_color{
+    color:red;
+    background:3F8E3F;
+    font-weight:bold;
+    
+}
+.rgt_scan {
+    width: 24px;
+    height: 24px;
+    float: right;
+    margin-right: 20px;
+    margin-top: 12px;
+    background-size: 100% 100%;
+    background-image: url("img/scan.png");
+}
+
+
+.div_fullscreen{
+    z-index:9998;background-color:rgba(244,244,244,1);width:100%;height:100%;position: fixed;top:0px;
+}
+.finish{
+    background: rgba(123, 123, 123, 0.9);
+}
+.check_back{
+    background-color:#ffffff;}
+.red_div{
+    float:right;
+    top:-4px;
+    right:40px;
+    position:absolute;
+    height:20px;
+    line-height:20px;
+    width:20px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    z-index:10011;
+    border-radius:30px;
+    box-shadow: 0 0 3px #222;
+    background: red;
+    color: #ffffff;
+    font-size:13px;
+    
+}
+.head_div{
+    text-align:center;
+    border-radius: 2px;
+    font-size:16px;
+    
+    background:rgba(235,236,237,0.5);
+    height:35px;
+    line-height:35px;
+    color:#8e8e8e;
+    margin-top:5px;
+    margin-left:60px;
+    padding-left:5px;
+}
+.rgt_search {
+    width: 20px;
+    height: 20px;
+    float: right;
+    margin-right: 16px;
+    margin-top: 12px;
+    background-size: 100% 100%;
+    background-image: url("img/search.png");
+}
+.customer_div{
+    display:none;
+
+}
+</style>
+<script>
+
+    var thisURL;
+    var step_now = 1;
+    var ntzb=new NTzuobiao();//实例化坐标转换类
+    var startX, startY, endX, endY;
+    var start_flag = 0;
+    var offline_flag = 0;
+    var myArray = new Array();
+    var myArray_offline = new Array();
+    
+    $(function() {
+     
+      thisURL = document.URL;
+      top.map_flag = 0;
+      
+      top.edit_flag = 1;
+      top.data={};
+
+    
+     loading();
+
+   
+      mui.init({
+               swipeBack:true //启用右滑关闭功能
+               });
+      mui('.mui-scroll-wrapper').scroll({
+                                        deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+                                        });
+      
+      mui(document.body).on('tap', '.mui-action-back', function(e) {
+                            this.click();
+                            return false;
+                            });
+      mui(document.body).on('tap', '.mui-table-view .mui-table-view-cell', function(e) {
+                            this.click();
+                           
+                            });
+
+      
+
+      file_begin();
+      
+      });
+
+
+function file_begin(){
+    
+    
+    
+    //做开关
+    if(start_flag == 1){
+        return;
+    }else{
+        var data = {
+            user_id:localStorage.getItem("user_id"),
+            manager_id:top.user_name,
+            inst_id:top.inst_name,
+            customer:localStorage.getItem("customer"),
+            group_code:localStorage.getItem("group_code"),
+            type:'0',
+            force:'0',
+            coordinate:top.coordinate,
+            address:top.address_gps,
+            trandate:get_trandate()
+        };
+        
+        Http_ajax(function(msg){
+                  
+                  top.stop_process();
+                  top.writelog("6003="+msg);
+                  var json=eval("("+msg+")");
+                  
+                  localStorage.setItem("fileno", json.data.fileno);
+                  if(json.data.stat == 0 ){ //新增
+                  start_flag = 1;
+                  window.scrollTo(0,$('#off_top').offset().top);
+                  return ;
+                  }else{
+                  var statinfo ='';
+                  
+                  if(json.data.stat == 1){ //已有且未完成
+                  statinfo = '检查未完成';
+                  }else if(json.data.stat == 2){//已有且完成
+                  statinfo = '检查已完成';
+                  }
+                  top.confirmInfo_new("今天对该客户已经做过检查，且"+statinfo+"。请选择如下操作", function(msg){
+                                      if(msg == 1){ //继续录入
+                                      
+                                      var fileno_now = localStorage.getItem("fileno");
+                                      var data = {
+                                      fileno:fileno_now
+                                      };
+                                      Http_ajax(function(msg){
+                                                top.stop_process();
+                                                var json=eval("("+msg+")");
+                                                top.data = json.data;
+                                                var check_jour_one = json.data.check_step_one;
+                                                var check_jour_two = json.data.check_step_two;
+                                                var check_jour_three = json.data.check_step_three;
+                                                var check_jour_four = json.data.check_step_four;
+                                                var check_jour_five = json.data.check_step_five;
+                                                var check_jour_six = json.data.check_step_six;
+                                                if(check_jour_one){
+                                                $("#step_1").attr("style","background:rgba(68, 153, 238, 0.9)");
+                                                }
+                                                if(check_jour_two){
+                                                $("#step_2").attr("style","background:rgba(68, 153, 238, 0.9)");
+                                                }
+                                                if(check_jour_three){
+                                                $("#step_3").attr("style","background:rgba(68, 153, 238, 0.9)");
+                                                }
+                                                if(check_jour_four){
+                                                $("#step_4").attr("style","background:rgba(68, 153, 238, 0.9)");
+                                                }
+                                                if(check_jour_five){
+                                                $("#step_5").attr("style","background:rgba(68, 153, 238, 0.9)");
+                                                }
+                                                if(check_jour_six){
+                                                $("#step_6").attr("style","background:rgba(68, 153, 238, 0.9)");
+                                                }
+                                                }, "app/6011", data);
+                                      }else if(msg == 2){//重新录入
+                                      
+                                      var data = {
+                                      user_id:localStorage.getItem("user_id"),
+                                      manager_id:top.user_name,
+                                      inst_id:top.inst_name,
+                                      customer:localStorage.getItem("customer"),
+                                      group_code:localStorage.getItem("group_code"),
+                                      type:'0',
+                                      force:'1',
+                                      coordinate:top.coordinate,
+                                      address:top.address_gps,
+                                      trandate:get_trandate()
+                                      };
+                                      Http_ajax(function(msg){
+                                                top.stop_process();
+                                                var json=eval("("+msg+")");
+                                                localStorage.setItem("fileno", json.data.fileno);
+                                                }, "app/6003", data);
+                                      }
+                                      });
+                  
+                  }
+                  
+                  }, "app/6003", data);
+                  
+    }
+    
+    
+}
+function update_button(step){
+
+	$("#step_"+i+"_img").attr("src", "imgurl");
+	$("#step_"+i+"_span").html("");
+}
+
+function clear_all(){
+    
+
+    top.alertInfo("本次检查已保存成功，请在【信息查看】里再次确认并提交检查结论，完成本次检查");
+    top.menu_refresh();
+}
+
+
+function check_by_step_two(){
+    showNewFrame('office_check.html', 'smask');
+}
+function check_by_step(step){
+    
+    switch(step){
+        case 1:
+
+        showNewFrame('business_place.html', 'smask');
+        
+        break;
+        case 2:
+
+        showNewFrame('office_check.html', 'smask');
+        break;
+        case 3:
+
+        showNewFrame('finance_check.html', 'smask');
+        
+        break;
+        case 4:
+
+        showNewFrame('taxes_check.html', 'smask');
+        
+        break;
+        case 5:
+
+        showNewFrame('bank_check.html', 'smask');
+        
+        break;
+        case 6:
+
+        showNewFrame('pawn_check.html', 'smask');
+        
+        break;
+        default:
+        break;
+        
+    }
+}
+
+function get_ban(){
+    
+    top.QR_code(function(msg){
+                top.browser(msg);
+                });
+                
+                //    top.get_video();
+}
+
+function customer_edit(){
+    localStorage.setItem("corporation", $("#corporation").html());
+    localStorage.setItem("credit_line", $("#credit_line").html());
+    localStorage.setItem("open_balance", $("#open_balance").html());
+    showNewFrame('customer_info_modify.html', 'smask');
+}
+function update_customer_info(corporation, credit_line, open_balance){
+    
+    $("#corporation").html(corporation);
+    $("#credit_line").html(credit_line);
+    $("#open_balance").html(open_balance);
+    scroll_auto();
+}
+var customer_list;
+function auto_complete(){
+    
+    var key = $("#search_key").val();
+    top.writelog("key="+key);
+    
+    if(key.length < 1)
+    return;
+    
+    var data = {
+        key:key,
+        customer_type:'1',
+        userid:localStorage.getItem("user_id")
+    }
+    top.writelog("6021 send:"+JSON.stringify(data));
+    $.ajax({
+           type : "post",
+           timeout: 2000,
+           url: "http://"+IP+":"+PORT+"/app/6021",
+           data : data,
+           datatype : "json",
+           success : function(msg){
+           //    top.writelog(msg);
+            top.writelog("6021 recv:"+msg);
+           var auto_html = '';
+           $("#context").html('');
+           
+           var json = eval("("+msg+")");
+           customer_list = json.data.list;
+           for(var i = 0; i < json.data.list.length; i++){
+           
+           auto_html += '<li class="ui-border-t" onclick="show_customerBySearch('+i+')">'
+           +'<h2 class="ui-arrowlink"><span style="color:#00a5e0;font-size: 15px;text-indent:2em;">'+json.data.list[i].customer+'</span></h2></li>'
+           //     top.writelog("groupCode="+json.data.list[i].groupCode+";customer="+json.data.list[i].customer);
+           }
+           $("#context").html(auto_html);
+           
+           },
+           error:function(msg){
+           
+           top.alertInfo('通讯失败，请稍后再试');
+           }
+           });
+}
+function show_customerBySearch(num){
+    //    top.writelog("search code="+customer_list[num].group_code);
+    $(".div_fullscreen").hide();
+    $('.ui-searchbar-input input').blur();
+    top.show_nav();
+    var data = {
+        customer:'',
+        group_code:customer_list[num].group_code,
+        coordinate:top.coordinate,
+        customer_type:'1',
+        address:top.address_gps
+    };
+    
+    top.writelog(JSON.stringify(data));
+    //通信
+    Http_ajax(function(msg){
+              
+              top.stop_process();
+              
+              show_customer(msg);
+              }, "app/6002", data);
+}
+function search_customer(){
+    if(start_flag == 1){
+        
+        top.confirmInfo("您有正在处理的检查，是否确定重新开始？", function(msg){
+                        if(msg == 2){
+                        return;
+                        }else{
+                        clear_all();
+                        $(".div_fullscreen").show();
+                        top.hide_nav();
+                        $('.ui-searchbar-wrap').addClass('focus');
+                        $('.ui-searchbar-input input').focus();
+                        }
+                        });
+                        
+    }else{
+        $(".div_fullscreen").show();
+        top.hide_nav();
+        $('.ui-searchbar-wrap').addClass('focus');
+        $('.ui-searchbar-input input').focus();
+    }
+    
+}
+function red_hide(){
+    $(".red_div").hide();
+}
+
+function upload_offline(){
+    top.writelog("offline="+ JSON.stringify(top.data.check_step_two));
+    var data = top.data.check_step_two;
+    //初始化多维数组
+    for(var i = 0; i < 8; i++){
+        myArray[i] = new Array();
+        myArray_offline[i] = new Array();
+    }
+    if (data.office_img && data.office_img.length > 0) {
+        myArray_offline[1] = data.office_img.split('|');
+    }
+    if (data.beltline_img && data.beltline_img.length > 0) {
+        myArray_offline[2] = data.beltline_img.split('|');
+    }
+    if (data.stock_img && data.stock_img.length > 0) {
+        myArray_offline[3] = data.stock_img.split('|');
+    }
+    if (data.process_img && data.process_img.length > 0) {
+        myArray_offline[4] = data.process_img.split('|');
+    }
+    if (data.wandp_img && data.wandp_img.length > 0) {
+        myArray_offline[5] = data.wandp_img.split('|');
+    }
+    if (data.logistics_img && data.logistics_img.length > 0) {
+        myArray_offline[6] = data.logistics_img.split('|');
+    }
+    if (data.other_img && data.other_img.lenght>0) {
+        myArray_offline[7] = data.other_img.split('|');
+    }
+    
+    top.images_offline = '';
+    top.confirmInfo("请确认处于网络流畅环境再发起上传，是否确定上传？", function(msg){
+                    if(msg == 1){
+                    for(var i = 1; i < 8; i++){
+                    top.writelog("i="+i+"len="+myArray_offline[i].length);
+                    if(myArray_offline[i].length > 0 ){
+                    
+                    for(var j = 0; j < myArray_offline[i].length; j++){
+                    var imgname = myArray_offline[i][j];
+                    myArray[i].push(imgname.substr(imgname.lastIndexOf('/') + 1));
+                    }
+                    if(top.images_offline == ''){
+                    top.images_offline =  myArray_offline[i].join('|');
+                    }else{
+                    top.images_offline += '|' + myArray_offline[i].join('|');
+                    }
+                    }
+                    top.writelog("i="+i+";myarray="+myArray_offline[i]+";top.images_offline="+top.images_offline);
+                    }
+                    
+                    top.upload_offline();
+                    }
+                    });
+}
+function isEmpty(obj) {
+    
+    if(!obj && obj != 0 && obj != '') {
+        return true;
+    }
+    
+    if(Array.prototype.isPrototypeOf(obj) && obj.length == 0) {
+        return true;
+    }
+    
+    if(Object.prototype.isPrototypeOf(obj) && Object.keys(obj).length == 0) {
+        
+        return true;
+    }
+    return false;
+}
+function after_upload(){
+    if(top.err_count == 0){
+        top.confirmInfo("图片上传成功，是否保存数据到服务器?", function(msg){
+                        if(msg == 1){
+                        save_offline_step_two();
+                        }else{
+                        $("#step_2").attr("style","background:rgba(68, 153, 238, 0.9)");
+                        $("#step_2").html("保存");
+                        $("#li_02").attr("onclick", "save_offline_step_two()");
+                        }
+                        });
+    }else{
+        $("#step_2").attr("style","background:rgba(68, 153, 238, 0.9)");
+        $("#step_2").html("继续上传");
+        $("#li_02").attr("onclick", "upload_again()");
+    }
+}
+function upload_again(){
+    var ret = upload_offline();
+    
+    if( ret == 0){
+        top.confirmInfo("图片上传成功，是否保存数据到服务器?", function(msg){
+                        if(msg == 1){
+                        save_offline_step_two();
+                        }else{
+                        $("#step_2"+step).attr("style","background:rgba(68, 153, 238, 0.9)");
+                        $("#step_2"+step).html("保存");
+                        $("#li_02").attr("onclick", "save_offline_step_two()");
+                        }
+                        });
+    }else{
+        $("#step_2").attr("style","background:rgba(68, 153, 238, 0.9)");
+        $("#step_2").html("继续上传");
+        $("#li_02").attr("onclick", "upload_again()");
+        
+    }
+}
+function save_offline_step_two(){
+    
+    top.data.check_step_two.office_img=myArray[1].join('|');
+    top.data.check_step_two.beltline_img=myArray[2].join('|');
+    top.data.check_step_two.stock_img=myArray[3].join('|');
+    top.data.check_step_two.process_img=myArray[4].join('|');
+    top.data.check_step_two.wandp_img=myArray[5].join('|');
+    top.data.check_step_two.logistics_img=myArray[6].join('|');
+    top.data.check_step_two.other_img=myArray[7].join('|');
+    
+    Http_ajax(function(msg){
+              top.stop_process();
+              
+              var json = eval("("+msg+")");
+              if(json.data.retcode == 0){
+              top.alertInfo(json.data.retinfo);
+              $("#step_2").attr("style","background:rgba(68, 153, 238, 0.9)");
+              $("#step_2").html("生产经营环境检查");
+              $("#li_02").attr("onclick", "check_by_step_two();");
+              return;
+              }else{
+              top.alertInfo(json.retinfo);
+              }
+              
+              }, "app/6005", top.data.check_step_two);
+              
+}
+
+function showPageByFlag(flag){
+    top.writelog("falg = "+flag);
+    if(flag == '1'){
+        showNewFrame('loan_info.html', 'smask')
+    }else if( flag == '2'){
+        showNewFrame('shareholder.html', 'smask')
+    }else if( flag == '3'){
+        red_hide();
+        showNewFrame('warning.html', 'smask')
+    }
+}
+</script>
+</head>
+    <body>
+        <header class="mui-bar mui-bar-nav head_color">
+            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+            <div class="head_div" onclick="search_customer();">按客户名称搜索 <div class="rgt_search" ></div></div>
+        </header>
+   
+        <div class="mui-content mui-scroll-wrapper" >
+            <div class="mui-scroll" style="margin-top:25px;">
+                <div class="mui-row" style="padding:5px;background-color:#fff;" onclick="showNewFrame('map.html', 'smask')">
+                    <div class="mui-col-xs-3" style="border:1px solid #8A8B8F;">
+                        <div id="maps" style="width:100%;height:25vw;"></div>
+                    </div>
+                    <div class="mui-col-xs-9" style="padding-left:10px;padding-top:10px;">
+                        <p style="" id="notice_info">点击右上角搜索查询客户信息</p>
+                        <p style="color:#00a5e0;font-size: 14px">现场检查GPS定位，点击确定</p>
+                        <p style="font-size: 15px" id="address_gps">正在获取当前地址。。。。</p>
+                    </div>
+                </div>
+                    <div class="mui-content-padded customer_div">
+                        <form class="mui-input-group">
+                            <div class="mui-input-row">
+                                <label>客户名称</label>
+                                <input type="text" placeholder="客户名称" id="customer">
+                                    </div>
+                            <div class="mui-input-row">
+                                <label>证件号码</label>
+                                <input type="text" placeholder="证件号码" id="group_code">
+                                    </div>
+                            <div class="mui-input-row">
+                                <label>联系地址</label>
+                                <input type="text" placeholder="联系地址" id="lx_address">
+                                    </div>
+                            
+                            <div class="mui-input-row">
+                                <label>风险分类</label>
+                                <input type="text" placeholder="风险分类" id="risk_type" >
+                                    </div>
+                            <div class="mui-input-row">
+                                <label>担保方式</label>
+                                <input type="text" placeholder="担保方式" id="guarant_type">
+                                    </div>
+                            <div class="mui-input-row">
+                                <label>担保人</label>
+                                <input type="text" placeholder="担保人" id="guarantor">
+                                    </div>
+                        </form>
+                    </div>
+                    <div class="mui-content-padded customer_div">
+                        <form class="mui-input-group">
+                            <div class="mui-input-row">
+                                <label>经营实体名称</label>
+                                <input type="text" placeholder="经营实体名称" id="corporation">
+                                    </div>
+                            <div class="mui-input-row">
+                                <label>行业分类</label>
+                                <input type="text" placeholder="行业分类" id="category" >
+                                    </div>
+                            <div class="mui-input-row">
+                                <label>注册地址</label>
+                                <input type="text" placeholder="注册地址" id="address" >
+                                    </div>
+                            
+                        </form>
+                    </div>
+                    <div class="customer_div" style="margin-top: 15px;">
+                        <ul class="mui-table-view">
+                           
+                            <li class="mui-table-view-cell" onclick="showPageByFlag('1');" id="1">
+                                <a class="mui-navigate-right">
+                                    查看贷款基本信息
+                                </a>
+                            </li>
+                            
+                            <li class="mui-table-view-cell" onclick="showPageByFlag('2');" id="2">
+                                <a class="mui-navigate-right">
+                                    查看股东信息
+                                </a>
+                            </li>
+                            <!--
+                            <li class="mui-table-view-cell" onclick="showPageByFlag('3');" id="warn_info">
+                                <a class="mui-navigate-right">
+                                    查看预警信息<div class="red_div" style="display:none"></div>
+                                </a>
+                            </li>
+                             -->
+                        </ul>
+                    </div>
+                    <section class="ui-container customer_div" style="background-color: #ffffff;border-top: 1px solid #d0d0d0;margin-top:5px;">
+                        <div class="demo-desc customer_div check_back" style="text-align:center;font-size:18px;" id="off_top">
+                            <p>请按以下操作记录现场检查情况</p>
+                        </div>
+                    </section>
+              
+              <div class="radmenu" style="margin-top:250px;display:none;" id="check_div" >
+                        <a href="#" class="show" id="start_btn">START</a>
+                        <ul>
+                            <li onclick="check_by_step(1);"  >
+                                <a href="#" id="step_1" class="finish">客户经营场所检查</a>
+                            </li>
+                            <li onclick="check_by_step(2);" id="li_02">
+                                <a href="#" id="step_2">生产经营情况检查</a>
+                            </li>
+                            <li onclick="check_by_step(3);">
+                                <a href="#" id="step_3">财务报表信息检查</a>
+                            </li>
+                            <li onclick="check_by_step(4);">
+                                <a href="#" id="step_4">纳税申报信息检查</a>
+                            </li>
+                            <li onclick="check_by_step(5);">
+                                <a href="#" id="step_5">银行对账信息检查</a>
+                            </li>
+                            <li onclick="check_by_step(6);">
+                                <a href="#" id="step_6">抵押物现状检查</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div style="height:510px;line-height:510px;color:#ffffff;" class="check_back">123</div>
+                        <div class="check_back" style="border-top: 1px solid #d0d0d0;display:none;height:300px;line-height:300px;text-align:center;">
+                        <p style="float:center;color:8e8e8e;font-size:14px;">兴业银行现场检查系统</p>
+                    </div>
+                </div>
+            </div>
+      
+        <div class="div_fullscreen" style="display:none">
+            <div class="demo-block" style="margin-top:25px;">
+                <div  class="ui-searchbar-wrap ui-border-b">
+                    <div class="ui-searchbar ui-border-radius"  style="height:35px;line-height:35px;">
+                        <i class="ui-icon-search"></i>
+                        <div class="ui-searchbar-text">按客户名称搜索</div>
+                        <div class="ui-searchbar-input" style="margin-top:8px;"><input value="" type="text" data-role="none" style="height:25px;line-height:25px;margin-left:2px;" onkeyup="auto_complete()" id="search_key" placeholder="按客户名称搜索" ></div>
+                        <i class="ui-icon-close"></i>
+                    </div>
+                    <button class="ui-searchbar-cancel">取消</button>
+                </div>
+                
+                <script src="js/frozen.js"></script>
+                <script type="text/javascript">
+                    $('.ui-searchbar').click(function(){
+                         $('.ui-searchbar-wrap').addClass('focus');
+                         $('.ui-searchbar-input input').focus();
+                     });
+                     $('.ui-searchbar-cancel').click(function(){
+                         $('.ui-searchbar-wrap').removeClass('focus');
+                         $('.ui-searchbar-input input').blur();
+                         $(".div_fullscreen").hide();
+                         top.show_nav();
+                     });
+                     $('.ui-icon-close').click(function(){
+                           $("#search_key").val('');
+                     });
+                    </script>
+            </div>
+            <div class="demo-block" >
+                <ul class="ui-list ui-list-pure ui-border-b" id="context">
+                    
+                    
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>
+

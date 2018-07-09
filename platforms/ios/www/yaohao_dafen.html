@@ -1,0 +1,429 @@
+
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+
+<!--App自定义的css-->
+<link rel="stylesheet" type="text/css" href="hello-mui/css/app.css" />
+
+<script src="hello-mui/js/mui.min.js"></script>
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<style>
+html, body {
+    position: relative;
+    height: 100%;
+}
+body {
+    background: #fff;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color:#000;
+    margin: 0;
+    padding: 0;
+    overflow:auto;
+ 
+}
+.div_fullscreen_pg{
+        
+        z-index:9998;background-color:rgba(2,2,2,0.8);width:100%;height:100%;position: fixed;top:0px;
+    }
+
+.div_process{
+       
+    z-index:9999;background-color:#FFFFFF; width:100%;position: fixed; bottom:0;left:0;text-align:left;
+        
+}
+h5.mui-content-padded {
+	margin-left: 3px;
+	margin-top: 20px !important;
+}
+h5.mui-content-padded:first-child {
+	margin-top: 12px !important;
+}
+.ui-alert {
+	text-align: center;
+	padding: 20px 10px;
+	font-size: 16px;
+}
+
+
+.head_color{
+	background-color: #18b4ed;
+}
+.mui-input-row input{
+	font-size:15px;
+	color:#8e8e8e;
+}
+.mui-input-row textarea{
+	font-size:15px;
+	color:#8e8e8e;
+}
+</style>
+<script>
+
+var thisURL; 
+var activeIndex = 0; //0-企业用户 1-个人用户
+var institution = 0; //合作机构编号
+var bondingCompany = 0; //担保公司编号
+var pgCompany = 0; //评估公司编号
+var fileno;
+var star = 0;
+var flag = 0;//0-企业用户1-个人用户
+var pgCompany = 0;
+var pgCompanyName='';
+var curr_assess_id=0;
+$(function() {			
+	  
+	
+	var thisURL = document.URL; 
+	 var getenv = thisURL.split('?')[1];
+     localStorage.setItem("list_flag", '1');
+     fileno = getenv.split('=')[1];
+    
+	mui.init({
+		swipeBack:true //启用右滑关闭功能
+	});
+	mui('.mui-scroll-wrapper').scroll({
+              deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+              });
+	mui(document.body).on('tap', '.mui-action-back', function(e) {
+		this.click();
+		return false;
+	});
+	initPage();
+	$("input").attr("readonly", "readonly");
+	
+ 
+
+	
+
+});  
+
+
+
+function initPage(){
+	var data = {
+            fileno:fileno           
+    };
+	
+	Http_ajax(done_check_info, "app/6041", data);
+}
+
+function done_check_info(msg){
+
+	top.writelog("6041 recv:"+msg);
+	top.stop_process();
+	var json = eval("("+msg+")");
+	
+	if(json.stat == '1'){
+		top.alertInfo("查询失败，请把该笔记录信息上报管理员处理");
+		return;
+	}
+	flag = json.data.fileinfo.flag;
+	var login_user = localStorage.getItem("user_id");
+	
+	curr_assess_id = json.data.fileinfo.assess_id;
+	var user_type = localStorage.getItem("user_type");
+	top.writelog("user_type="+user_type);
+	top.writelog("fileno="+fileno+";stat="+json.data.fileinfo.stat);
+	if(json.data.fileinfo.flag == '1'){ //个人
+		$("#gr_div").show();
+		$("#customer_gr").val(json.data.fileinfo.customer); //客户名称
+		$("#tel_no_gr").val(json.data.fileinfo.tel_no); //联系方式
+		$("#pawn_flag_gr").val(json.data.fileinfo.pawnName + json.data.fileinfo.pawnSmall); //抵押物类型
+		$("#pawn_address_gr").val(json.data.fileinfo.pawn_address_text); //具体地址
+		$("#region_gr").val(json.data.fileinfo.area_name); //支行所处区域
+		if(!top.isEmpty(json.data.fileinfo.agency_id)){
+			
+			$("#institution_name").val(json.data.fileinfo.agency_id); //合作机构
+			$("#institution_lxr").val(json.data.fileinfo.agency_lxr); //合作机构
+			$("#institution_lxfs").val(json.data.fileinfo.agency_lxfs); //合作机构
+			
+		}
+		
+		if(json.data.fileinfo.stat == 0 && user_type == 0){ //未处理时客户经理看不到评估公司
+			$("#pg_name_gr").val("具体分派评估公司稍后通知"); //评估公司
+			
+		}else{
+			$("#pg_name_gr").val(json.data.fileinfo.assess_name); //评估公司
+			$("#person_gr").val(json.data.fileinfo.person); //评估公司联系人
+			$("#person_phone_gr").val(json.data.fileinfo.person_phone);//评估公司联系方式
+		
+
+			$("#pg_star_gr").val(json.data.fileinfo.star);
+
+		}
+		
+	}else{ //企业
+		$("#qy_div").show();
+		$("#customer_qy").val(json.data.fileinfo.customer); //客户名称
+		$("#tel_name_qy").val(json.data.fileinfo.tel_name); //联系人
+		$("#tel_no_qy").val(json.data.fileinfo.tel_no); //联系方式
+		$("#pawn_flag_qy").val(json.data.fileinfo.pawnName + json.data.fileinfo.pawnSmall); //抵押物类型
+		$("#pawn_address_qy").val(json.data.fileinfo.pawn_address_text); //具体地址
+		$("#region_qy").val(json.data.fileinfo.area_name); //支行所处区域
+		
+
+			$("#pg_name_qy").val(json.data.fileinfo.assess_name); //评估公司
+			$("#person_qy").val(json.data.fileinfo.person); //评估公司联系人
+			$("#person_phone_qy").val(json.data.fileinfo.person_phone);//评估公司联系方式
+			
+
+			$("#pg_star_qy").val(json.data.fileinfo.star);
+	
+	}
+
+}
+
+
+function dafen_fun(){
+	
+	if(flag == 1){//个人
+		star  = $("#star_gr").val();
+	}else{ //企业
+		star  = $("#star_qy").val();
+	}
+	if(star < 0 || star > 100){
+		top.alertInfo("打分分数需在1-100之间");
+		return;
+	}
+
+	var data = {
+			fileno:fileno,
+			star:star
+	};
+
+	//通信
+	Http_ajax(function(msg){
+		
+		top.stop_process();
+		top.writelog("6034 recv:"+msg);
+		top.alertInfo("评价成功");
+		parent.initPage();
+		back_history();
+	}, "app/6034", data);
+}
+
+
+
+//拨号
+function call_phone(obj){
+	top.call_phone(obj.value);
+}
+
+
+
+
+</script>
+</head>
+    
+<body>
+ 
+   	<header class="mui-bar mui-bar-nav head_color">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+		<h1 class="mui-title">摇号资料</h1>
+	</header>
+
+	<div class="container-fluid">
+	<div class="mui-content mui-scroll-wrapper" >													
+		    <div class="mui-scroll top_head" id="qy_div" style="display:none;background-color: #efeff4;height:100%;">				    	
+ 					<div class="mui-content-padded" style="margin: 5px;">
+						<form class="mui-input-group">
+							<div class="mui-input-row">
+								<label>客户名称</label>
+								<input type="text" id="customer_qy" placeholder="客户名称">
+							</div>
+							<div class="mui-input-row">
+								<label>联系人</label>
+								<input type="text" id="tel_name_qy" placeholder="联系人">
+							</div>
+							<div class="mui-input-row" >
+								<label>联系方式</label>
+								<input type="text" id="tel_no_qy" placeholder="联系方式" onclick="javascript:call_phone(this);">
+							</div>
+						</form>
+					</div>
+					<div class="mui-content-padded" style="margin: 5px;">								
+						<form class="mui-input-group" >										
+							<div class="mui-input-row">
+								<label>类型</label>
+								<input type="text" id="pawn_flag_qy" placeholder="抵押物类型" id='pawn_flag_qy' readonly="readonly">
+							</div>
+							<div class="mui-input-row" style="height:80px;">
+								<label>位置</label>								
+								<textarea id="pawn_address_qy" rows="2" placeholder="具体地址" readonly="readonly"></textarea>
+							</div>
+						</form>
+					</div>	
+					<div class="mui-content-padded" style="margin: 5px;">								
+						<form class="mui-input-group" >										
+							<div class="mui-input-row">
+								<label>地区</label>
+								<input type="text" id="region_qy" placeholder="支行所处区域"  readonly="readonly">
+							</div>										
+						</form>
+					</div>	
+					<div class="mui-content-padded" style="margin: 5px;">								
+						<form class="mui-input-group" >										
+							<div class="mui-input-row">
+								<label>评估公司</label>
+								<input type="text" placeholder="评估公司" id='pg_name_qy' readonly="readonly">
+							</div>										
+														
+							<div class="mui-input-row pggs_info" >
+								<label>联系人</label>
+								<input type="text" placeholder="评估公司" id='person_qy' readonly="readonly">
+							</div>	
+							<div class="mui-input-row pggs_info" >
+								<label>联系方式</label>
+								<input type="text" placeholder="评估公司" id='person_phone_qy' readonly="readonly" onclick="javascript:call_phone(this);">
+							</div>									
+						</form>
+					</div>		
+					<div class="mui-content-padded" style="margin: 5px;">
+						<form class="mui-input-group">										
+							
+							
+							<div class="mui-input-row"  id='div_star_qy'>
+								<label>用户打分</label>
+								<input type="text" placeholder="用户打分" id='pg_star_qy' readonly="readonly">
+							</div>										
+						</form>						
+					</div>
+					<div class="mui-content-padded dafen" style="margin: 5px;">
+						<form class="mui-input-group">										
+							<div class="mui-input-row">
+								<label>用户打分</label>
+								<div class="mui-numbox" style="width: 180px;height: 38px;">
+									<button class="mui-btn-numbox-minus" type="button">-</button>
+									<input class="mui-input-numbox" type="number" id="star_qy" min="1" max="100" value="90"/>
+									<button class="mui-btn-numbox-plus" type="button">+</button>
+								</div>
+							</div>
+						</form>
+						<div style="margin-top:10px;text-align:center;margin-bottom: 600px;">
+							<button type="button" class="mui-btn  mui-btn-primary" style="width:90%" onclick="dafen_fun();">打分</button>
+						</div>
+						
+					</div>	
+	
+			 </div>
+
+		    <div class="mui-scroll top_head" id="gr_div"  style="display:none;background-color: #efeff4;height:100%;">
+				<div class="mui-content-padded" style="margin: 5px;">						
+					<form class="mui-input-group">
+						<div class="mui-input-row">
+							<label>客户名称</label>
+							<input type="text" id="customer_gr" placeholder="客户名称">
+						</div>
+						
+						<div class="mui-input-row">
+							<label>联系方式</label>
+							<input type="text" id="tel_no_gr" placeholder="联系方式" onclick="javascript:call_phone(this);">
+						</div>
+					</form>								
+				</div>
+						<div class="mui-content-padded" style="margin: 5px;">								
+						<form class="mui-input-group" >										
+							<div class="mui-input-row">
+								<label>类型</label>
+								<input type="text" placeholder="抵押物类型" id='pawn_flag_gr' readonly="readonly">
+							</div>
+							<div class="mui-input-row"  style="height:80px;">
+								<label>位置</label>
+								<textarea id="pawn_address_gr" rows="2" placeholder="具体地址" readonly="readonly"></textarea>
+								
+							</div>
+						</form>
+					</div>	
+					<div class="mui-content-padded" style="margin: 5px;">								
+						<form class="mui-input-group" >										
+							<div class="mui-input-row">
+								<label>地区</label>
+								<input type="text" id="region_gr" placeholder="支行所处区域"  readonly="readonly">
+							</div>										
+						</form>
+					</div>
+					
+					<div class="mui-content-padded" style="margin: 5px;" id="zj_div">								
+						<form class="mui-input-group" >										
+				
+							<div class="mui-input-row">										
+								<label>中介名称</label>
+								<input type="text" placeholder="请输入房产中介名称" id='institution_name'>
+							</div>
+							<div class="mui-input-row " >										
+								<label>联系人</label>
+								<input type="text" placeholder="请输入房产中介名称" id='institution_lxr'>
+							</div>
+							<div class="mui-input-row " >										
+								<label>联系方式</label>
+								<input type="text" placeholder="请输入房产中介名称" id='institution_lxfs'>
+							</div>											
+						</form>
+					</div>
+
+					<div class="mui-content-padded" style="margin: 5px;">								
+						<form class="mui-input-group" >										
+							<div class="mui-input-row">
+								<label>评估公司</label>
+								<input type="text" placeholder="评估公司" id='pg_name_gr' readonly="readonly">
+							</div>										
+															
+							<div class="mui-input-row">
+								<label>联系人</label>
+								<input type="text" placeholder="评估公司" id='person_gr' readonly="readonly">
+							</div>	
+							<div class="mui-input-row">
+								<label>联系方式</label>
+								<input type="text" placeholder="评估公司" id='person_phone_gr' readonly="readonly" onclick="javascript:call_phone(this);">
+							</div>									
+						</form>
+					</div>	
+					<div class="mui-content-padded" style="margin: 5px;">
+						<form class="mui-input-group">										
+				
+							<div class="mui-input-row"  id='div_star_gr'>
+								<label>用户打分</label>
+								<input type="text" placeholder="用户打分" id='pg_star_gr' readonly="readonly">
+							</div>									
+						</form>					
+					</div>
+					
+					<div class="mui-content-padded dafen" style="margin: 5px;">
+						<form class="mui-input-group">										
+							<div class="mui-input-row">
+							<label>用户打分</label>
+								<div class="mui-numbox" style="width: 180px;height: 38px;">
+									<button class="mui-btn-numbox-minus" type="button">-</button>
+									<input class="mui-input-numbox" type="number" id="star_gr" min="1" max="100" value="90"/>
+									<button class="mui-btn-numbox-plus" type="button">+</button>
+								</div>
+							</div>
+						</form>		
+						<div style="margin-top:10px;text-align:center;margin-bottom: 300px;">
+							<button type="button" class="mui-btn  mui-btn-primary" style="width:90%" onclick="dafen_fun();">打分</button>
+						</div>				
+					</div>	
+				
+			
+			 </div>
+		
+	</div>
+</div>
+
+
+
+    </body>
+</html>

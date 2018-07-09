@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+	
+        <link rel="stylesheet" href="css/frozen.css">
+        <link rel="stylesheet" href="css/common.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+		<link rel="stylesheet" type="text/css" href="css/aui/aui.2.0.css" />
+		<link rel="stylesheet" type="text/css" href="css/aui/api.css" />
+		<link rel="stylesheet" type="text/css" href="css/aui/aui-list-swipe.css" />
+		<link rel="stylesheet" type="text/css" href="css/aui/aui-flex.css" />
+		<link rel="stylesheet" href="css/demo.css">
+<link rel="stylesheet" href="css/iconfont.css">
+<link rel="stylesheet prefetch" href="css/photoswipe.css">
+<link rel="stylesheet prefetch" href="css/default-skin/default-skin.css">
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		
+        <script src="lib/zepto.min.js"></script>
+        <script src="js/frozen.js"></script>
+        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+           
+             html, body {
+                 position: relative;
+                 height: 100%;
+             }
+         body {
+             background: #fff;
+             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+             font-size: 14px;
+             color:#000;
+             margin: 0;
+             padding: 0;
+         }
+       
+        	.img_lit{
+                      
+                        width: 80px;
+                       	height: 80px;
+                        
+                    }
+         	.divcss5_w{ border:0px solid #000; width:90px; height:85px;overflow:hidden;padding:5px;} 
+			.divcss5_w img{max-width:80px;_width:expression(this.width > 80 ? "80px" : this.width);}
+			.divcss5_h{ border:0px solid #000; width:85px; height:90px;overflow:hidden;padding:5px;} 
+			.divcss5_h img{max-height:80px;_height:expression(this.height > 80 ? "80px" : this.height);} 
+        </style>
+ 		<script type="text/javascript">
+ 		var fileno;
+ 		
+ 		var myArray = new Array();
+		$(function() {
+			//调整map高度
+			var thisURL = document.URL; 
+				localStorage.setItem("thisURL", thisURL);
+			localStorage.setItem("thisURL", thisURL);
+			fileno = localStorage.getItem("fileno");
+			
+			
+			top.offline = 0;
+			initPage();
+			
+		});
+		function initPage(){
+			if(top.data.check_step_five){
+
+	
+    			
+				var data = top.data.check_step_five;
+				
+    			$("#jbrly").val(data.note);
+    						
+    			myArray = bankcheck_img.split('|');
+    			
+    	
+    			var file_path = localStorage.getItem("group_code");
+    			
+    				for(var j = 0; j < myArray.length; j++){
+    					if(myArray[j].length > 0){
+    						var imgurl =  top.imgpath+file_path+'/'+myArray[j];
+        					add_pic_init(imgurl);
+    					}else{
+    						myArray.splice(j,1);
+    					}
+    					
+    				}
+    			
+    			
+			}
+		}
+		function add_pic_init(server_url){
+			
+			
+			
+			var gallery = document.getElementById('gallery_2');
+				
+			var figure = document.createElement("figure");
+			figure.setAttribute("class", "aui-col-xs-3");
+			
+			var div = document.createElement("div");
+			div.setAttribute("class", "divcss5");
+		
+			var a = document.createElement("a");
+			a.setAttribute("href", server_url);
+			var img = document.createElement("img");
+			img.src = server_url;
+			checkPicurl(img.src);
+			var figcaption = document.createElement("figcaption");
+		
+			a.appendChild(img);
+			div.appendChild(a);
+			
+			figure.appendChild(div);
+			figure.appendChild(figcaption)
+		    gallery.appendChild(figure);
+			
+
+	
+							
+		}
+		function pz(){
+            
+            top.capturePhoto();
+
+        }
+		function add_pic(local_url, server_url){
+			
+			//添加照片到数组
+			myArray.push(server_url);
+			var gallery = document.getElementById('gallery_2');
+			
+			var figure = document.createElement("figure");
+			figure.setAttribute("class", "aui-col-xs-3");
+			
+			var div = document.createElement("div");
+			div.setAttribute("class", "divcss5");
+		
+			var a = document.createElement("a");
+			a.setAttribute("href", local_url);
+			var img = document.createElement("img");
+			img.src = local_url;
+			checkPicurl(img.src);
+			var figcaption = document.createElement("figcaption");
+		
+			a.appendChild(img);
+			div.appendChild(a);
+			
+			figure.appendChild(div);
+			figure.appendChild(figcaption)
+		    gallery.appendChild(figure);
+							
+		}
+	
+		function upload_info(){
+			if(myArray.length == 0){
+				top.alertInfo("至少要上传一张银行对账检查图片");
+				return;
+			}
+			
+			var notes = $("#jbrly").val();
+			
+			if(notes.length < 39){
+				top.alertInfo("备注信息不得少于20字");
+				return;
+			}
+			var data = {
+        			fileno : fileno,
+        			bankcheck_img:myArray.join('|'),
+        			note:notes,
+        			coordinate:top.coordinate,
+        			address:top.address_gps,
+        			trandate:get_trandate()
+        		};
+			Http_ajax(function(msg){
+			
+				top.stop_process();
+	
+				var json = eval("("+msg+")");
+				if(json.data.retcode == 0){
+					top.alertInfo(json.data.retinfo);		
+					top.data.check_step_five = data;
+					back_history();
+					parent.update_button('5');
+					return;
+				}else{
+					top.alertInfo(json.retinfo);
+				}
+				
+				
+			}, "app/6008", data);
+			
+	        
+		}
+
+		</script>
+    </head>                                
+	<body style="overflow:auto;background-color: #f4f4f4;">
+	<div class="nextandlast" style="display:none;">
+            
+                    <div class="left " onClick="close_back();"><div class="back"></div>返回</div>
+                    <div id="title" class="center"></div>
+                    <div class="right" onclick="is_delete()"></div>
+           
+        </div>
+	<div class="container-fluid" >
+		<header class="ui-header ui-header-positive ui-border-b">
+            <i class="ui-icon-return" onclick="back_history();top.scroll_auto();"></i><div style="font-size:18px;font-weight:bold;text-align:center;">银行对账校验</div>
+        </header>
+    
+      	<section class="ui-container" style="background-color: #ffffff">
+			<section id="form">
+		
+		     	<div style="font-size: 15px;text-align: left;margin-top:10px;">
+                       <textarea style="width:90%;color:#5b5b5b;border:0px;background:#ffffff;margin-left: 15px;margin-right: 15px;" rows="4" id="jbrly" placeholder="备注信息，不得少于20字"></textarea>
+                </div>
+			
+		  
+				<div class="demo-item" >
+       				 <div class="demo-desc" style="text-align:center;font-size:18px;">主要往来银行当期对账单信息核查拍照</div>
+       			</div>
+       			
+			
+
+			</section>
+
+        </section>
+        <div class="contain" style="margin: 0 0 0;background-color: #ffffff;border-bottom: 1px solid #d0d0d0;">
+					<ul style="width:100%;">
+						<li style="display:inline-block;width:100%;">
+		        			<!--data-pswp-uid 是每个gallery的id不能重复-->
+					
+							<div class="my-gallery" data-pswp-uid="2" style="width:100%;" id="gallery_2">	
+																					
+																							
+							</div>	
+							<div class="aui-col-xs-3"><div class="divcss5"><img src="img/add.png" onclick="pz('1');"/></div></div>											
+						</li>
+					</ul>
+		</div>
+
+      	   <section class="ui-container" >
+			<section id="form">
+				<div class="demo-item" >			       
+			        <div class="demo-block"> 
+			            <div class="ui-btn-wrap">
+			            	
+			                <button class="ui-btn-lg ui-btn-primary"  style="margin-top:20px;" onclick="upload_info()">
+			                  	  保存
+			                </button>
+			            </div>
+			
+			        </div>
+			    </div>
+			   </section>
+			  </section>  
+	</div>	
+	<div class='div_back' style="display:none;">
+		<div class="div_bottom">		
+			<p style="text-align:center">是否删除该图片？</p>	
+			<ul>
+				<li onclick="delete_img()">删除</li>
+				<li onclick="button_hide();" style="margin-top:10px;" >取消</li>
+			</ul>
+		</div>
+    </div>
+	<!-- Root element of PhotoSwipe. Must have class pswp. -->
+	<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+	
+	    <!-- Background of PhotoSwipe. 
+	         It's a separate element as animating opacity is faster than rgba(). -->
+	    <div class="pswp__bg"></div>
+	
+	    <!-- Slides wrapper with overflow:hidden. -->
+	    <div class="pswp__scroll-wrap">
+	
+	        <!-- Container that holds slides. 
+	            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+	            Don't modify these 3 pswp__item elements, data is added later on. -->
+	        <div class="pswp__container">
+	            <div class="pswp__item"></div>
+	            <div class="pswp__item"></div>
+	            <div class="pswp__item"></div>
+	        </div>
+	
+	        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+	        <div class="pswp__ui pswp__ui--hidden">
+	
+	            <div class="pswp__top-bar" style="display:none">
+	
+	                <!--  Controls are self-explanatory. Order can be changed. -->
+	
+	                <div class="pswp__counter"></div>
+	
+	                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+	<!-- 
+	                <button class="pswp__button pswp__button--share" title="Share"></button>
+	 -->
+	                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+	
+	                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+	
+	                <!-- element will get class pswp__preloader--active when preloader is running -->
+	                <div class="pswp__preloader">
+	                    <div class="pswp__preloader__icn">
+	                      <div class="pswp__preloader__cut">
+	                        <div class="pswp__preloader__donut"></div>
+	                      </div>
+	                    </div>
+	                </div>
+	            </div>
+	
+	            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+	                <div class="pswp__share-tooltip"></div> 
+	            </div>
+	
+	            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+	            </button>
+	
+	            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+	            </button>
+	
+	            <div class="pswp__caption">
+	                <div class="pswp__caption__center"></div>
+	            </div>
+	
+	        </div>
+	
+	    </div>
+
+	</div>
+	</body>
+	<script src="js/jquery.min.js"></script>
+<script src="js/photoswipe.js"></script>
+<script src="js/photoswipe-ui-default.min.js"></script>
+<script type="text/javascript">
+var gallery_pswp;
+var items_list;
+function close_back(){
+	console.log("click close");
+	gallery_pswp.close();
+}
+function button_hide(){
+	$(".div_back").hide();
+}
+function is_delete(){
+	
+	$(".div_back").show();
+}
+function delete_img(){
+	$(".div_back").hide();
+	console.log("delete index=:"+gallery_pswp.getCurrentIndex());
+	var num = gallery_pswp.getCurrentIndex();
+	
+	if(num == (myArray.length - 1)){
+		myArray.splice(num, 1);
+		var gallery = document.getElementById('gallery_2');
+		var list = document.getElementsByTagName('figure');
+		
+		gallery.removeChild(list[num]);
+		close_back();
+		return;
+	}
+	console.log("before delete:"+myArray);
+	myArray.splice(num, 1);
+	console.log("after delete:"+myArray);
+	var gallery = document.getElementById('gallery_2');
+	var list = document.getElementsByTagName('figure');
+	
+	gallery.removeChild(list[num]);
+	items_list.splice(num, 1);
+	gallery_pswp.invalidateCurrItems();
+	// updates the content of slides
+	gallery_pswp.updateSize(true);
+	
+}
+
+
+var initPhotoSwipeFromDOM = function(gallerySelector) {
+
+// 解析来自DOM元素幻灯片数据（URL，标题，大小...）
+// (children of gallerySelector)
+var parseThumbnailElements = function(el) {
+    var thumbElements = el.childNodes,
+        numNodes = thumbElements.length,
+        items = [],
+        figureEl,
+        linkEl,
+        size,
+        item,
+		divEl;
+
+    for(var i = 0; i < numNodes; i++) {
+
+        figureEl = thumbElements[i]; // <figure> element
+
+        // 仅包括元素节点
+        if(figureEl.nodeType !== 1) {
+            continue;
+        }
+		divEl = figureEl.children[0];
+        linkEl = divEl.children[0]; // <a> element
+        
+        var size = localStorage.getItem(linkEl.getAttribute('href'));
+					var width = size.split(',')[0];
+					var height = size.split(',')[1];
+            item = {
+	                  src: linkEl.getAttribute('href'),
+	                  w: parseInt(width, 10),
+	                  h: parseInt(height, 10)
+	              };
+       /*
+	    var flag = localStorage.getItem("list_flag");
+	    if(flag == 0){
+	    	 //modify by lwj 20170216
+            var ImgObj=new Image();
+		    ImgObj.src= linkEl.getAttribute('href');
+		    
+	    	item = {
+	                src: linkEl.getAttribute('href'),
+	                w: parseInt(ImgObj.width, 10),
+	                h: parseInt(ImgObj.height, 10)
+	            };
+	    }else{
+	    	  item = {
+	                  src: linkEl.getAttribute('href'),
+	                  w: parseInt(768, 10),
+	                  h: parseInt(1024, 10)
+	              };
+	    }
+	    */
+	 // 创建幻灯片对象
+        
+	 /*
+        size = linkEl.getAttribute('data-size').split('x');
+
+        // 创建幻灯片对象
+        item = {
+            src: linkEl.getAttribute('href'),
+            w: parseInt(size[0], 10),
+            h: parseInt(size[1], 10)
+        };
+
+*/
+
+        if(figureEl.children.length > 1) {
+            // <figcaption> content
+            item.title = figureEl.children[1].innerHTML; 
+        }
+
+        if(linkEl.children.length > 0) {
+            // <img> 缩略图节点, 检索缩略图网址
+            item.msrc = linkEl.children[0].getAttribute('src');
+        } 
+
+        item.el = figureEl; // 保存链接元素 for getThumbBoundsFn
+        items.push(item);
+    }
+
+    return items;
+};
+
+// 查找最近的父节点
+var closest = function closest(el, fn) {
+	
+    return el && ( fn(el) ? el : closest(el.parentNode, fn) );
+};
+
+// 当用户点击缩略图触发
+var onThumbnailsClick = function(e) {
+    e = e || window.event;
+    e.preventDefault ? e.preventDefault() : e.returnValue = false;
+
+    var eTarget = e.target || e.srcElement;
+
+    // find root element of slide
+    var clickedListItem = closest(eTarget, function(el) {
+        return (el.tagName && el.tagName.toUpperCase() === 'FIGURE');
+    });
+
+    if(!clickedListItem) {
+        return;
+    }
+
+    // find index of clicked item by looping through all child nodes
+    // alternatively, you may define index via data- attribute
+    var clickedGallery = clickedListItem.parentNode,
+        childNodes = clickedListItem.parentNode.childNodes,
+        numChildNodes = childNodes.length,
+        nodeIndex = 0,
+        index;
+
+    for (var i = 0; i < numChildNodes; i++) {
+        if(childNodes[i].nodeType !== 1) { 
+            continue; 
+        }
+
+        if(childNodes[i] === clickedListItem) {
+            index = nodeIndex;
+            break;
+        }
+        nodeIndex++;
+    }
+
+
+
+    if(index >= 0) {
+        // open PhotoSwipe if valid index found
+        openPhotoSwipe( index, clickedGallery );
+    }
+    return false;
+};
+
+// parse picture index and gallery index from URL (#&pid=1&gid=2)
+var photoswipeParseHash = function() {
+    var hash = window.location.hash.substring(1),
+    params = {};
+
+    if(hash.length < 5) {
+        return params;
+    }
+
+    var vars = hash.split('&');
+    for (var i = 0; i < vars.length; i++) {
+        if(!vars[i]) {
+            continue;
+        }
+        var pair = vars[i].split('=');  
+        if(pair.length < 2) {
+            continue;
+        }           
+        params[pair[0]] = pair[1];
+    }
+
+    if(params.gid) {
+        params.gid = parseInt(params.gid, 10);
+    }
+
+    return params;
+};
+
+var openPhotoSwipe = function(index, galleryElement, disableAnimation, fromURL) {
+	
+	localStorage.setItem("open_flag", '1');
+
+    var pswpElement = document.querySelectorAll('.pswp')[0],
+        options;
+        
+
+    items_list = parseThumbnailElements(galleryElement);
+
+    // 这里可以定义参数
+    options = {
+    		
+      barsSize: { 
+        top: 100,
+        bottom: 100
+      }, 
+	   fullscreenEl : false,
+		shareButtons: [
+		{id:'wechat', label:'分享微信', url:'#'},
+		{id:'weibo', label:'新浪微博', url:'#'},
+		{id:'download', label:'保存图片', url:'{{raw_image_url}}', download:true}
+		],
+
+        // define gallery index (for URL)
+        galleryUID: galleryElement.getAttribute('data-pswp-uid'),
+
+        getThumbBoundsFn: function(index) {
+            // See Options -> getThumbBoundsFn section of documentation for more info
+            var thumbnail = items_list[index].el.getElementsByTagName('img')[0], // find thumbnail
+                pageYScroll = window.pageYOffset || document.documentElement.scrollTop,
+                rect = thumbnail.getBoundingClientRect(); 
+
+            return {x:rect.left, y:rect.top + pageYScroll, w:rect.width};
+        }
+
+    };
+
+    // PhotoSwipe opened from URL
+    if(fromURL) {
+        if(options.galleryPIDs) {
+            // parse real index when custom PIDs are used 
+            for(var j = 0; j < items_list.length; j++) {
+                if(items_list[j].pid == index) {
+                    options.index = j;
+                    break;
+                }
+            }
+        } else {
+            // in URL indexes start from 1
+            options.index = parseInt(index, 10) - 1;
+        }
+    } else {
+        options.index = parseInt(index, 10);
+    }
+
+    // exit if index not found
+    if( isNaN(options.index) ) {
+        return;
+    }
+
+    if(disableAnimation) {
+        options.showAnimationDuration = 0;
+    }
+
+    // Pass data to PhotoSwipe and initialize it
+    gallery_pswp = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items_list, options);
+    gallery_pswp.init();
+    $(".nextandlast").show();
+    gallery_pswp.listen('close', function() {
+    	$(".nextandlast").hide();
+		console.log("close"+gallery_pswp.getCurrentIndex());  
+		localStorage.setItem("open_flag", '0');
+	});
+    
+    var count = gallery_pswp.getCurrentIndex();
+	count++;
+	$("#title").html(count+'/'+items_list.length);
+
+	gallery_pswp.listen('afterChange', function() {
+		console.log(gallery_pswp.getCurrentIndex());  
+		var count = gallery_pswp.getCurrentIndex();
+		count++;
+		$("#title").html(count+'/'+items_list.length);
+	});
+	gallery_pswp.listen('gettingData', function(index, item) {
+
+	    /* Set image source & size based on real viewport width
+	    if( useLargeImages ) {
+	        item.src = item.originalImage.src;
+	        item.w = item.originalImage.w;
+	        item.h = item.originalImage.h;
+	    } else {
+	        item.src = item.mediumImage.src;
+	        item.w = item.mediumImage.w;
+	        item.h = item.mediumImage.h;
+	    }
+*/
+	
+	    // It doesn't really matter what will you do here, 
+	    // as long as item.src, item.w and item.h have valid values.
+	    // 
+	    // Just avoid http requests in this listener, as it fires quite often
+
+	});
+};
+
+// loop through all gallery elements and bind events
+var galleryElements = document.querySelectorAll( gallerySelector );
+
+for(var i = 0, l = galleryElements.length; i < l; i++) {
+    galleryElements[i].setAttribute('data-pswp-uid', i+1);
+    galleryElements[i].onclick = onThumbnailsClick;
+}
+
+// Parse URL and open gallery if it contains #&pid=3&gid=1
+var hashData = photoswipeParseHash();
+if(hashData.pid && hashData.gid) {
+    openPhotoSwipe( hashData.pid ,  galleryElements[ hashData.gid - 1 ], true, true );
+}
+};
+
+// execute above function
+initPhotoSwipeFromDOM('.my-gallery');
+
+
+$(".my-gallery>figure>div").each(function(){
+	$(this).height($(this).width());
+});
+
+function more(obj,id) {
+		if ($('#txt'+id).is(":hidden")) {
+			$('#p'+id).hide();
+	 		$('#txt'+id).show();
+	 		obj.innerHTML='收起';
+		} else {
+			$('#p'+id).show();
+	 		$('#txt'+id).hide();
+	 		obj.innerHTML='全文';
+		}
+	}
+
+</script>
+</html>

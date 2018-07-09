@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/common.css">
+
+		<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+    	<link rel="stylesheet" href="hello-mui/css/app.css">
+
+
+		<script src="hello-mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+       
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+	
+  		<script type="text/javascript" src="js/nt_zuobiao.js"></script>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=kZ76MkTNOIQ1VnidegnnxbKc"></script>
+        <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+         <style>
+             html, body {
+                 position: relative;
+                 height: 100%;
+             }
+         body {
+             background: #fff;
+             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+             font-size: 14px;
+             color:#000;
+             margin: 0;
+             padding: 0;
+             overflow:auto;
+          
+         }
+         .button_color{
+         color:red;
+         	background:3F8E3F;
+         	font-weight:bold;
+         	
+         }
+         .rgt_scan {
+			width: 24px;
+			height: 24px;
+			float: right;
+			margin-right: 20px;
+			margin-top: 12px;
+			background-size: 100% 100%;
+			background-image: url("img/scan.png");
+		}
+		 .rgt_search {
+		   width: 20px;
+		   height: 20px;
+		   float: right;
+		   margin-right: 16px;
+		   margin-top: 12px;
+		   background-size: 100% 100%;
+		   background-image: url("img/search.png");
+		 }
+    
+         .div_fullscreen{       
+    z-index:9998;background-color:rgba(244,244,244,1);width:100%;height:100%;position: fixed;top:0px;
+}
+.finish{
+background: rgba(123, 123, 123, 0.9);
+}
+.check_back{
+background-color:#ffffff;}
+.red_div{
+	float:right;
+	top:14px;
+	right:40px;
+	position:absolute;
+	height:20px;
+	line-height:20px;
+	width:20px;
+	text-align: center;
+	align-items: center;
+	justify-content: center;
+	z-index:10011;
+	border-radius:30px;
+	box-shadow: 0 0 3px #222;
+	background: red;
+	color: #ffffff;
+	font-size:13px;
+
+}
+ .head_div{
+	text-align:center;
+	border-radius: 2px;
+	font-size:18px;
+	font-weight:bold;
+	background:rgba(235,236,237,0.5);
+	height:35px;
+	line-height:35px;
+	margin-top:5px;
+	margin-left:60px;
+	padding-left:5px;
+}
+			.mui-control-content {
+			
+				min-height: 215px;
+			}
+		.qj_class{
+			height:500px;
+		}
+		.gr_class{
+			height:500px;
+		}
+		
+		.mui-input-row input{
+			color:#6d6d6d;
+		}
+        </style>
+ 		<script>
+ 		//background:-webkit-gradient(linear,0% 0%, 0% 100%, from(#999999), to(#333333), color-stop(0.5,#336600));
+			var thisURL; 
+			var step_now = 1;
+			var ntzb=new NTzuobiao();//实例化坐标转换类
+			var startX, startY, endX, endY;
+			var start_flag = 0;
+			var myArray = new Array();
+			var user_type = '0'; //0-企金 1-个人
+			var y = 0;
+			var label_list = [
+			                  "保证担保",
+			                  "抵、质押、公证",
+			                  "业务合作协议",
+			                  "其他非标准核保"];
+			$(function() {				
+						 
+				thisURL = document.URL; 
+				top.map_flag = 0;
+				
+				top.edit_flag = 0;
+				top.data={};
+				localStorage.setItem("list_flag", '0');
+				y = 0- $(".mui-slider").offset().bottom -80;
+				loading();
+
+				for(var i = 0; i < 4; i++){
+					myArray[i] = 0;
+				}
+				mui.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				mui('.mui-scroll-wrapper').scroll({
+	                deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+	                });
+				mui(document.body).on('tap', '.mui-action-back ', function(e) {
+					this.click();
+					return false;
+				});
+				document.getElementById('slider').addEventListener('slide', function(e) {
+					
+					if (e.detail.slideNumber === 0) {//企金用户
+						user_type = '0';
+					//	$(".mui-slider-group").removeClass("gr_class");
+					//	$(".mui-slider-group").addClass("qj_class");
+						
+					} else if (e.detail.slideNumber === 1) {//零售客户
+						user_type = '1';
+					//	$(".mui-slider-group").removeClass("qj_class");
+					//	$(".mui-slider-group").addClass("gr_class");
+					}
+				});
+				mui('.mui-input-group').on('change', 'input', function() {
+				//	var value = this.checked?"true":"false";
+				//	this.previousElementSibling.innerText = "checked："+value;
+					var num = this.value;
+					if( this.checked ){
+						myArray[num] = 1;
+						$("#li_"+num).attr("style", "display:black");
+						this.previousElementSibling.innerHTML = label_list[this.value];
+						
+					}else{
+						myArray[num] = 0;
+						$("#li_"+num).attr("style", "display:none");
+						this.previousElementSibling.innerHTML = label_list[this.value];
+					
+					}
+					top.writelog("myArray="+myArray);
+					localStorage.setItem("hb_type", myArray.join('-'));
+				
+				});
+				 $('#search_key').bind('input propertychange', function() {  
+			        	
+					 auto_complete();  
+			        });
+              document.getElementById("promptBtn").addEventListener('tap', function(e) {
+                       //	e.detail.gesture.preventDefault(); //修复iOS 8.x平台存在的bug，使用plus.nativeUI.prompt会造成输入法闪一下又没了
+                       var btnArray = ['取消', '确定'];
+                       mui.prompt('请录入该次核保结论，确认后该笔记录将不可再修改', '结论不得少于20字', '核保确认', btnArray, function(e) {
+                                  if (e.index == 1) {
+                                  //	info.innerText = '谢谢你的评语：' + e.value;
+                                  if(e.value.length < 20){
+                                  mui.toast("结论不得少于20字");
+                                  this.click();
+                                  }else{
+                                  var data = {
+                                  fileno:localStorage.getItem("fileno"),
+                                  note:e.value
+                                  };
+                                  Http_ajax(function(msg){
+                                            top.writelog("6023="+msg);
+                                            top.stop_process();
+                                            
+                                            back_history();
+                                            }, "app/6023", data);
+                                  }
+                                  } else {
+                                  //info.innerText = '你点了取消按钮';
+                                  }
+                                  });
+                       //document.querySelector('.mui-popup-input input').type='tel';
+                       });
+              
+            //页面加载后10秒  检查定位情况
+				setTimeout(function(){
+					if(top.map_flag == 0){
+						 top.alertInfo("未获取到地址信息，若点击确认后依旧无法获取地理位置，请退出后重新打开该页面并检查手机网络【苹果手机请确认定位权限是否打开】");
+					//	 window.location.reload();
+						 return ;
+					}
+				},5000);
+            
+            
+            	$("input").attr("readonly", "readonly");
+            	$("#search_key").attr("readonly", false);
+			});  
+
+			function loading(){
+				
+				window.top.getmylocation_r(buildmap);
+				
+			
+			}
+
+            function buildmap(msg) {
+                
+            	var parr = msg.split(',');
+				top.writelog("parr="+JSON.stringify(parr));
+				var point=new BMap.Point(parr[0],parr[1]);
+              
+                
+                var  map = new BMap.Map("maps",{enableMapClick:false});
+                
+              
+                
+                map.centerAndZoom(point, 18);
+                
+                var myPos = new BMap.Marker(point);
+                map.addOverlay(myPos);
+                
+                var myGeo = new BMap.Geocoder();
+                myGeo.getLocation(point, function(result){
+                	 top.writelog("result="+result);
+                                  if (result){
+                                  top.address_gps = result.address;
+                                  
+                                  if(top.map_flag == 0){
+                                  $("#address_gps").html(result.address);
+                                  top.map_flag = 1;
+                                  }
+                                  top.add_value_android(null, null, "address_gps", result.address);
+                                  
+                                  }
+                                  });
+                                  
+            }
+			//获取当前位置
+			function cxdw(msg){
+				var parr = msg.split(',');
+				top.writelog("parr="+JSON.stringify(parr));
+				var point=new BMap.Point(parr[0],parr[1]);
+				
+				var myGeo = new BMap.Geocoder();
+				myGeo.getLocation(point, function(result){
+                               
+			    	if (result){
+                                     top.writelog("result="+result);
+			    		top.address_gps = result.address;
+			    		
+				    		if(top.map_flag == 0){
+				    			$("#address_gps").html(result.address);
+				    			top.map_flag = 1;
+				    		}
+							top.add_value_android(null, null, "address_gps", result.address);
+			    
+			    	}      
+				});		
+			}
+			
+			function update_address(address){
+			
+				top.address_gps = address;
+				$("#address_gps").html(address);
+				top.add_value_android(null, null, "address_gps", result.address);
+			}
+			
+			function query_by_code(){
+
+				if( $("#customer").val().length==0 && $("#group_code").val().length == 0){
+					top.alertInfo("客户姓名或者组织机构代码必须输入一个");
+					return;
+				}
+				var data = {
+						customer:$("#customer").val(),
+						group_code:$("#group_code").val(),
+						coordinate:top.coordinate,
+						customer_type:user_type,
+						address:top.address_gps
+				};
+			
+				
+				//通信
+				Http_ajax(function(msg){
+					
+					top.stop_process();
+					
+					show_customer(msg);
+				}, "app/6002", data);
+				
+			
+			}
+			function show_customer(msg){
+				
+				var json = eval("("+msg+")");
+				
+		
+				   if(user_type == '0'){ //企金客户
+						$("#address_qj").val(json.data.customer_info.addressName);
+						$("#category_qj").val(json.data.customer_info.categoryName);
+						if(json.data.customer_info.corporation.length < 1){
+							$("#corporation_qj").val("点击编辑法人名称");
+						}else{
+							$("#corporation_qj").val(json.data.customer_info.corporation);
+						}
+						if(json.data.customer_info.credit_line.length < 1){
+							$("#credit_line_qj").val("点击编辑授信余额");
+						}else{
+							$("#credit_line_qj").val(json.data.customer_info.credit_line +"(万)");
+						}
+						if(json.data.customer_info.open_balance.length < 1){
+							$("#open_balance_qj").val("点击编辑敞口余额");
+						}else{
+							$("#open_balance_qj").val(json.data.customer_info.open_balance +"(万)");
+						}
+					
+						
+						$("#customer_qj").val(json.data.customer_info.customer);
+						
+						
+						$("#group_code_qj").val(json.data.customer_info.group_code);
+						
+						
+						localStorage.setItem("file_path", json.data.customer_info.group_code);
+					
+						$("#more_qj").show(); //显示股东预警信息
+						var warn_flag = json.data.warn_info_ls.length;
+						if(warn_flag == '0'){
+							$("#warn_info").attr("style","display:black");
+							//$(".red_div").show();
+							//$(".red_div").html(warn_flag);
+						}else{
+							$("#warn_info").attr("style","display:black");
+							$(".red_div").show();
+							$(".red_div").html(warn_flag);
+						}
+
+						localStorage.setItem("shareholder", JSON.stringify(json.data.shareholder_info));
+						top.shareholder = json.data.shareholder_info;
+						localStorage.setItem("warn", JSON.stringify(json.data.warn_info_ls));
+						top.warn_info = json.data.warn_info;
+						localStorage.setItem("retal_info", JSON.stringify(json.data.ratal_info));
+
+						localStorage.setItem("customer",json.data.customer_info.customer);
+						localStorage.setItem("group_code", json.data.customer_info.group_code);
+				   }else{
+					   $("#address_gr").val(json.data.customer_info.addressName);
+					    $("#category_gr").val(json.data.customer_info.categoryName);
+					    $("#corporation_gr").val(json.data.customer_info.corporation);
+					    $("#customer_gr").val(json.data.customer_info.customer);
+					    $("#group_code_gr").val(json.data.customer_info.group_code);
+					    $("#lx_address_gr").val(json.data.customer_info.LS_ADDRESS);
+					    $("#risk_type_gr").val(json.data.customer_info.risk_type);
+					    $("#guarant_type_gr").val(json.data.customer_info.guarant_type);
+					    $("#guarantor_gr").val(json.data.customer_info.guarantor);
+
+					    localStorage.setItem("file_path", json.data.customer_info.group_code);
+					    $("#more_gr").show(); //显示股东预警信息
+					    localStorage.setItem("shareholder", JSON.stringify(json.data.shareholder_info));
+					    localStorage.setItem("loan_info", JSON.stringify(json.data.loan_info));
+					    top.shareholder = json.data.shareholder_info;
+					    localStorage.setItem("warn", JSON.stringify(json.data.warn_info_ls));
+					    top.warn_info = json.data.warn_info;
+
+
+					    localStorage.setItem("customer",json.data.customer_info.customer);
+					    localStorage.setItem("group_code", json.data.customer_info.group_code);
+					  
+				   }
+
+		
+				
+				  $("#begin_div").show();
+				scroll_auto();
+			}
+
+
+			function update_button(step){
+			//	$("#step_"+step).addClass("button_color");
+				//每次用最新的一张覆盖，用于主页面展示
+				var img_tmp = localStorage.getItem("check_hb_"+step+"_tmp_image");
+				$("#img_"+step).attr("src", img_tmp);
+			}
+			
+			function clear_all(){
+				
+						//隐藏功能模块
+
+						//清空流水号
+						fileno = '';
+						localStorage.setItem("fileno", "");
+						
+						
+						start_flag = 0;
+						top.data={};
+			
+			
+			}
+
+			function scroll_auto(){
+				
+
+			}
+
+			
+			function get_ban(){
+				
+				top.QR_code(function(msg){
+					top.browser(msg); 
+				});
+				
+			
+			}
+			
+			function customer_edit(){
+				localStorage.setItem("corporation", $("#corporation").val());
+				localStorage.setItem("credit_line", $("#credit_line").val());
+				localStorage.setItem("open_balance", $("#open_balance").val());
+				showNewFrame('customer_info_modify.html', 'smask');
+			}
+			function update_customer_info(corporation, credit_line, open_balance){
+				
+				$("#corporation").val(corporation);
+				$("#credit_line").val(credit_line);
+				$("#open_balance").val(open_balance);
+				scroll_auto();
+			}
+			var customer_list;
+			function auto_complete(){
+				
+				var key = $("#search_key").val();
+				
+				
+				if(key.length < 2)
+					return;
+				
+				var data = {
+						key:key,
+						userid:localStorage.getItem("user_id"),
+						customer_type:user_type
+				}
+				top.writelog("data="+JSON.stringify(data));
+				$.ajax({
+			        type : "post",
+			        timeout: 2000,
+			        url: "http://"+IP+":"+PORT+"/app/6021",			        
+			        data : data,
+			        datatype : "json",
+			        success : function(msg){
+						top.writelog(msg);
+						var auto_html = '';
+						$("#context").val('');
+						
+						var json = eval("("+msg+")");
+						customer_list = json.data.list;
+						for(var i = 0; i < json.data.list.length; i++){
+							
+							auto_html += '<li class="ui-border-t" onclick="show_customerBySearch('+i+')">'
+			                			+'<h2 class="ui-arrowlink"><span style="color:#00a5e0;font-size: 15px;text-indent:2em;">'+json.data.list[i].customer+'</span></h2></li>'
+			           // 	top.writelog("groupCode="+json.data.list[i].groupCode+";customer="+json.data.list[i].customer);
+						}
+						$("#context").html(auto_html);
+						
+					},
+			        error:function(msg){
+			     	  
+			     	   top.alertInfo('通讯失败，请稍后再试');
+			        }
+			        });
+			}
+			function show_customerBySearch(num){
+			
+				$(".div_fullscreen").hide();
+              
+                $('#search_key').blur();
+				var data = {
+						customer:'',
+						group_code:customer_list[num].group_code,
+						coordinate:top.coordinate,
+                        customer_type:user_type,
+						address:top.address_gps
+				};
+			
+				top.writelog(JSON.stringify(data));
+				//通信
+				Http_ajax(function(msg){
+					
+					top.stop_process();
+					
+					show_customer(msg);
+				}, "app/6002", data);
+			}
+			function search_customer(){
+				if(start_flag == 1){
+					
+					top.confirmInfo("您有正在处理的检查，是否确定重新开始？", function(msg){
+						if(msg == 2){
+							return;
+						}else{
+							clear_all();
+							$(".div_fullscreen").show();
+							
+			                 $('#search_key').focus();
+						}
+					});
+					
+				}else{
+					$(".div_fullscreen").show();
+					 
+	                 $('#search_key').focus();
+				}
+				
+			}
+			function red_hide(){
+				$(".red_div").hide();
+			}
+			
+			function begin_info(){
+	
+				
+				//做开关
+				if(start_flag == 1){
+					return;
+				}else{
+					var data = {
+							user_id:localStorage.getItem("user_id"),
+							manager_id:top.user_name,
+							inst_id:top.inst_name,
+							customer:localStorage.getItem("customer"),
+							group_code:localStorage.getItem("group_code"),  
+							type:'2',
+                            force:'0',
+							coordinate:top.coordinate,
+		        			address:top.address_gps,
+		        			trandate:get_trandate()
+					};
+		
+					Http_ajax(function(msg){
+						
+						top.stop_process();
+						top.writelog("6003="+msg);
+						var json=eval("("+msg+")");
+                        
+                              localStorage.setItem("fileno", json.data.fileno);
+                              if(json.data.stat == 0 ){ //新增
+                                start_flag = 1;
+                                $("#check_div").show();
+                      			$("#begin_div").hide();
+                      			top.writelog("y="+y);
+                      			mui('.mui-scroll-wrapper').scroll().reLayout();//重新布局，不加这个移动后会自动回弹
+                      			mui('.mui-scroll-wrapper').scroll().scrollTo(0,y,1000);//1000毫秒滚动顶部滚动到Y的位置
+                               // window.scrollTo(0,$('#off_top').offset().top);
+                                return ;
+                              }else{
+                                var statinfo ='';
+                              
+                                if(json.data.stat == 1){ //已有且未完成
+                                    statinfo = '检查未完成';
+                                }else if(json.data.stat == 2){//已有且完成
+                                    statinfo = '检查已完成';
+                                }
+                              top.confirmInfo_new("今天对该客户已经做过检查，且"+statinfo+"。请选择如下操作", function(msg){
+                                              if(msg == 1){ //继续录入
+                                                  //showNewFrame('fileno_info.html?fileno='+json.data.fileno, 'smask');
+                                                  var fileno_now = localStorage.getItem("fileno");
+                                                  var data = {
+                                                  fileno:fileno_now											
+                                                  };
+                                                  Http_ajax(function(msg){
+                                                            
+                                                            
+                                                            top.stop_process();
+                                                            top.writelog("6011 hb:"+msg);
+                                                            var json=eval("("+msg+")");
+                                                            var check_jour_hb = json.data.check_jour_hb;
+                                                            var check_jour = json.data.check_jour;
+                                                            var type = check_jour_hb.type;
+                                                            var myArray = type.split('-');
+                                                            
+                                                        for(var i = 0; i < myArray.length; i++){
+                                                            if(myArray[i] == '0'){
+                                                                $("#step_"+i).hide();
+                                                            }else{
+                                                                $("#step_"+i).show();
+                                                                switch(i){
+                                                                    case 0:
+                                                                        add_pic(check_jour_hb.imgurl_zero, '0', "保证担保");
+                                                                        localStorage.setItem("hb_0_"+fileno, check_jour_hb.imgurl_zero);
+                                                            
+                                                                        $("input[value='0']").prop("checked",true);
+                                                                    break;
+                                                                    case 1:
+                                                                        add_pic(check_jour_hb.imgurl_one, '1', "抵、质押、公证");
+                                                                        localStorage.setItem("hb_1_"+fileno, check_jour_hb.imgurl_one);
+                                                           
+                                                                        $("input[value='1']").prop("checked",true);
+                                                                    break;
+                                                                    case 2:
+                                                                        add_pic(check_jour_hb.imgurl_two, '2', "业务合作协议");
+                                                                        localStorage.setItem("hb_2_"+fileno, check_jour_hb.imgurl_two);
+                                                            
+                                                                        $("input[value='2']").prop("checked",true);
+                                                                    break;
+                                                                    case 3:
+                                                                            add_pic(check_jour_hb.imgurl_three, '3', "其他非标准核保");
+                                                                        localStorage.setItem("hb_3_"+fileno, check_jour_hb.imgurl_three);
+                                                           
+                                                                        $("input[value='3']").prop("checked",true);
+                                                                    break;
+                                                                    default:
+                                                                    break
+                                                                }
+                                                            }
+                                                        }
+                                                            
+                                                            
+                                                            
+                                                    }, "app/6011", data);
+                                                  
+                                                  }else if(msg == 2){//重新录入
+                                                  
+                                                    var data = {
+                                                        user_id:localStorage.getItem("user_id"),
+                                                        manager_id:top.user_name,
+                                                        inst_id:top.inst_name,
+                                                        customer:localStorage.getItem("customer"),
+                                                        group_code:localStorage.getItem("group_code"),
+                                                        type:'2',
+                                                        force:'1',
+                                                        coordinate:top.coordinate,
+                                                        address:top.address_gps,
+                                                        trandate:get_trandate()
+                                                    };
+                                                    Http_ajax(function(msg){
+                                                            top.stop_process();
+                                                              top.writelog("重新开始6003:"+msg);
+                                                            var json=eval("("+msg+")");
+                                                            localStorage.setItem("fileno", json.data.fileno);
+                                                            }, "app/6003", data);
+                                                  }
+                                            });
+						start_flag = 1;
+                              }
+                        $("#check_div").show();
+              			$("#begin_div").hide();
+              			top.writelog("y="+y);
+              			mui('.mui-scroll-wrapper').scroll().reLayout();//重新布局，不加这个移动后会自动回弹
+              			mui('.mui-scroll-wrapper').scroll().scrollTo(0,y,1000);//1000毫秒滚动顶部滚动到Y的位置
+					}, "app/6003", data);
+				//	window.scrollTo(0,$('#off_top').offset().top);
+				}
+			}
+			function showPageByFlag(flag){
+			    top.writelog("falg = "+flag);
+			    if(flag == '1'){
+			        showNewFrame('loan_info.html', 'smask')
+			    }else if( flag == '2'){
+			        showNewFrame('shareholder.html', 'smask')
+			    }else if( flag == '3'){
+			        red_hide();
+			        showNewFrame('warning.html', 'smask')
+			    }
+			}
+			
+			function search_hide(){
+				$(".div_fullscreen").hide();
+				$('#search_key').blur();
+			}
+		</script>
+    </head>
+    
+<body>
+		<header class="mui-bar mui-bar-nav head_color">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+			<h1 class="mui-title">核保核查</h1>
+			<!-- <div class="head_div" onclick="search_customer();">按客户名称搜索 <div class="rgt_search" ></div></div> -->
+		</header>
+
+
+
+       <div class="mui-content mui-scroll-wrapper" style="margin-top:25px;">
+       <div class="mui-scroll " >
+		   	<div id="slider" class="mui-slider" >
+				<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<a class="mui-control-item" href="#item1mobile">
+						企金客户
+					</a>
+					<a class="mui-control-item" href="#item2mobile">
+						零售客户
+					</a>
+				</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+				 
+				<div class="mui-row" style="padding:5px;background-color:#fff;" onclick="showNewFrame('map.html', 'smask')">
+                    <div class="mui-col-xs-3" style="border:1px solid #8A8B8F;">
+                        <div id="maps" style="width:100%;height:25vw;"></div>
+                    </div>
+                    <div class="mui-col-xs-9" style="padding-left:10px;padding-top:10px;">
+                        <p style="" id="notice_info">点击右上角搜索查询客户信息</p>
+                        <p style="color:#00a5e0;font-size: 14px">现场检查GPS定位，点击确定</p>
+                        <p style="font-size: 15px" id="address_gps">正在获取当前地址。。。。</p>
+                    </div>
+                </div>
+               
+                <div class="mui-slider-group qj_class">
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<div id="scroll1">							
+						    <div class="mui-scroll">	
+								<div class="mui-content-padded">
+			                        <form class="mui-input-group">
+			                            <div class="mui-input-row">
+			                                <label>客户名称</label>
+			                                <input type="text" placeholder="客户名称" id="customer_qj" onclick="search_customer();">
+			                                    </div>
+			                            <div class="mui-input-row">
+			                                <label>机构代码</label>
+			                                <input type="text" placeholder="证件号码" id="group_code_qj">
+			                                    </div>
+			                            <div class="mui-input-row">
+			                                <label>注册地址</label>
+			                                <input type="text" placeholder="联系地址" id="address_qj">
+			                                    </div>
+			                            
+			                            <div class="mui-input-row">
+			                                <label>行业分类</label>
+			                                <input type="text" placeholder="风险分类" id="category_qj" >
+			                                    </div>
+			                       
+			                        </form>
+			                    </div>
+			                    <div class="mui-content-padded">
+			                        <form class="mui-input-group">
+			                            <div class="mui-input-row">
+			                                <label>法人姓名</label>
+			                                <input type="text" placeholder="经营实体名称" id="corporation_qj">
+			                                    </div>
+			                            <div class="mui-input-row">
+			                                <label>授信余额</label>
+			                                <input type="text" placeholder="行业分类" id="credit_line_qj" >
+			                                    </div>
+			                            <div class="mui-input-row">
+			                                <label>敞口余额</label>
+			                                <input type="text" placeholder="注册地址" id="open_balance_qj" >
+			                                    </div>
+			                            
+			                        </form>
+			                    </div>
+			                    <div  style="margin-top: 15px;display:block" id="more_qj">
+			                        <ul class="mui-table-view">
+			                            <li class="mui-table-view-cell"  onclick="showNewFrame('shareholder.html', 'smask')" id="2">
+			                                <a class="mui-navigate-right">
+			                                   	 查看股东信息
+			                                </a>
+			                            </li>
+			                           
+			                            <li class="mui-table-view-cell" onclick="red_hide();showNewFrame('warning.html', 'smask')" id="warn_info">
+			                                <a class="mui-navigate-right">
+			                                    	查看预警信息
+			                                    	<span class="red_div" style="display:none">11</span>
+			                                </a>
+			                               
+			                            </li>
+			                           
+			                        </ul>
+			                    </div>
+						    </div>
+						</div>
+					</div>
+					<div id="item2mobile" class="mui-slider-item mui-control-content">
+						<div id="scroll2">							
+						    <div class="mui-scroll">
+						    	<div class="mui-content-padded">
+			                        <form class="mui-input-group">
+			                            <div class="mui-input-row">
+			                                <label>客户名称</label>
+			                                <input type="text" placeholder="客户名称" id="customer_gr" onclick="search_customer();">
+			                                    </div>
+			                            <div class="mui-input-row">
+			                                <label>证件号码</label>
+			                                <input type="text" placeholder="证件号码" id="group_code_gr">
+			                                    </div>
+			                            <div class="mui-input-row">
+			                                <label>联系地址</label>
+			                                <input type="text" placeholder="联系地址" id="lx_address_gr">
+			                                    </div>
+			                            
+			                            <div class="mui-input-row">
+			                                <label>风险分类</label>
+			                                <input type="text" placeholder="风险分类" id="risk_type_gr" >
+			                                    </div>
+			                            <div class="mui-input-row">
+			                                <label>担保方式</label>
+			                                <input type="text" placeholder="担保方式" id="guarant_type_gr">
+			                                    </div>
+			                            <div class="mui-input-row">
+			                                <label>担保人</label>
+			                                <input type="text" placeholder="担保人" id="guarantor_gr">
+			                                    </div>
+			                        </form>
+			                    </div>
+			                    <div class="mui-content-padded">
+			                        <form class="mui-input-group">
+			                            <div class="mui-input-row">
+			                                <label>经营实体名称</label>
+			                                <input type="text" placeholder="经营实体名称" id="corporation_gr">
+			                                    </div>
+			                            <div class="mui-input-row">
+			                                <label>行业分类</label>
+			                                <input type="text" placeholder="行业分类" id="category_gr" >
+			                                    </div>
+			                            <div class="mui-input-row">
+			                                <label>注册地址</label>
+			                                <input type="text" placeholder="注册地址" id="address_gr" >
+			                                    </div>
+			                            
+			                        </form>
+			                    </div>
+			                    <div style="margin-top: 15px;display:none" id="more_gr">
+			                        <ul class="mui-table-view">
+ 
+			                            <li class="mui-table-view-cell" onclick="showPageByFlag('1');" id="1">
+			                                <a class="mui-navigate-right">
+			                                   	查看贷款基本信息
+			                                </a>
+			                            </li>
+			                            
+			                            <li class="mui-table-view-cell" onclick="showPageByFlag('2');" id="2">
+			                                <a class="mui-navigate-right">
+			                                  	  查看股东信息
+			                                </a>
+			                            </li>
+			                            
+			                        </ul>
+			                    </div>
+						    </div>
+						</div>
+					</div>
+				</div>
+			</div> 
+			<div style="margin-top:10px;text-align:center;display:none;margin-bottom: 300px;" id="begin_div">
+                	<button type="button" class="mui-btn  mui-btn-primary" style="width:90%" onclick="begin_info()"> 开始录入</button>
+	        </div>	
+		    <div id="check_div" style="display:none"> 
+				    <div class="mui-card">
+						<form class="mui-input-group">
+							<div class="mui-input-row mui-checkbox">
+								<label>保证担保</label>
+								<input name="checkbox1" value="0" type="checkbox" >
+							</div>
+							<div class="mui-input-row mui-checkbox">
+								<label>抵、质押、公证</label>
+								<input name="checkbox1" value="1" type="checkbox" >
+							</div>
+							<div class="mui-input-row mui-checkbox">
+								<label>业务合作协议</label>
+								<input name="checkbox1" value="2" type="checkbox" >
+							</div>
+							<div class="mui-input-row mui-checkbox">
+								<label>其他非标准核保</label>
+								<input name="checkbox1" value="3" type="checkbox">
+							</div>
+						</form>
+					</div>
+				    <ul class="mui-table-view mui-grid-view" style="background-color:#f4f4f4;">
+				        <li class="mui-table-view-cell mui-media mui-col-xs-3" id="li_0" style="display:none" onClick="showNewFrame('check_hb_0.html', 'smask');">		             
+				                <div class="divcss5">               
+				                	<img class="mui-media-object" src="img/add.png" id="img_0">
+				                </div>
+				                <div class="mui-media-object" style="position:absolute;z-indent:2;left:0px;top:0px;width:100%;height:100%;;background-color:rgba(0,0,0,0.0);">
+							      <!--    
+							        <span style="position:absolute;color:#ffffff;font-weight:bold;bottom:20px;;left:20px;width:100%;text-align:left;" id="span_1">保证担保</span>
+							    	 --> 
+							    </div>
+				                <div class="mui-media-body">保证担保</div></li>
+				        
+		
+				        <li class="mui-table-view-cell mui-media mui-col-xs-3" id="li_1" style="display:none" onClick="showNewFrame('check_hb_1.html', 'smask');">
+				            	<div class="divcss5">  
+				            		<img class="mui-media-object" src="img/add.png" id="img_1">
+				            	</div>
+				                <div class="mui-media-object" style="position:absolute;z-indent:2;left:0px;top:0px;width:100%;height:100%;;background-color:rgba(0,0,0,0.0);">
+							        
+							      <!--    <span style="position:absolute;color:#ffffff;font-weight:bold;bottom:20px;;left:20px;width:100%;text-align:left;" id="span_2">抵、质押、公证</span>
+							       -->
+							    </div>
+				                <div class="mui-media-body">抵、质押、公证</div></li>
+				        <li class="mui-table-view-cell mui-media mui-col-xs-3" id="li_2" style="display:none" onClick="showNewFrame('check_hb_2.html', 'smask');">
+				            	<div class="divcss5">  
+				            		<img class="mui-media-object" src="img/add.png" id="img_2">
+				            	</div>
+				                <div class="mui-media-object" style="position:absolute;z-indent:2;left:0px;top:0px;width:100%;height:100%;;background-color:rgba(0,0,0,0.0);">
+							     <!--   
+							        <span style="position:absolute;color:#ffffff;font-weight:bold;bottom:20px;;left:20px;width:100%;text-align:left;" id="span_3">业务合作协议</span>
+							         -->
+							    </div>
+				                <div class="mui-media-body">业务合作协议</div></li>
+				        <li class="mui-table-view-cell mui-media mui-col-xs-3" id="li_3" style="display:none" onClick="showNewFrame('check_hb_3.html', 'smask');">
+				            	<div class="divcss5">  
+				            		<img class="mui-media-object" src="img/add.png" id="img_3">
+				            	</div>
+				                <div class="mui-media-object" style="position:absolute;z-indent:2;left:0px;top:0px;width:100%;height:100%;;background-color:rgba(0,0,0,0.0);">
+							      <!-- 
+							      <span style="position:absolute;color:#ffffff;font-weight:bold;bottom:20px;;left:20px;width:100%;text-align:left;" id="span_4">其他非标准核保</span>
+							        -->
+							    </div>
+				                <div class="mui-media-body">其他非标准核保</div></li>
+				    </ul> 
+  
+				
+	            <div style="margin-top:10px;text-align:center;margin-bottom: 300px;">
+	                <button type="button" class="mui-btn  mui-btn-primary" style="width:90%" id="promptBtn">保存</button>
+	            </div>
+			</div>
+		</div>
+	</div>
+  
+	<div class="div_fullscreen" style="display:none">
+	    <div class="mui-content" >
+	    	<div class="mui-scroll-wrapper">
+		        <div class="mui-scroll">
+		            <div style="margin-top:25px;padding:10px;" >
+		                <input type="search" class="mui-input-clear"   id="search_key"  placeholder="按关键字搜索问题" style="width:85%;float:left;">
+		                    <div style="width:15%;float:right;padding-left:5px;"><button type="button" class="mui-btn  mui-btn-primary"  onclick="search_hide()">取消</button></div>
+		                    </div>
+		           
+		                    <ul class="mui-table-view" style="margin-top:45px;" id="context">
+		                        
+		                    </ul>
+		        </div>
+	        </div>
+	    </div>
+     </div> 
+
+
+       
+
+    </body>
+</html>

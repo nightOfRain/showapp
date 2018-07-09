@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+	
+        <link rel="stylesheet" href="css/frozen.css">
+        <link rel="stylesheet" href="css/demo.css">
+        <link rel="stylesheet" type="text/css" href="css/aui/aui.css" />
+		<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+		<link rel="stylesheet" href="hello-mui/css/app.css">
+		<script src="hello-mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+        <script src="lib/zepto.min.js"></script>
+        <script src="js/frozen.js"></script>
+        <style>
+        	.rgt_d {
+	width: 25px;
+	height: 25px;
+	float: right;
+	margin-right: 15px;
+	margin-top: 12px;
+	background-size: 100% 100%;
+	background-image: url("img/delete.png");
+}
+        </style>
+ 		<script type="text/javascript">
+ 		var ids=0;
+ 		$(function() {	
+			thisURL = document.URL; 
+			localStorage.setItem("thisURL", thisURL);
+			
+			var getenv = thisURL.split("?")[1];
+			ids = getenv.split("=")[1];
+		
+			if(ids > 0){
+				var json = localStorage.getItem("debt_info_"+ids);
+				
+				var debt_info = JSON.parse(json);
+				$("#debtor").val(debt_info.debtor);
+				$("#debt").val(debt_info.debt);
+				$("#add_btn").attr("style", "display:none");
+			}else{
+				$("#update_btn").attr("style", "display:none");
+				$(".rgt_d").attr("style", "display:none");
+			}
+			$('.je_class').bind('input propertychange', function() {  			
+				this.value=this.value.replace(/[^\d{1,}\.\d{1,}|\d{1,}]/g,''); 			
+	        });
+			
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			mui('.mui-scroll-wrapper').scroll({
+		              deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+		              });
+			mui(document.body).on('tap', '.mui-action-back ', function(e) {
+				this.click();
+				return false;
+			});
+		});
+		function delete_by_ids(){
+			
+			top.confirmInfo("确定删除该债务人信息？", function(msg){
+				if(msg == 1){
+					var data = {
+							ids:ids
+							
+		        		};		
+					Http_ajax(function(){
+						top.stop_process();
+						for(var i=0; i < top.debt_info.length; i++){
+							if(ids == top.debt_info[i].ids){
+								top.debt_info.splice(i,1);
+							}
+						}
+						parent.update_debt_info();
+						back_history();
+					}, "app/6019", data);
+				}
+			});
+			
+			
+		}
+		
+		function save_info(){
+			
+			//先更新本地股东信息
+			if(ids > 0){
+				for(var i = 0; i < top.debt_info.length; i++){
+					if(ids == top.debt_info[i].ids){
+						top.debt_info[i].debtor = $("#debtor").val();
+						top.debt_info[i].debt = $("#debt").val();
+				
+						
+					}
+				}
+			}else{
+				var holder={};
+				holder.debtor = $("#debtor").val();
+				holder.debt = $("#debt").val();
+		
+				top.debt_info.push(holder);
+			}
+			
+			
+			var data = {
+					ids:ids,
+					customer:localStorage.getItem("customer"),
+					group_code:localStorage.getItem("group_code"),
+					debtor : $("#debtor").val(),
+					debt : $("#debt").val()
+			};
+		//	alert(JSON.stringify(data));
+			Http_ajax(function(msg){
+			//	alert(msg);
+				top.stop_process();
+				parent.update_debt_info();
+				back_history();
+
+			}, "app/6018", data);
+			
+		}
+		</script>
+    </head>                                
+	<body style="overflow:auto;background-color: #f4f4f4;">
+		<header class="mui-bar mui-bar-nav head_color">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+			<h1 class="mui-title">债务信息编辑</h1>
+		</header>
+		<div class="container-fluid" >  
+			<div class="mui-content mui-scroll-wrapper" >
+                
+                <div class="mui-scroll top_head">
+    
+
+					<section id="list" style="margin-top:45px;">
+					    <div class="demo-item">
+					        <div class="demo-block">
+					      
+					      		<div class="ui-form ui-border-t">
+					      		 	<div class="ui-form-item ui-form-item-l ui-border-b">
+						                 <label class="ui-border-r">
+						                           	 债务人
+						                 </label>
+					                     <input type="text"  placeholder="请输入姓名" id="debtor"/>	
+					                                            
+					                </div>
+					               
+					                <div class="ui-form-item ui-form-item-l ui-border-b">
+						                 <label class="ui-border-r">
+						                          	  债务额/万
+						                 </label>
+					                     <input type="text je_class" placeholder="请输入出资金额" id="debt" maxlength="11"/>
+					                     	                      
+					                </div> 
+					   
+					             </div>
+					        </div>
+			        	</div>
+			       </section>
+			    <section > 
+				    <div class="demo-block"> 
+			            <div class="ui-btn-wrap">
+			            	<button class="ui-btn-lg" onclick="save_info();" id="add_btn">
+			                  	保存
+			                </button>
+			                <button class="ui-btn-lg" onclick="save_info();" id="update_btn">
+			                  	修改
+			                </button>
+			  
+			            </div>
+			         </div>
+				 </section> 
+			</div>	
+		</div>
+	</div>
+
+	</body>
+</html>

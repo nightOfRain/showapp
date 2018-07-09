@@ -1,0 +1,137 @@
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title></title>
+	<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+	<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+	<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+	<link rel="stylesheet" href="hello-mui/css/app.css">
+
+	<script src="hello-mui/js/mui.min.js"></script>
+	<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+	<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script>
+  
+	<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+       <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+        <style>
+		 html, body {
+                 position: relative;
+                 height: 100%;
+             }
+         body {
+             background: #fff;
+             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+             font-size: 14px;
+             color:#000;
+             margin: 0;
+             padding: 0;
+             overflow:auto;
+          
+         }
+
+		.mui-spinner,
+			.mui-spinner-white {
+				margin-top: 12px
+			}
+			.active .mui-spinner-indicator {
+				background: #007AFF;
+			}
+		.div_conditions{       
+		    z-index:9998;background-color:rgba(244,244,244,1);width:100%;height:100%;position: fixed;top:0px;
+		}
+		input[type="date"]:before{
+    color:#A9A9A9;
+    content:attr(placeholder);
+}
+
+
+input[type="date"].full:before {
+    color:black;
+    content:""!important;
+}
+        </style>
+ 		<script>
+			
+			var json;
+		
+			$(function() {
+				
+
+	            mui('.mui-scroll-wrapper').scroll({
+	                                             deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+	                                             });
+	            mui("#pullrefresh").on('tap', '.mui-card', function (event) {
+					this.click();
+					
+					});
+	            mui(document.body).on('tap', '.mui-action-back', function(e) {
+	        		this.click();
+	        		return false;
+	        	});
+
+	   
+	            initPage();				
+			});
+				
+			function initPage(){
+
+
+			
+				json=localStorage.getItem("loaninfo").parseJSON(); ;		
+				
+				if(json.length == 0){
+					mui.toast('您的需求没有新的变化');
+					return;
+				}
+				
+				var info_html = '';
+				for(var i = 0; i < json.length; i++){
+					
+					var type = json[i].type;
+					
+			    		info_html += '<div class="mui-card" ><div class="mui-card-header mui-card-media">'					
+						+'<div class="mui-media-body">'+json[i].loan_type+'<p>导入时间：'+json[i].lr_date+'</p></div></div>'
+						+'<div class="mui-card-content" style="padding-left:10px;">'
+						+'<h5 style="color:black;">合同号：'+json[i].loan_hth+'</h5>'
+						+'<p style="margin:1px;font-size:12px;">授信金额：'+json[i].credit_je+'</p>'
+						+'<p style="margin:1px;font-size:12px;">贷款余额：'+json[i].loan_je+'</p>'
+						+'<p style="margin:1px;font-size:12px;">担保方式：'+json[i].guarant_type+'</p>'	
+						+'<p style="margin:1px;font-size:12px;">到期日期：'+json[i].arrive_date+'</p>'	
+						+'<p style="margin:1px;font-size:12px;">欠息金额：'+json[i].debt_je+'</p>'	
+						+'<p style="margin:1px;font-size:12px;">风险分类：'+json[i].rist_type+'</p>'	
+						+'</div></div>'
+						+'</div>';
+				}
+				
+				$("#info").html('');
+				$("#info").html(info_html+'<div style="height:100;color:#f4f4f4">填充空白</div>');
+		
+			}
+			
+
+		</script>
+    </head>
+    
+<body>
+   	<header class="mui-bar mui-bar-nav head_color">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+		<h1 class="mui-title" style="font-weight:bold;">贷款基本信息</h1>
+
+	</header>
+
+	<div class="container-fluid">
+		
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper" >				
+			<div class="mui-scroll top_head" style="background-color: #f4f4f4;">
+				<ul  id="info">
+			
+				</ul>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

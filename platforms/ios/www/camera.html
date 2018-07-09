@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+ 
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title></title>
+<link href="css/lib/bootstrap/bootstrap-combined.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" type="text/css"
+	href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+<link href="css/common.css" rel="stylesheet">
+<link href="css/index.css" rel="stylesheet">
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script src="js/lib/jQuery/jquery.mobile-1.4.3.js"
+	type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="js/lib/bootstrap/bootstrap.min.js"></script>
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+<style>
+body {
+	margin: 0;
+	padding: 0;
+}
+
+.content {
+	width: 100%;
+		overflow: auto;
+}
+.bot_btn_1{
+	text-shadow: none !important;
+	width: 80%;
+	text-align: center;
+	height:45px;
+	line-height: 45px;
+	color: #ffffff;
+	font-size: 20px;
+	margin: 10px auto;
+	background-color: #CCCCCC;
+}
+
+.upload_process_bar{  
+    width:100%;  
+    border:#ccc 1px solid;  
+    height:6px;  
+    padding:1px;  
+    background:#fff;  
+    -moz-border-radius:10px;  
+    -webkit-border-radius:10px;  
+    border-radius:10px;  
+    display:none;  
+}  
+.upload_current_process{  
+    height:6px;  
+    width:0%;  
+    background:#A4C639;  
+    -moz-border-radius:10px;  
+    -webkit-border-radius:10px;  
+    border-radius:10px;      
+
+</style>
+<script  type="text/javascript">
+         document.addEventListener("DOMContentLoaded", initial);
+         function initial() {
+        	 top.capturePhoto();
+         }
+         
+
+</script>
+ 
+</head>
+ 
+<body >
+ 
+    <!-- page write -->
+ 
+    <div data-role="page" id="write">
+ 
+        <div class="top" data-position="fixed">
+			 <div class="back_ic" onClick="back_history();"></div>
+			
+    			<span class="top_title" >拍照并上传图片</span>
+ 				
+
+        </div>
+ 
+        <div data-role="content">
+ 
+            <input id="_picFile" type="hidden" value="" />
+ 
+
+  			
+            <br> 
+                <img
+                 id="largeImage"
+                src="" /> 
+        </div>
+ 
+    </div>
+ 
+</body>
+ 
+</html>

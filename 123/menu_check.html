@@ -1,0 +1,106 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/frozen.css">
+<link rel="stylesheet" href="css/demo.css">
+<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+
+<link rel="stylesheet" href="hello-mui/css/iconfont.css">
+<link rel="stylesheet" href="hello-mui/css/app.css">
+<script src="hello-mui/js/mui.min.js"></script>
+<script src="js/lib/jQuery/jquery-2.0.0.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+
+<style>
+body{
+background: #f4f4f4;
+font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+font-size: 14px;
+color:#000;
+margin: 0;
+padding: 0;
+
+}
+
+</style>
+<script>
+var id = 0; //问题序号
+$(function() {
+  
+    //初始化mui
+    mui.init({
+             swipeBack:true //启用右滑关闭功能
+    });
+
+    //返回键 tap事件监听
+    mui(document.body).on('tap', '.mui-action-back', function(e) {
+        this.click();
+        return false;
+    });
+
+});
+
+
+</script>
+</head>
+    <body>
+        <header class="mui-bar mui-bar-nav head_color">
+            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+            <h1 class="mui-title">功能模块</h1>
+        </header>
+        <div class="mui-content" style="margin-top:10px;background: #f4f4f4;padding:10px;">
+            <ul class="mui-table-view mui-grid-view mui-grid-9" style="background: #f4f4f4;">
+               <p style="color:#4CB9FC;height:20px;line-height:20px;">现场检查-在线</p>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3" style="border:0" onClick="showNewFrame('home.html?flag=0', 'smask');">
+                    <span class="mui-icon iconfont icon-hechajigou" style="color:#4CB9FC;"></span>
+                    <div class="mui-media-body" style="font-size:13px;">企金检查</div></li>
+                
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3" style="border:0" onClick="showNewFrame('home_gr.html', 'smask');">
+                    <span class="mui-icon iconfont icon-ryhclr" style="color:#4CB9FC;"></span>
+                    <div class="mui-media-body" style="font-size:13px;">零售检查</div></li>
+            </ul>
+           
+           <ul class="mui-table-view mui-grid-view mui-grid-9" style="background: #f4f4f4">
+               <p style="color:#666666;height:20px;line-height:20px;">现场检查-离线</p>
+               <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3" style="border:0" onClick="showNewFrame('offline_home.html?flag=0', 'smask');">
+                   <span class="mui-icon iconfont icon-hechajigou" style="color:#666666;"></span>
+                   <div class="mui-media-body" style="font-size:13px;">企金检查</div></li>
+               <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3" style="border:0" onClick="showNewFrame('offline_home_gr.html?flag=0', 'smask');">
+                   <span class="mui-icon iconfont icon-ryhclr" style="color:#666666;"></span>
+                   <div class="mui-media-body" style="font-size:13px;">零售检查</div></li>
+           </ul>
+                    
+
+            <div style="height:100px;line-height:100px;text-align:center"><span style="font-size:12px;color:#f4f4f4">————到底了————</span></div>
+            
+        </div>
+ 
+        
+        <script type="text/javascript">
+            
+            
+            $('li').each(function(){
+                         var $obj=$(this);
+                         this.addEventListener('touchstart',function(){
+                                               $obj.css('background-color','#cccccc');
+                                               }, false);
+                         
+                         this.addEventListener('touchend',function(){
+                                               $obj.css('background-color','');
+                                               }, false);
+                         
+                         });
+                         
+            </script>
+        
+    </body>
+</html>
+

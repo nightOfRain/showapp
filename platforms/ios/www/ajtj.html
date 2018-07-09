@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            
+            <meta name="viewport"
+                content="width=device-width, initial-scale=1.0, user-scalable=no">
+                <title></title>
+                
+                <link href="css/lib/bootstrap/bootstrap-combined.min.css"
+                    rel="stylesheet">
+                    <link rel="stylesheet" type="text/css"
+                    href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+                    <link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+                        <link href="css/common.css" rel="stylesheet">
+                            <link href="css/index.css" rel="stylesheet">
+                                <link href="dev/css/mobiscroll.android-ics-2.5.2.css" rel="stylesheet" type="text/css" />
+                                <link href="dev/css/mobiscroll.core-2.5.2.css" rel="stylesheet" type="text/css" />
+                                <link href="dev/css/mobiscroll.animation-2.5.2.css" rel="stylesheet" type="text/css" />
+                                
+                                <link href="css/easydropdown.metro.css" rel="stylesheet">
+                                    <script src="js/jquery.min.js"></script>
+                                    <script src="js/jquery.easydropdown.js"></script>
+                                    <script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+                                    <script src="js/lib/jQuery/jquery.mobile-1.4.3.js" type="text/javascript" charset="utf-8"></script>
+                                    <script type="text/javascript" src="js/lib/bootstrap/bootstrap.min.js"></script>
+                                    <script src="js/mobiscroll.custom-2.5.2.min.js" type="text/javascript" charset="utf-8"></script>
+                                    <script src="dev/js/mobiscroll.core-2.5.2.js" type="text/javascript"></script>
+                                    <script src="dev/js/mobiscroll.core-2.5.2-zh.js" type="text/javascript"></script>
+                                    <script src="dev/js/mobiscroll.datetime-2.5.1.js" type="text/javascript"></script>
+                                    <script src="dev/js/mobiscroll.datetime-2.5.1-zh.js" type="text/javascript"></script>
+                                    <script src="dev/js/mobiscroll.android-ics-2.5.2.js" type="text/javascript"></script>
+                                    <script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+                                    <script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+                                    <style>
+                                        .btn:hover, .btn:focus, .btn.focus{color:#fff;}
+                                        
+                                        .rgt {
+                                            width: 10px;
+                                            height: 18px;
+                                            float: right;
+                                            margin-right: 20px;
+                                            margin-top: 12px;
+                                            background-size: 100% 100%;
+                                            background-image: url("img/right.png");
+                                        }
+                                    .inp_label{
+                                        width: 300px;
+                                        line-height: 45px;
+                                        color: #000000;
+                                        font-size: 17px;
+                                        text-align: left;
+                                        float: left;
+                                        margin-left: 15px;
+                                    }
+                                    .bottom_footer {
+                                        position: fixed; /*or前面的是absolute就可以用*/
+                                        bottom: 0px;
+                                        text-shadow: none !important;
+                                        width: 100%;
+                                        text-align: center;
+                                        height:45px;
+                                        line-height: 45px;
+                                        color: #444;
+                                        font-size: 20px;
+                                        background-color: #ffffff;
+                                    }
+                                    </style>
+    </head>
+    <script type="text/javascript">
+        //初始化插件内容
+        var opt_datatime = {
+            preset: 'date', //日期格式 date（日期）|datetime（日期加时间）
+            theme: 'android-ics light', //皮肤样式
+            display: 'modal', //显示方式
+            mode: 'clickpick', //日期选择模式
+            dateFormat: 'yyyymmdd', // 日期格式
+            timeWheels:'HHii', //时间格式24小时
+            timeFormat:'HH:ii', //时间格式24小时
+            setText: '确定', //确认按钮名称
+            cancelText: '取消',//取消按钮名籍我
+            dateOrder: 'yyyymmdd', //面板中日期排列格式
+            dayText: '日', monthText: '月', yearText: '年', //面板中年月日文字
+            yearText: '年', monthText: '月',  dayText: '日',  //面板中年月日文字
+            endYear:2020, //结束年份
+            showNow:true,
+            nowText:'今天',
+            hourText:'小时',
+            minuteText:'分'
+        }
+    
+    var cpzl_map = {
+        "8001":"公积金贷款",
+        "8002":"商贷贷款",
+        "8003":"组合贷款",
+        "8004":"房抵贷",
+        "8005":"安居贷",
+        "8006":"大树金融",
+        "8007":"友金所",
+        "8008":"平安新一贷",
+        "8009":"赎楼贷",
+        "8010":"尾款贷"
+    };
+    var cpzl;
+    var ajzt;
+    document.addEventListener("DOMContentLoaded", initial);
+    function initial() {
+        thisURL = document.URL;
+    //    document.getElementsByTagName('body')[0].style.width = top.screenWidth+"px";
+    //    document.getElementsByTagName('body')[0].style.height = top.screenHeight+20+"px";
+        //$(".top_title").html(top.title);
+        $("#qssj").mobiscroll(opt_datatime);
+        $("#jzsj").mobiscroll(opt_datatime);
+        localStorage.setItem("pagenum", 0);
+        
+    }
+    
+    
+    function aj_submit(){
+        
+        var data = {};
+        data.loantype = cpzl;
+        data.loanstat = ajzt;
+        data.begindate = $("#qssj").val();
+        data.enddate = $("#jzsj").val();
+        data.userid = localStorage.getItem("userid");
+        top.start_process();
+        $.ajax({
+               type : "post",
+               url: "http://"+IP+":"+PORT+"/app/6009",
+               timeout: 5000,
+               data : data,
+               datatype : "json",
+               success :function(msg){
+            	   top.stop_process();
+               showmessage(msg);
+               },
+               error:function(msg){
+            	   top.stop_process();
+               top.alertInfo('通信失败');
+               }
+               });
+               
+    }
+    
+    function showmessage(msg){
+
+
+        var total_num = 0;
+        var total_amt = 0.00;
+        var json=eval("("+msg+")");
+        
+        if(document.getElementById('content') )
+        document.getElementById('p2').removeChild(document.getElementById('content'));
+        var div_host = document.getElementById("p2");
+        var div_content = document.createElement("div");
+        div_content.setAttribute("class", "form_div");
+        div_content.setAttribute("id", "content");
+        
+        //var data = json.responsedata.data;
+        var data = json.data.fileList;
+        if(data.length == 0){
+            top.alertInfo('没有相关案卷信息，请确认查询条件是否正确');
+            $("#mxtj").attr("style", "display:none");
+            return;
+        }
+        for (var i = 0; i < data.length; i++ ){
+            
+            
+            var ul = document.createElement("ul");
+            var li = document.createElement("li");
+            li.setAttribute("onclick", "go_yh('"+data[i].fileno+"')");
+            
+            var sp3_t=document.createElement("div");
+           sp3_t.setAttribute("style", "background-color: #ffffff;overflow: hidden; text-indent:1em;white-space: nowrap; text-overflow: ellipsis;width:98%;font-size: 13px;margin-top:13px;margin-left:5px;margin-right:5px;color:#708090;");
+            
+            sp3_t.innerHTML = data[i].fc_dz;
+            if(data[i].fc_dz == '' || data[i].fc_dz == 'null'){
+                sp3_t.innerHTML = "面签人员暂不知道房产地址";
+            }
+            var img=document.createElement("img");
+            img.setAttribute("src", "img/right.png");
+            img.setAttribute("style", "width: 10px;height: 18px;float: right;margin-right: 20px;margin-top: -20px;background-size: 100% 100%;");
+            
+            
+            li.appendChild(sp3_t);
+            li.appendChild(img);
+            
+            ul.appendChild(li);
+            
+            div_content.appendChild(ul);
+            total_amt += parseFloat(data[i].dk_je + data[i].dk_gjj_je);
+            var info={};
+            
+            info.fc_dz = data[i].fc_dz;
+            info.loantype = data[i].loantype;
+            info.bankid = data[i].bankid;
+            info.dk_sqje = data[i].dk_sqje;
+            info.dk_sqqx = data[i].dk_sqqx;
+            info.dk_je = data[i].dk_je;
+            info.dk_qx = data[i].dk_qx;
+            info.dk_hkfs = data[i].dk_hkfs;
+            localStorage.setItem("ajtj_"+data[i].fileno,JSON.stringify(info));
+        }
+       
+        div_host.appendChild(div_content);
+        $("#tjbs").html(json.data.total_num+" 笔");
+        $("#tjje").html(json.data.total_amt+"万");
+        $("#mxtj").attr("style", "display:black");
+    }
+    
+    function go_yh(fileno){
+        
+        showNewFrame('ajtj_detail.html?fileno='+fileno,'smask');
+        
+        
+    }
+    
+    
+    
+    function page_add(){
+        var pagenum = localStorage.getItem("pagenum");
+        pagenum++;
+        
+        localStorage.setItem("pagenum", pagenum);
+    }
+    function page_back(){
+        var pagenum = localStorage.getItem("pagenum");
+        
+        pagenum--;
+        
+        localStorage.setItem("pagenum", pagenum);
+        history.go(-1);
+    }
+    function cp_back(cptype){
+        cpzl = cptype;
+        var cpzlname ;
+        if(cpzl == "8888")
+        {
+            cpzlname="所有品种";
+        }else{
+            cpzlname = cpzl_map[cpzl];
+        }
+        
+        $("#cxlx").html(cpzlname);
+        
+        jQuery.mobile.changePage('#p1', {transition : 'slide'});
+        
+        
+    }
+    function zt_back(zttype){
+        ajzt = zttype;
+        
+        if( zttype == 2){
+            $("#ajzt").html("已完成案卷");
+        }else if( zttype == 0){
+            $("#ajzt").html("未完成案卷");
+        }else if( zttype == 1){
+            $("#ajzt").html("异常终结案卷");
+        }else if( zttype == 3){
+            $("#ajzt").html("所有案卷");
+        }
+        
+        jQuery.mobile.changePage('#p1', {transition : 'slide'});
+        
+        
+    }
+    </script>
+    
+    <body style="background:#8EC2F5;">
+        
+        <!-- 顶部固定，不能滚动 -->
+        <div data-role="page" id="p1">
+            <div class="topNavWrapper" >
+                <div class="topNav">
+                    <div component-role="m11_top" class="top">
+                        <div class="back_ic" onClick="parent.hideFrame('srfade');"></div>
+                        <span class="top_title">案卷统计</span>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="container-fluid" style="height:600px;overflow:auto">
+                <div class="form_div" style="margin-top:25px;">
+                <ul>
+                <li   onClick="jQuery.mobile.changePage('#pcpzl', {transition : 'slide'});">
+                <div class="inp_label_new" >
+                产品种类</div>
+                <span id="cxlx" class="inp_show_text" style="color:#5b5b5b;width:140px;margin-left:1px;">选择产品种类</span>
+                <div class="rgt"></div>
+                
+                </li>
+                </ul>
+                
+                
+                <ul>
+                <li   onClick="jQuery.mobile.changePage('#pajzt', {transition : 'slide'});">
+                <div class="inp_label_new" >
+                案卷状态</div>
+                <span id="ajzt" class="inp_show_text" style="color:#5b5b5b;width:140px;margin-left:1px;">请选择案卷状态</span>
+                <div class="rgt"></div>
+                
+                </li>							
+                </ul>
+                </div>
+                <div class="form_div">
+                <ul>
+                <li>
+                <div class="inp_label_new"  >起始时间</div> <input id="qssj" type="text" placeholder="起始时间"
+                class="inp_text" data-role="none">
+                </li>
+                <li>
+                <div class="inp_label_new" >截止时间</div> <input id="jzsj" type="text" placeholder="截止时间"
+                class="inp_text" data-role="none" maxlength="20" onKeyUp="value=value.replace(/[\W]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"></input>
+                </li>					
+                </ul>				
+                </div>
+                <div class="form_div" id="mxtj" style="display:none">
+                <ul>
+                <li>
+                <div class="inp_label" style="width:60px">总笔数</div><span class="inp_label" id="tjbs" style="width:60px">4</span>
+                <div class="inp_label" style="width:60px">总金额</div><span class="inp_label" id="tjje" style="width:120px">30万元</span>
+                </li>
+                </ul>
+                
+                </div>
+                <div class="bot_btn_m" onClick="aj_submit()" id="ajtj" >查询</div>
+                
+                
+                <div id="p2"   style="margin-top:10px;">
+                
+                
+                </div>
+                <div class="form_div" style="background:#f4f4f4;height:40px;"></div>
+                </div>
+                </div>
+                
+                <div data-role="page" id="pcpzl">
+                <div class="topNavWrapper" >
+                <div class="topNav">
+                <div component-role="m11_top" class="top">				
+                <div class="back_ic" onClick="jQuery.mobile.changePage('#p1', {transition : 'slide'});"></div>
+                <span class="top_title">产品选择</span>
+                </div>
+                </div>
+                </div>
+                <div class="form_div" style="margin-top:35px;">
+                <ul>
+                <li onClick="cp_back('8888')">
+                <div class="inp_label" style="width:180px;">所有品种</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="cp_back('8001')">
+                <div class="inp_label" style="width:180px;">公积金贷款</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="cp_back('8002')">
+                <div class="inp_label" style="width:180px;">商贷贷款</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="cp_back('8003')">
+                <div class="inp_label" style="width:180px;">组合贷款</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="cp_back('8004')">
+                <div class="inp_label" style="width:180px;">房抵贷</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="cp_back('8005')">
+                <div class="inp_label" style="width:180px;">安居贷</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="cp_back('8006')">
+                <div class="inp_label" style="width:180px;">大树金融</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="cp_back('8007')">
+                <div class="inp_label" style="width:180px;">友金所</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="cp_back('8008')">
+                <div class="inp_label" style="width:180px;">平安新一贷</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="cp_back('8009')">
+                <div class="inp_label" style="width:180px;">赎楼贷</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="cp_back('8010')">
+                <div class="inp_label" style="width:180px;">尾款贷</div>
+                <div class="rgt"></div>
+                </li>
+                
+                </ul>
+                </div>
+                </div>
+                
+                <div data-role="page" id="pajzt">
+                <div class="topNavWrapper" >
+                <div class="topNav">
+                <div component-role="m11_top" class="top">				
+                <div class="back_ic" onClick="jQuery.mobile.changePage('#p1', {transition : 'slide'});"></div>
+                <span class="top_title">产品选择</span>
+                </div>
+                </div>
+                </div>
+                <div class="form_div" style="margin-top:35px;">
+                <ul>
+                <li onClick="zt_back(2)">
+                <div class="inp_label" style="width:180px;">已完成</div>
+                <div class="rgt"></div>
+                </li>	
+                <li onClick="zt_back(0)">
+                <div class="inp_label" style="width:180px;">未完成</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="zt_back(1)">
+                <div class="inp_label" style="width:180px;">异常终结</div>
+                <div class="rgt"></div>
+                </li>
+                <li onClick="zt_back(3)">
+                <div class="inp_label" style="width:180px;">所有案卷</div>
+                <div class="rgt"></div>
+                </li>			
+                </ul>
+                </div>
+                </div>
+                
+                </body>
+                </html>

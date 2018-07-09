@@ -1,0 +1,6 @@
+framework module NTCachePlugin {
+  umbrella header "NTCachePlugin.h"
+
+  export *
+  module * { export * }
+}

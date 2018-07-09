@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>服务评价</title>
+		<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">
+		<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+		
+		<link href="css/common.css" rel="stylesheet">
+		
+		<!-- select 样式  -->
+		<link href="css/easydropdown.metro.css" rel="stylesheet">
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.easydropdown.js"></script>
+		<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+		<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery.md5.js" type="text/javascript" charset="utf-8"></script>
+		<style>
+			.btn:hover, .btn:focus, .btn.focus{color:#fff;}
+			.inp_label{
+	width: 300px;
+	line-height: 45px;
+	color: #000000;
+	font-size: 17px;
+	text-align: left;
+	float: left;
+	margin-left: 15px;
+}
+	.inp_label_wdjrxq {
+	width: 85px;
+	line-height: 35px;
+	color: #2894FF;
+	/* font-weight:bold; */
+	font-size: 14px;
+	text-align: left;
+	float: left;
+	margin-left: 15px;
+}
+.inp_show_text_new1 {
+	width: 50%;
+	line-height: 35px;
+	color: #8e8e8e;
+	font-size: 13px;
+	text-align: left;
+	float: left;
+	margin-left: 3px;
+	margin-right: 5px;
+}
+
+.flow_steps ul span { height:23px; padding:0 50px 0 40px; line-height:23px; font-size:18px;text-align:center; background:url(img/barbg.png) no-repeat 100% 0 #E4E4E4; font-weight:bold;}  
+.flow_steps ul span.done { background-position:100% -46px; background-color:#FFEDA2;}  
+.flow_steps ul span.current_prev { background-position:100% -23px; background-color:#FFEDA2;}  
+/*
+.flow_steps ul span { height:31px; padding:0 50px 0 40px; line-height:31px; font-size:23px;text-align:center; background:url(img/barbg_new.png) no-repeat 100% 0 #E4E4E4; font-weight:bold;}  
+.flow_steps ul span.done { background-position:100% -62px; background-color:#FFEDA2;}  
+.flow_steps ul span.current_prev { background-position:100% -31px; background-color:#FFEDA2;}  
+*/
+.flow_steps ul span.current { color:#fff; background-color:#990D1B;}  
+.flow_steps ul span.last { background-image:none;} 
+</style>
+		
+<script type="text/javascript">
+var json;
+var count;
+var fileno;
+var flow;
+var number;
+			document.addEventListener("DOMContentLoaded", initial);
+			function initial() {
+				var thisURL = document.URL;  
+                document.getElementsByTagName('body')[0].style.width = top.screenWidth+"px";
+                document.getElementsByTagName('body')[0].style.height = top.screenHeight+20+"px";
+			//	var getenv = thisURL.split('?')[1];
+		//		fileno = getenv.split('=')[1];
+			//	fileno = "10000090";
+			//	$(".top_title").html(top.title);
+				$("#fileno").html(fileno);
+				//for test
+				showinfo();
+			//	initPage();
+			}
+			
+			function initPage(){
+				
+				var data = {};
+				data.fileno = fileno;
+				top.start_process();
+				$.ajax({
+						type : "post",
+						url: "http://"+IP+":"+PORT+"/app/6016;",
+						timeout: 15000,
+						data : data,
+						datatype : "json",
+						success :function(msg){
+							top.stop_process();	
+							showinfo(msg);
+						},
+						error:function(msg){
+							top.stop_process();
+							top.alertInfo('通信失败','','温馨提示','确认');
+						}
+					}); 
+				
+				
+			}	
+			
+
+			function showinfo(msg){
+			
+						
+				json=eval("("+msg+")");
+			
+				var data = json.data;
+				count = data.length;
+				if(document.getElementById('content') )
+					document.getElementById('p1').removeChild(document.getElementById('content'));
+				var div_host = document.getElementById("p1");
+				
+				var ul = document.createElement("ul");
+				
+				for(var i = 0; i < data.length; i++){	
+					var span = document.createElement("span");
+					span.setAttribute("onclick", "show_step('"+i+"','"+data[i].number+"')");
+					span.setAttribute("id", "step"+i);
+					span.innerHTML = data[i].flowname;
+					if(i == (data.length - 1)){
+						span.setAttribute("class", "last");
+					//	span.setAttribute("style", "color:#F00");
+					} else {
+						span.setAttribute("class", "done");
+					}
+					
+					
+					ul.appendChild(span);
+					
+				}
+				//默认显示最后一项
+				
+
+				div_host.appendChild(ul);
+				show_step(0);
+			}
+			function show_step(i, flow_i){
+				
+				
+				$("#flow_name").html(json.data[i].flowname);
+				$("#jbr_name").html(json.data[i].username);
+				$("#jbr_lxfs").html(json.data[i].lxfs );
+				$("#real_time").html(json.data[i].realtime + " 天");
+				$("#jbrly").val(json.data[i].beiz);
+				
+				var cssj = json.data[i].realtime -  json.data[i].flowtime;
+				if( cssj > 0 )
+				{	
+					$("#li_flowstat").attr("style", "display:black");
+					$("#flow_stat").html("超时:"+cssj + " /工作日");
+				} else {
+					$("#li_flowstat").attr("style", "display:none");
+				}
+				
+				$(".flow_steps ul span").attr("style", "color:#000000");
+				//$("#step"+i).attr("style", "color:#F00");
+				
+				$("#step"+i).attr("class", "current");
+	
+				if( i > 1 )
+					document.getElementById('p1').scrollLeft = document.getElementById('step'+i).offsetLeft - 120;
+				
+				for(var j = 0; j < count; j++){
+					if( j < (i - 1)){
+						$("#step"+j).attr("class", "done");
+					} else if( j == (i-1)){
+						$("#step"+j).attr("class", "current_prev");
+					} else if (j > i) {
+						
+						if( j == (count - 1))
+							$("#step"+j).attr("class", "last");
+						else
+							$("#step"+j).removeAttr("class");
+					} 
+				}
+				
+				//只有该步流程的本员工和总公司老板能看到图片
+				var level = localStorage.getItem("level");
+				var userid = localStorage.getItem("userid");
+				if( level == 1 || userid == json.data[i].userid){	
+					//根据案卷编号和流程号去查询流程图片
+					var data = {};
+					data.fileno = fileno;
+					data.number = flow_i;
+					$("#imageshow").attr("style", "display:black;");
+					top.start_process();
+					$.ajax({
+							type : "post",
+							url: "http://"+IP+":"+PORT+"/app/6017;",
+							timeout: 15000,
+							data : data,
+							datatype : "json",
+							success :function(msg){
+								top.stop_process();	
+								showimg_flow(msg);
+							},
+							error:function(msg){
+								top.stop_process();
+								top.alertInfo('通信失败','','温馨提示','确认');
+							}
+						});
+					
+				}
+			}
+			
+			function showimg_flow(msg){
+				var	msg='{"data":[{ "imgno":"1", "imageurl":"test1.jpg","imagedes":"测试图片1", "flow":"2"},{ "imgno":"2", "imageurl":"test2.jpg","imagedes":"测试图片2", "flow":"2"},{ "imgno":"3", "imageurl":"test3.jpg","imagedes":"测试图片3", "flow":"2"},{ "imgno":"4", "imageurl":"test4.jpg","imagedes":"测试图片4", "flow":"2"},{ "imgno":"5", "imageurl":"test5.jpg","imagedes":"测试图片5", "flow":"2"}]}';	
+				var jsons=eval("("+msg+")");
+			
+				if(document.getElementById('content_info') )
+					document.getElementById('p2').removeChild(document.getElementById('content_info'));
+				var div_host = document.getElementById("p2");
+				var div_content = document.createElement("div");
+				div_content.setAttribute("class", "form_div");
+				div_content.setAttribute("id", "content_info");
+				
+				for(var i = 0; i < jsons.data.length; i++){
+					var ul = document.createElement("ul"); 			
+					var div_label = document.createElement("div"); 
+					div_label.setAttribute("class", "inp_label");
+					div_label.setAttribute("id", 'img'+jsons.data[i].imageno);
+					div_label.innerHTML=jsons.data[i].imagedes;
+					var br = document.createElement("br");
+					var img = document.createElement("img"); 
+					img.setAttribute("style", "display: block; width: "+screen.availWidth+"; height: auto;border: 2px; hspace: 8px");
+				//	img.setAttribute("src", top.imgpath+fileno+'/'+jsons.data[i].imageurl);
+					img.setAttribute("src", 'img/test/'+fileno+'/'+jsons.data[i].imageurl);
+					ul.appendChild(div_label);
+					ul.appendChild(br);
+					ul.appendChild(img);
+					ul.appendChild(br);
+					div_content.appendChild(ul);
+					
+				}
+				
+				div_host.appendChild(div_content);
+			}
+			function tj_submit(){
+				alert("暂为开通该功能");
+			}
+			function myphone(lxfs){
+				
+				top.call_phone("联系方式:"+$("#"+lxfs).html());
+			}
+		</script>  
+		
+	</head>
+	<body style="background:#ffffff;overflow:auto;">
+		<!-- 顶部固定，不能滚动 -->
+		<div class="topNavWrapper" >
+			<div class="topNav">
+				<div component-role="m11_top" class="top">				
+					<div class="back_ic" onClick="hideFrame('srfade');"></div>
+					<span class="top_title">案卷流程</span>
+				</div>
+			</div>
+		</div>
+		
+			
+			<div style="margin-top:25px;">
+				<div></div>
+				<div style="background-color: #ffffff;text-indent:2em;text-overflow:ellipsis;font-size: 12px;margin-top:13px;margin-left:5px;margin-right:45px;color:#8e8e8e;">点击下面流程查看经办信息,并做出评价.<span style="color:#FF5151">可左右滑动</span></div>
+				<div id="p1" class="flow_steps" style="width:100%;overflow-x:scroll;dispaly:inline;white-space:nowrap;margin-top:10px;" >					
+				</div>
+				
+				<div class="form_div" id="div_aj"  style="margin-top:10px;">
+					<table class="table_class_new">
+						<li style="height:35px;">
+							<span class="inp_label_wdjrxq" >案卷编号</span><span class="inp_show_text_new1" id="fileno"></span>
+						</li >
+						<li style="height:35px;">
+							<span class="inp_label_wdjrxq" >流程</span><span class="inp_show_text_new1" id="flow_name"></span>
+						</li>
+						<li style="height:35px;">
+							<span class="inp_label_wdjrxq" >经办人</span><span class="inp_show_text_new1" id="jbr_name"></span>
+						</li>	
+						<li style="height:35px;">
+						<span class="inp_label_wdjrxq" >联系方式</span><span class="inp_show_text_new1" onclick="myphone('jbr_lxfs')" id="jbr_lxfs" style=" text-decoration:underline"></span>
+						</li>
+						<li style="height:35px;">
+							<span class="inp_label_wdjrxq" >用时</span><span class="inp_show_text_new1" id="real_time"></span>
+						</li>
+						<li id="li_flowstat" style="height:35px;">
+							<span class="inp_label_wdjrxq" >状态</span><span class="inp_show_text_new1" id="flow_stat" style="color:#ff0000"></span>
+						</li>
+					</table>
+				</div>
+				<!-- 经办人留言信息 -->
+			<div class="row" style="background:#ffffff;height:12px;"></div>
+				<div style="border-color: white;background-color: #ffffff;font-size: 17px;text-align: left;margin-left: 15px;">
+							经办人留言
+			</div>
+			<div style="background-color: #ffffff;font-size: 15px;text-align: left;margin-left: 15px;margin-right: 15px;">
+				<textarea style="width:100%;color:#5b5b5b;" rows="4" id="jbrly" readonly="readonly"></textarea>
+			</div>
+			<div id="imageshow" style="display:none;">
+				<div style="background-color: #ffffff;text-align:center;text-overflow:ellipsis;font-size: 12px;margin-top:13px;margin-left:5px;margin-right:45px;color:#8e8e8e;"><span style="color:#FF5151">该流程上传的图片</span></div>
+					
+				<div class="content" id="p2">
+						
+				</div>
+			</div>
+		</div>	
+	</body>
+</html>

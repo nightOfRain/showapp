@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title></title>
+<link href="css/lib/bootstrap/bootstrap-combined.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="css/lib/jQueryMobile/jquery.mobile-1.4.3.css" />
+<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+<link href="css/common.css" rel="stylesheet">
+<link href="css/index.css" rel="stylesheet">
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script src="js/lib/jQuery/jquery.mobile-1.4.3.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="js/lib/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<style type="text/css">
+.title1{
+	text-shadow: none !important;
+	color: white;
+	line-height: 40px;
+	text-align: center;
+	height: 40px;
+	width: 100%;
+	background-color: #129bf0;
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-align-items: center;
+	align-items: center;
+}
+body { 
+margin: 0; 
+padding: 0; 
+background-attachment: fixed; /* prevent screen flash in IE6 */ 
+} 
+div,ul{margin: 0;padding: 0;} 
+.topNavWrapper { 
+width: 100%; 
+text-align: left; 
+height: 31px; 
+margin: 0px auto; 
+z-index:100; 
+_position: relative ; 
+_top:0px; 
+} 
+.topNav { 
+width: 100%; 
+float: left; 
+display: block; 
+z-index: 100; 
+overflow: visible; 
+position: fixed; 
+top: 0px; /* position fixed for IE6 */ 
+_position: absolute; 
+_top: expression(documentElement.scrollTop + "px"); 
+background-repeat: no-repeat; 
+background-position: right; 
+height: 31px; 
+line-height: 31px; 
+color:#fff; 
+background-color:#444; 
+text-align:center; 
+} 
+</style> 
+
+</head>
+
+<body style="background:#f4f4f4;overflow:auto;">
+<div class="container-fluid">
+<div class="topNavWrapper" >
+	<div class="topNav">
+		<div component-role="m11_top" class="top">
+			<div class="back_ic" style="margin-top:-4px;" onClick="back_history();">	</div>	
+			<span class="top_title">湖北金融服务网格化信息网</span>
+		</div>
+	</div>
+</div>
+
+<div class="form_div" style="margin-top:30px;">
+<table width="100%" border="0">
+  <tr>
+    <th colspan="3" scope="col"><div style="margin-left:10px;margin-right:10px"><span id="bt"></span></div></th>
+  </tr>
+  <tr><th><div class="row" style="background:#f4f4f4;height:20px;"></div></th></tr>
+  <tr>
+    <td width="50%"><div style="margin-left:10px;margin-right:10px"><span id="rq" style="color:#C0C0C0"></span></div></td>
+    <td width="28%"></td>
+    <td width="22%"></td>
+  </tr>
+  <tr>
+    <td colspan="3"><div style="margin-left:10px;margin-right:10px;margin-top:10px;"><img id="img" name="" src="" width="100%" height="100%" alt="" /></div></td>
+  </tr>
+  <tr>
+    <td height="71" colspan="3">
+	    <div  style="margin-right:10px;margin-top:20px;">
+	    	<p style="margin-left:10px;font-size:15px;text-justify:inter-ideograph; text-align:justify;letter-spacing:1px;line-height:120%;" id="nr"></p>
+	    </div>
+    </td>
+  </tr>
+</table>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+
+var thisURL;
+
+document.addEventListener("DOMContentLoaded", initial);
+function initial() {
+	
+	thisURL = document.URL; 
+	$(".top_title").html("湖北金融服务网格化信息网"+top.didian);
+	
+	var getenv = thisURL.split("?")[1];
+	var id = getenv.split("=")[1];
+	var msg=localStorage.getItem(id);
+	
+	var data=eval("("+msg+")");	
+	//alert("data="+data.zcbt);
+	//alert("zcbt="+data.zcbt+";zcrq="+data.zcrq+";zctp="+data.zctp1+";zcnr="+data.zcnr);
+		
+	
+	$("#bt").html(data.zcbt);
+	$("#bt").attr("style", "font-size:20px;")
+//	$("#rq").html("2015年10月15日 9点17");
+	$("#rq").html(data.datetime);
+	$("#nr").html(data.zcnr);
+	
+	
+
+	$("#img").attr("src", "http://"+IP+":"+PORT+"/JRWG/img/"+data.zctp1);
+
+	
+	
+//	var data={"data":[{"id":1,"zcrq":"2015年1月27号 9点15分","zcbt":"这是测试,juranalaksdjflajskjsalkdfjlsajskk我skdjflkasjdffkljaskdjfk阿斯蒂芬塑料袋口附近塑料袋咖啡碱","zcnr":"测试，打架围观测试速度康师傅的垃圾收代理费交路口见松岛枫","by1":"1","by2":"1","zctp1":"http://127.0.0.1:8080/images/psb.jpg","zctp2":"http://127.0.0.1:8080/images/psb.jpg"}]};
+//	$("#bt").html(data.data[0].zcbt);
+//	$("#rq").html(data.data[0].zcrq);
+//	$("#img").attr("src", data.data[0].zctp1);	
+//	$("#nr").html(data.data[0].zcnr);
+//	$("bt").attr("style", "margin-top:10px;margin-left:"+top.spacing+";margin-right:"+top.spacing+";font-size:20px;letter-spacing:2px;line-height:1.5;");
+//	$("#img").attr("style", "height:100px;widht:"+(window.screen.Width*0.92)+";margin-left:"+top.spacing+";");
+	 
+	/* $("#img").attr("style", "height:160px"); */
+//	$("#nr").attr("style","text-indent:2em;margin-top:10px;margin-left:"+top.spacing+";margin-right:"+top.spacing+";font-size:15px;letter-spacing:2px;line-height:1.5;");
+	/* $("#nr").attr("style","letter-spacing:2px;font-size:15px;margin-bottom: 10px;"); */
+	
+	/*test--------------------------------
+
+	$("#bt").html("阿红的反馈说句话的反馈静安寺爱上当看见疯狂拉升京东方科技");
+	$("#bt").attr("style", "font-size:20px;")
+	$("#rq").html("2015年10月15日 9点17");
+
+	$("#nr").html("saldfjklsj是看得见反馈静安寺速度快放假拉斯的asdkfjsaskldfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfjfj阿斯顿发空间看圣诞节疯狂刘聚奎啥地方看见老师看见爱对方路口见阿斯顿发据了解爱上对方考虑就卡死的减肥了看见爱上了对方空间来看时间段放路口见阿斯顿会计分录空间艾斯黛拉反馈据了解阿斯顿发来看静安寺路口的减肥了看见爱上了对方空间里看见爱上对方离开家离得近阿斯利康敬爱放塑料袋空间阿斯兰的疯狂就拉上剪短发了空间按塑料袋咖啡碱卡拉斯剪短发了空间拉斯克奖地方了看见爱上了对方据了解阿斯顿发来看静安寺裸考军队爱丽丝的空间发了就爱上对方考虑就爱死了对方空间里看见爱上对方路口见阿斯顿口附近路口见阿斯顿发老看见爱上了对方空间里看见爱上的妇科垃圾地方了看见爱上了对方空间考虑就爱上对方离开就拉上看见对方路口见阿斯顿发空间里看见爱上对方考虑静安寺电缆附件老看见爱上对方考虑就爱上当减肥了开始建安大分路口见阿斯兰的空间发了看见爱上对方来看见爱上了对方及刻录机阿斯顿风口浪尖阿斯顿发空间爱上了对方空间里到静安寺风口浪尖爱上了对方空间看见爱上对方来看见爱上对方考虑就撒旦飞机离开谁极爱单分路口见阿斯利康解放路空间啊阿斯兰的房间来敬爱是否打开了敬爱是贷款街坊邻居阿斯顿发路口见阿斯兰的房间里看见爱上对方离开敬爱的老师发空间");
+	
+	
+
+	$("#img").attr("src", "http://59.172.63.26:88/JRWG/img/"+data.zctp1);*/
+}
+
+</script>
+</html>

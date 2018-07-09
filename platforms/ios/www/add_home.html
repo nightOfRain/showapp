@@ -1,0 +1,359 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<link href="js/lib/bootstrap3.0/bootstrap.css" rel="stylesheet">		
+<link href="css/lib/zzlcss/menu11.css" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/circle_reset.css">
+<link rel="stylesheet" href="css/circle_style.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="hello-mui/css/mui.min.css">
+<link rel="stylesheet" href="hello-mui/css/app.css">
+<link rel="stylesheet" href="hello-mui/css/iconfont.css">
+<link rel="stylesheet" href="hello-mui/css/demo.css">
+<link rel="stylesheet" href="css/frozen.css">
+<link rel="stylesheet" href="css/demo.css">     
+<link rel="stylesheet" type="text/css" href="css/timeline.css" />   
+
+
+<script src="hello-mui/js/mui.min.js"></script>
+<script src="hello-mui/js/iconfont.js"></script>
+<script type="text/javascript" src="js/lib/jQuery/jquery-2.0.0.min.js"></script>
+<script type="text/javascript" src="js/lib/bootstrap3.0/bootstrap.min.js"></script> 
+<script type="text/javascript" src="js/lib/zzljs/menu11_com.js"></script>
+<script type="text/javascript" src="js/nt_zuobiao.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=kZ76MkTNOIQ1VnidegnnxbKc"></script>
+
+<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+<style>
+html, body {
+    position: relative;
+    height: 100%;
+}
+body {
+    background: #fff;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color:#000;
+    margin: 0;
+    padding: 0;
+    overflow:auto;
+ 
+}
+
+
+
+</style>
+<script>
+
+			var thisURL; 
+
+			var startX, startY, endX, endY;
+			var start_flag = 0;
+			var offline_flag = 0;
+			var myArray = new Array(); 
+			var myArray_offline = new Array(); 
+	
+			$(function() {				
+		
+				thisURL = document.URL; 
+				top.map_flag = 0;
+				
+				top.edit_flag = 1;
+				top.data={};
+				localStorage.setItem("list_flag", '0');
+
+				mui.init({
+					swipeBack:true //启用右滑关闭功能
+				});
+				mui('.mui-scroll-wrapper').scroll({
+	                deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+	                });
+				
+				mui(document.body).on('tap', '.mui-action-back ', function(e) {
+					this.click();
+					return false;
+				});
+				
+				mui(document.body).on('tap', '.cd-timeline-block', function(e) {
+					this.click();
+                    return false;
+				});
+				file_begin();
+			});
+
+
+			function file_begin(){
+				
+				localStorage.setItem("file_path", localStorage.getItem("group_code"));
+				//做开关
+				if(start_flag == 1){
+					return;
+				}else{
+					var data = {
+							user_id:localStorage.getItem("user_id"),
+							manager_id:top.user_name,
+							inst_id:top.inst_name,
+							customer:localStorage.getItem("customer"),
+							group_code:localStorage.getItem("group_code"),  
+							type:'1',
+							force:'0',
+							coordinate:top.coordinate,
+		        			address:top.address_gps,
+		        			trandate:get_trandate()
+					};
+		
+					Http_ajax(function(msg){
+						
+						top.stop_process();
+						top.writelog("6003="+msg);
+						var json=eval("("+msg+")");
+						
+						localStorage.setItem("fileno", json.data.fileno);
+						
+						
+						if(json.data.stat == 0 ){ //新增
+							start_flag = 1;
+							top.data.fileno = json.data.fileno;
+							localStorage.setItem("fileno", json.data.fileno);
+						
+							fileno = json.data.fileno;
+							return ;
+						}else{
+							var statinfo ='';
+							
+							if(json.data.stat == 1){ //已有且未完成
+								statinfo = '检查未完成';
+							}else if(json.data.stat == 2){//已有且完成
+								statinfo = '检查已完成';							
+							}
+							top.confirmInfo_new("今天对该客户已经做过检查，且"+statinfo+"。请选择如下操作", function(msg){
+								if(msg == 1){ //继续录入
+									top.data.fileno = json.data.fileno;
+									localStorage.setItem("fileno", json.data.fileno);
+									var fileno_now = json.data.fileno;
+									var data = {
+											fileno:fileno_now											
+									};
+									Http_ajax(function(msg){
+										top.stop_process();
+										var json=eval("("+msg+")");
+										top.data = json.data;
+			
+										if(top.data.check_step_one){
+											
+											$("#step_1_span").html("正在检查...");
+											$("#step_1_img").attr("src", "img/finish.png");
+										}
+										if(top.data.check_step_two){
+											
+											$("#step_2_span").html("正在检查...");
+											$("#step_2_img").attr("src", "img/finish.png");
+										}
+										if(top.data.check_step_three){
+											
+											$("#step_3_span").html("正在检查...");
+											$("#step_3_img").attr("src", "img/finish.png");
+										}
+										if(top.data.check_step_four){
+											
+											$("#step_4_span").html("正在检查...");
+											$("#step_4_img").attr("src", "img/finish.png");
+										}
+										if(top.data.check_step_five){
+											
+											$("#step_5_span").html("正在检查...");
+											$("#step_5_img").attr("src", "img/finish.png");
+										}
+										if(top.data.check_step_six){
+											
+											$("#step_6_span").html("正在检查...");
+											$("#step_6_img").attr("src", "img/finish.png");
+										}
+									}, "app/6011", data);
+								}else if(msg == 2){//重新录入
+									
+									var data = {
+											user_id:localStorage.getItem("user_id"),
+											manager_id:top.user_name,
+											inst_id:top.inst_name,
+											customer:localStorage.getItem("customer"),
+											group_code:localStorage.getItem("group_code"),  
+											type:'1',
+											force:'1',
+											coordinate:top.coordinate,
+						        			address:top.address_gps,
+						        			trandate:get_trandate()
+									};
+									Http_ajax(function(msg){
+										top.stop_process();
+										var json=eval("("+msg+")");
+										localStorage.setItem("fileno", json.data.fileno);
+										fileno = json.data.fileno
+									}, "app/6003", data);
+								}
+							});
+							
+						}
+						
+					}, "app/6003", data);
+					
+				}
+				
+				
+			}
+			function update_button(step){		
+				$("#step_"+step+"_img").attr("src", "img/finish.png");
+				$("#step_"+step+"_span").html("正在检查...");
+			}
+
+
+			function scroll_auto(){
+
+	            mui('.mui-scroll-wrapper').scroll().reLayout();
+	            mui('.mui-scroll-wrapper').scroll().scrollToBottom(500);
+	        
+			}
+	
+			function check_by_step(step){
+
+				switch(step){
+					case '1':
+                        showNewFrame('business_place.html', 'smask');
+						break;
+					case '2':
+						showNewFrame('office_check.html', 'smask');				
+						break;
+					case '3':
+                        showNewFrame('finance_check.html', 'smask');
+											
+						break;
+					case '4':
+						showNewFrame('taxes_check.html', 'smask');
+						break;
+					case '5':
+						showNewFrame('bank_check.html', 'smask');
+						break;
+					case '6':
+						showNewFrame('pawn_check.html', 'smask');												
+						break;
+					default:
+						break;
+				
+				}
+			}
+
+
+			function isEmpty(obj) {
+
+				if(!obj && obj != 0 && obj != '') {　　　　　　　　　
+				  return true;
+				}
+				
+				if(Array.prototype.isPrototypeOf(obj) && obj.length == 0) {
+					　　　return true;
+				}
+				
+				if(Object.prototype.isPrototypeOf(obj) && Object.keys(obj).length == 0) { 
+					
+					　return true; 　　　
+				}
+				return false; 
+			}
+			
+			function finishIt()(){
+				mui.alert("数据已上传，如需修改请在【信息查看】模块处理，未确认提交前都可以修改", "风险管理APP", null);
+				back_history();
+			}
+		</script>
+    </head>
+    
+<body>  
+  	<header class="mui-bar mui-bar-nav head_color">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="back_history();" ></a>
+		<h1 class="mui-title">尽职调查-在线检查</h1>
+	</header>
+	
+	<div class="mui-content mui-scroll-wrapper" >
+    	<div class="mui-scroll" >
+            <iframe style="width:100%;border:0;margin-top:25px;" src="map_header.html" mce_src="map_header.html" name="tmp_iframe" id="tmp_iframe"></iframe>
+        
+        	<section id="cd-timeline" class="cd-container" style="margin-top:-30px;">
+					<div class="cd-timeline-block" onclick="check_by_step('1')">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/doing.png" alt="Picture" id="step_1_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>客户经营场所检查</h2>																																						
+							<span class="cd-date" id="step_1_span">点击开始检查</span>							
+						</div>
+					</div>
+					<div class="cd-timeline-block pass" onclick="check_by_step('2')">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/doing.png" alt="Movie" id="step_2_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>生产经营情况检查</h2>							
+							<span class="cd-date" id="step_2_span">点击开始检查</span>							
+						</div>
+					</div>
+					<div class="cd-timeline-block pass" onclick="check_by_step('3')">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/doing.png" alt="Movie" id="step_3_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>财务报表信息检查</h2>								
+							<span class="cd-date" id="step_3_span">点击开始检查</span>							
+						</div>
+					</div>
+					<div class="cd-timeline-block pass" onclick="check_by_step('4')">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/doing.png" alt="Movie" id="step_4_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>纳税申报信息检查</h2>								
+							<span class="cd-date" id="step_4_span">点击开始检查</span>							
+						</div>
+					</div>
+					<div class="cd-timeline-block pass" onclick="check_by_step('5')">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/doing.png" alt="Movie" id="step_5_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>银行对账信息检查</h2>			
+							<span class="cd-date" id="step_5_span">点击开始检查</span>							
+						</div>
+					</div>
+					<div class="cd-timeline-block pass" onclick="check_by_step('6')">
+						<div class="cd-timeline-img cd-picture">
+							<img src="img/doing.png" alt="Movie" id="step_6_img">
+						</div>
+				
+						<div class="cd-timeline-content">
+							<a class="cd-read-more" target="_blank"></a>
+							<h2>抵押物现状检查</h2>	
+							<span class="cd-date" id="step_6_span">点击开始检查</span>							
+						</div>
+					</div>
+
+
+				</section>
+				<div style="margin-top:10px;text-align:center;margin-bottom: 300px;"  onclick="finishIt();">
+					<button type="button" class="mui-btn  mui-btn-primary" style="width:90%">完成检查</button>
+				</div>
+        </div>
+	</div>
+
+</body>
+</html>
