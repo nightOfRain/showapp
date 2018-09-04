@@ -1,6 +1,0 @@
-framework module NTCallBrowserPlugin {
-  umbrella header "NTCallBrowserPlugin.h"
-
-  export *
-  module * { export * }
-}

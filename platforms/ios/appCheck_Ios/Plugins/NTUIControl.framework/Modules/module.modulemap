@@ -1,6 +1,0 @@
-framework module NTUIControl {
-  umbrella header "NTUIControl.h"
-
-  export *
-  module * { export * }
-}

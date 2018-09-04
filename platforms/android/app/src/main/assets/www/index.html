@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <link href="css/zzlcss/menu11.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link href="css/ionic.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/mui.min.css">
+    <!--App自定义的css-->
+    <link rel="stylesheet" type="text/css" href="css/app.css"/>
+    <link rel="stylesheet" type="text/css" href="css/icons-extra.css" />
+    <link href="css/mui.indexedlist.css" rel="stylesheet" />
+    <script src="js/ionic.bundle.min.js"></script>
+    <script type="text/javascript" src="js/jquery-2.0.0.min.js"></script>
+    <script type="text/javascript" src="js/pinyin.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/zzljs/menu11_com.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <title>Hello World</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid">
+
+
+    <header class="mui-bar mui-bar-nav head_color">
+        <h1 class="mui-title"><font style="font-weight:bold;">首页</font></h1>
+        <a  class="mui-icon-extra mui-icon-extra-sweep mui-pull-right"  onclick="get_scan()"></a>
+    </header>
+
+    <div  class="mui-content mui-scroll-wrapper" id="home" name="首页">
+        <div class="mui-scroll top_head" >
+            <div  class="mui-content-padded">
+                <h1 onclick="get_data('bankcard')">获取银行卡信息</h1>
+                <h1 onclick="get_data('idcard')">获取身份证信息</h1>
+                <h1 onclick="share_wx()">微信分享</h1>
+                <h1 onclick="parent.showNewFrame('firstPages/movie.html','smask')">短视频</h1>
+                <h1 >生产二维码</h1>
+                <textarea></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div  class="mui-content mui-scroll-wrapper" style="display:none" id="page1" name="消息">
+        <div class="mui-scroll top_head">
+            <div  class="mui-content-padded">
+                <h1 onclick="get_all()">获取消息</h1>
+                <p id="contacts"></p>
+            </div>
+        </div>
+    </div>
+
+    <div  class="mui-content mui-scroll-wrapper" style="display:none"  id="page2" name="通讯录">
+        <div class="mui-scroll top_head" >
+            <div id='list' class="mui-indexed-list">
+                <div class="mui-indexed-list-search mui-input-row mui-search">
+                    <input type="search" class="mui-input-clear mui-indexed-list-search-input" placeholder="搜索联系人">
+                </div>
+                <div class="mui-indexed-list-bar">
+                    <a>A</a>
+                    <a>B</a>
+                    <a>C</a>
+                    <a>D</a>
+                    <a>E</a>
+                    <a>F</a>
+                    <a>G</a>
+                    <a>H</a>
+                    <a>I</a>
+                    <a>J</a>
+                    <a>K</a>
+                    <a>L</a>
+                    <a>M</a>
+                    <a>N</a>
+                    <a>O</a>
+                    <a>P</a>
+                    <a>Q</a>
+                    <a>R</a>
+                    <a>S</a>
+                    <a>T</a>
+                    <a>U</a>
+                    <a>V</a>
+                    <a>W</a>
+                    <a>X</a>
+                    <a>Y</a>
+                    <a>Z</a>
+                </div>
+
+                <div class="mui-indexed-list-alert"></div>
+                <div class="mui-indexed-list-inner">
+                    <div class="mui-indexed-list-empty-alert">没有数据</div>
+                    <ul class="mui-table-view" id="contactList">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div  class="mui-content mui-scroll-wrapper" style="display:none"  id="page3" name="设置">
+        <div class="mui-scroll top_head" >
+            <div  class="mui-content-padded">
+                <h1 onclick="get_data('bankcard')">我是刘文杰</h1>
+
+            </div>
+        </div>
+    </div>
+    <nav class="mui-bar mui-bar-tab">
+        <a class="mui-tab-item mui-active" href="#home">
+            <span class="mui-icon mui-icon-home"></span>
+            <span class="mui-tab-label">首页</span>
+        </a>
+        <a class="mui-tab-item" href="#page1" onclick="testconn()">
+            <span class="mui-icon mui-icon-email"><span class="mui-badge">9</span></span>
+            <span class="mui-tab-label">消息</span>
+        </a>
+        <a class="mui-tab-item" href="#page2" onclick="get_all()">
+            <span class="mui-icon mui-icon-contact"></span>
+            <span class="mui-tab-label">通讯录</span>
+        </a>
+        <a class="mui-tab-item" href="#page3">
+            <span class="mui-icon mui-icon-gear"></span>
+            <span class="mui-tab-label">设置</span>
+        </a>
+    </nav>
+</div>
+
+<script src="js/mui.min.js"></script>
+<script src="js/mui.indexedlist.js"></script>
+<script>
+var pagearr=[];//存放页面的栈
+var activeTab = "#home";
+var hasContact = false;
+var Debug = true;
+    $(function() {
+        mui.init({
+            swipeBack:false //启用右滑关闭功能
+        });
+
+        mui('.mui-scroll-wrapper').scroll({
+            deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+        });
+        $("#img_test").attr("src", "img/logo.png");
+
+
+        mui(document.body).on('tap', '.mui-pull-right', function(e) {
+            this.click();
+            return false;
+        });
+        mui('.mui-bar-tab').on('tap', 'a', function(e) {
+            var targetTab = this.getAttribute('href');
+            console.log("activeTab="+activeTab+"; targetTab="+targetTab);
+            if (targetTab == activeTab) {
+                return;
+            }
+
+            $(".mui-bar-tab a").removeClass("mui-active");
+            $(targetTab).addClass("mui-active");
+
+            $(".mui-scroll-wrapper").hide();
+            $(targetTab).show();
+            activeTab = targetTab;
+
+            $(".mui-title").html($(targetTab).attr("name"));
+
+        });
+        mui(document.body).on('tap', '.mui-indexed-list-item', function(e) {
+            var phonenumber = this.getAttribute('id');
+            console.log("phonenumber="+phonenumber);
+            parent.showNewFrame('fourPages/icons.html','smask');
+
+        });
+
+        //事件监听-向上滑动
+		mui(document.body).on('swipeup', '.mui-scroll-wrapper', function(e) {
+	        alert("swipeup");
+            return false;
+	  	});
+	  	//事件监听-向下滑动
+		mui(document.body).on('swipedown', '.mui-scroll-wrapper', function(e) {
+	        alert("swipedown");
+            return false;
+	  	});
+
+    });
+
+    //微信分享
+    function share_wx(){
+        WXapiPlugin.share(null, null, {'type':'test',
+                'text':'test'});
+    }
+
+    //扫描二维码
+    function get_scan(){
+        Bscan.Scan(function(msg){
+            console.log("scan success:"+JSON.stringify(msg));
+            var msg = JSON.stringify(msg);
+            $("textarea").val(msg);
+            var reg=/^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/;
+            if(reg.test(url)){//这是网址
+
+            }
+        },function(err){
+            console.log("scan err:"+err);
+        },[])
+    }
+     //生产二维码
+    function set_scan(){
+        Bscan.Encode("TEXT_TYPE", "testdata", function(msg){
+            console.log("scan success:"+JSON.stringify(msg));
+        },function(err){
+            console.log("scan err:"+err);
+        },[])
+    }
+    //通过百度AI识别图片（银行卡、证件号等）
+    function get_data(str){
+        navigator.camera.getPicture(function(img){
+        console.log("img:"+img);
+            $("#img_test").attr("src", img);
+            BaiduAiPlugin.getResult(function(msg){
+                console.log("succ:"+msg);
+                var json = JSON.parse(msg);
+                if(str == "idcard"){
+                console.log("姓名："+json.words_result.姓名.words);
+                }
+
+            }, function(error){
+                console.log("error:"+error);
+            }, {'type':str,
+                'imgurl':img});
+        },function fail(msg){
+    		console.log("fail:"+msg);
+    	},{
+
+            quality : 50,
+
+            destinationType : navigator.camera.DestinationType.FILE_URI,//这里要用FILE_URI，才会返回文件的URI地址
+
+            //destinationType : Camera.DestinationType.DATA_URL,
+
+            sourceType : Camera.PictureSourceType.CAMERA,
+
+            allowEdit : true,
+
+            encodingType : Camera.EncodingType.JPEG,
+
+            popoverOptions : CameraPopoverOptions,
+
+            saveToPhotoAlbum : true
+
+        });
+    }
+
+    /***********************************************通讯录处理模块****************************************/
+    //获取通讯录
+    function get_all(){
+        if(hasContact){//是否获取过通讯录
+            return;
+        }
+     //   var contactFileds = ["displayName", "name", "phoneNumbers", "emails", "address"];
+        var contactFileds = ["displayName", "phoneNumbers"];
+        var options = {filter:"", multiple: true};
+        navigator.contacts.find(contactFileds, onSuccess, onError, options);
+    }
+
+    function onSuccess(contacts){
+        hasContact = true;//是否获取过通讯录
+        console.log('Found contacts length==' + contacts.length);
+        console.log('all contacts==' + angular.toJson(contacts));
+        var contactsLength = contacts.length;
+        var formatContacts=[];
+        for(var i = 0; i < contactsLength; i++) {
+
+            var obj = {};
+            obj.displayName = contacts[i].displayName;
+            obj.phoneNumber = contacts[i].phoneNumbers[0].value;
+            obj.pinyinName = pinyin.getFullChars(obj.displayName);
+
+            var camelChar = pinyin.getCamelChars(obj.displayName).substring(0, 1);
+
+            var j = 0;
+            var len = formatContacts.length;
+            for(j; j < len; j++) {
+                if(formatContacts[j].key == camelChar) {
+                    formatContacts[j].value.push(obj);
+                    break;
+                }
+            }
+            if(j == len) {
+                // console.log('新增key');
+                var arr = new Array();
+                arr.push(obj);
+                formatContacts[len] = {
+                    key: camelChar,
+                    value: arr
+                };
+            }
+
+            obj = null;
+        }
+
+        //排序展示
+        formatContacts = formatContacts.sort(compare('key'));
+        console.log("formatContacts="+JSON.stringify(formatContacts));
+
+        //按字母分组
+        var contacthtml = '';
+        var indexkey='';
+        for(var i = 0; i < formatContacts.length; i++){
+            if(indexkey == formatContacts[i].key){
+                contacthtml+= '<li data-value="'+formatContacts[i].value[0].pinyinName+'" data-tags="'+formatContacts[i].value[0].pinyinName+'" class="mui-table-view-cell mui-indexed-list-item" id="'+formatContacts[i].value[0].phoneNumber+'">'+formatContacts[i].value[0].displayName+'</li>';
+            }else{
+                contacthtml+= '<li data-group="'+formatContacts[i].key+'" class="mui-table-view-divider mui-indexed-list-group">'+formatContacts[i].key+'</li>'
+                            +'<li data-value="'+formatContacts[i].value[0].pinyinName+'" data-tags="'+formatContacts[i].value[0].pinyinName+'" class="mui-table-view-cell mui-indexed-list-item" id="'+formatContacts[i].value[0].phoneNumber+'">'+formatContacts[i].value[0].displayName+'</li>';
+                indexkey = formatContacts[i].key;
+            }
+        }
+        $("#contactList").html(contacthtml);
+
+        //设置通讯录高度
+        var header = document.querySelector('header.mui-bar');
+        var list = document.getElementById('list');
+        //calc hieght
+        list.style.height = (document.body.offsetHeight - header.offsetHeight - 45) + 'px';
+        //create
+        window.indexedList = new mui.IndexedList(list);
+    }
+
+    function onError(err){
+        console.log("err="+JSON.stringify(err));
+
+    }
+
+
+    //对象数组按属性排序
+    var compare = function(prop) {
+        return function (obj1, obj2) {
+            var val1 = obj1[prop];
+            var val2 = obj2[prop];
+            if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
+                val1 = Number(val1);
+                val2 = Number(val2);
+            }
+            if (val1 < val2) {
+                return -1;
+            }else if(val1 > val2) {
+                return 1;
+            }else{
+                return 0;
+            }
+        }
+    }
+    /***************************************通讯录页面处理结束*********************************************/
+    /***************************************公共接口部分***************************************************/
+    var comm_url = "127.0.0.1:8080/mfpexample";//服务器访问路径
+    var Settings={};//全局变量，用于存放用户信息等
+
+    function testconn(){
+        var data = {};
+        http_comm("st001", data, function(msg){
+            alert("conn test success");
+         })
+    }
+    //全局变量处理
+	function set_settings(){
+		top.writelog("set setttings="+JSON.stringify(Settings));
+		localStorage.setItem("settings", JSON.stringify(Settings));
+	}
+    //统一通信接口
+	function http_comm(trancode, data, succCallback){
+		writelog(trancode+" send: "+JSON.stringify(data));
+
+		$.ajax({
+			type : "post",
+			timeout: 10000,
+			url: "http://"+comm_url+"/txCtrl?txcode="+trancode,
+			data : data,
+			datatype : "application/json",
+			beforeSend : (function(e,xhr,o) {
+                writelog("xhr="+JSON.stringify(xhr));
+                writelog("o="+JSON.stringify(o));
+                    }),
+			success : function(msg, status, xhr){
+
+                writelog("xhr="+JSON.stringify(xhr));
+				if(msg == null){
+					mui.alert("服务器处理异常");
+					return;
+				}
+				writelog(trancode+" recv: "+JSON.stringify(msg));
+				if(isJson(msg)){
+					  if(msg.responseCode == 'A006'){//登陆认证失败，需要重新登陆
+							  mui.alert("通讯失败："+msg.responseMsg);
+							  Settings.loginState = false;
+							  set_settings();
+
+							  return;
+					  }else if(msg.responseCode == 'AAAA'){ //交易成功
+					  		msg = JSON.stringify(msg);
+					  		var msg = msg.replace(/null/g, '\'\'');
+							succCallback(msg);
+					  }else{
+					  		mui.alert("交易失败："+msg.responseMsg);
+					  		return;
+					  }
+
+				  }
+			},
+				//调用执行后调用的函数
+            complete: function (XMLHttpRequest, textStatus) {
+                if(textStatus == 'timeout'){
+                    mui.alert('连接超时，请检查网络情况');
+                    return;
+                }
+            },
+			error:function(msg){
+
+				writelog(trancode+" error recv: "+JSON.stringify(msg));
+				mui.alert('通信失败，请重新登陆');
+				Settings.loginState = false;
+				set_settings();
+
+			}
+			});
+
+
+	}
+
+	//日志打印
+    function writelog(str){
+        if(Debug){
+            console.log(str);
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+/*
+ *这是单独为hello mui准备的个性化css，可以覆盖标准mui的css定义；
+ * 在实际项目开发时，建议为App单独写一个css文件，从而实现项目的自定义皮肤功能；
+ * 
+ * */
+.mui-plus header.mui-bar{
+	display: none;
+}
+.mui-plus .mui-bar-nav~.mui-content{
+	padding: 0;
+}
+
+/*hm开头的表示仅为 Hello MUI示例定义*/
+.hm-description{
+	margin: .5em 0;
+}
+
+.hm-description>li {
+	font-size: 14px;
+	color: #8f8f94;
+}
+
+.div_fullscreen{
+    z-index:9998;width:100%;height:100%;position: fixed;top:0px;
+    background:-webkit-gradient(linear, 10% 30%, 50% 100%,from(#8ec2f5), to(#04477c));
+    background:-moz-linear-gradient(top,#b8c4cb,#f6f6f8);
+}
+
+.div_fullscreen_transparent{
+    z-index:9998;width:100%;
+    height:100%;
+    position: fixed;
+    top:0px;
+    background-color:rgba(220,38,38,0);
+}
+
+.top_head{
+    margin-top:25px;
+}
+
+.head_color{
+	height:70px;
+	padding-top:25px;
+}
+.head_color_transparent{
+	background-color:#049FF1;
+	height:70px;
+	padding-top:25px;
+	background-color:rgba(4,159,241,0.0);
+	-webkit-box-shadow:none;
+	box-shadow:none
+}
+.div_footer_transparent{
+    padding-left:10px;
+    padding-right:calc(15% + 10px);
+    position: fixed;
+    bottom: 44px;
+	min-height:70px;
+	width:100vw;
+	background-color:rgba(4,159,241,0.0);
+	-webkit-box-shadow:none;
+	box-shadow:none;
+}
+.div_footer_transparent h5{
+
+    color:#fafafa;
+    text-weight:bold;
+}
+.div_footer_transparent p{
+    min-height:30px;
+    line-height:15px;
+    font-size:0.8em;
+    color:#fafafa;
+
+    border:0;
+    background-color:rgba(4,159,241,0.0);
+}
+.div_right_transparent{
+    position: fixed;
+    right: 0;
+    bottom:0;
+	height:50vh;
+	padding-right:10px;
+	width:60px;
+	background-color:rgba(4,159,241,0.0);
+	-webkit-box-shadow:none;
+	box-shadow:none;
+	text-align:center;
+}
+.div_right_transparent img{
+    margin-top:-10px;
+    width:50px;
+}
+.div_right_transparent div{
+    border-radius:25px;
+    width:50px;
+    padding-right:-10px;
+    text-align:center;
+}
+.div_right_transparent div img{
+    border-radius:25px;
+    width:50px;
+}
+.div_right_transparent p{
+    margin-top:-10px;
+    text-align:center;
+    color:#fafafa;
+    font-size:0.6em;
+}
+.div_right_transparent div.my-badge{
+    margin-top:-10px;
+    background-color:red;
+    width:4vw;
+    border-radius:2vw;
+}
+.button__transparent{
+    background-color:rgba(4,159,241,0.0);
+}
+ .box {
+    width: 300px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.animate {
+
+    padding-left: 20px;
+    font-size: 12px;
+    color: #000;
+    display: inline-block;
+    white-space: nowrap;
+    animation: 5s wordsLoop linear infinite normal;
+}
+
+@keyframes wordsLoop {
+    0% {
+        transform: translateX(200px);
+        -webkit-transform: translateX(200px);
+    }
+    100% {
+        transform: translateX(-100%);
+        -webkit-transform: translateX(-100%);
+    }
+}
+
+@-webkit-keyframes wordsLoop {
+    0% {
+        transform: translateX(200px);
+        -webkit-transform: translateX(200px);
+    }
+    100% {
+        transform: translateX(-100%);
+        -webkit-transform: translateX(-100%);
+    }
+}

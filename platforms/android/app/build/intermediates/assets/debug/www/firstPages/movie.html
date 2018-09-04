@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <link href="../js/bootstrap3.0/bootstrap.css" rel="stylesheet">
+    <link href="../css/zzlcss/menu11.css" rel="stylesheet">
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../css/mui.min.css">
+    <!--App自定义的css-->
+    <link rel="stylesheet" type="text/css" href="../css/app.css"/>
+    <script src="../js/mui.min.js"></script>
+    <script type="text/javascript" src="../js/jquery-2.0.0.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap3.0/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/zzljs/menu11_com.js"></script>
+    <script src="../js/index.js" type="text/javascript" charset="utf-8"></script>
+    <style>
+        html,
+        body {
+            margin:0;
+            padding:0;
+        }
+
+        .mui-bar{
+            background-color:rgba(4,159,241,0);
+        }
+        .mui-tab-label{
+            color:#f4f4f4;
+        }
+
+        .mui-active .mui-tab-label{
+            font-weight:bold;
+            border-bottom:1px solid #fff;
+        }
+        .mui-tab-item img{
+            margin-top:3px;
+            height:40px;
+        }
+    </style>
+    <script type="text/javascript" charset="utf-8">
+	var sonClass;
+	var myVideo;
+	var videoLine; //存放视频队列，服务器每次请求10条视频地址，存放在本地栈，通过索引currIndex读取对应视频
+	var currIndex=0;
+ 	document.addEventListener("DOMContentLoaded", initial);
+
+    function initial() {
+        thisURL = document.URL;
+        myVideo=document.getElementById("video1");
+
+        mui.init({
+			swipeBack:false //启用右滑关闭功能
+		});
+
+		mui('.mui-scroll-wrapper').scroll({
+            deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+        });
+
+		//返回键 tap事件监听
+		mui(document.body).on('tap', '.mui-action-back ', function(e) {
+	  		this.click();
+            return false;
+	  	});
+
+	  	//返回键 tap事件监听
+		mui(document.body).on('tap', '.button__transparent', function(e) {
+	  		this.click();
+            return false;
+	  	});
+	    //事件监听-向上滑动
+		mui(document.body).on('swipeup', '.div_fullscreen_transparent', function(e) {
+	  		myVideo.src = "../movie/movie2.mp4";
+	  	//	nextVideo();
+	  		myVideo.play();
+            return false;
+	  	});
+	  	//事件监听-向下滑动
+		mui(document.body).on('swipedown', '.div_fullscreen_transparent', function(e) {
+	  		myVideo.src = "../movie/movie1.mp4";
+	  	//	prevVideo();
+	  		myVideo.play();
+            return false;
+	  	});
+	  	//返回键 tap事件监听
+		mui(document.body).on('tap', '.div_fullscreen_transparent', function(e) {
+
+	  		if (myVideo.paused)
+              myVideo.play();
+            else
+              myVideo.pause();
+            return false;
+	  	});
+
+	  	myVideo.play();
+
+	  	mui('.mui-bar-tab').on('tap', 'a', function(e) {
+            this.click();
+            return false;
+
+        });
+    }
+
+
+
+    //下一条视频
+    function nextVideo(){
+
+        if( currIndex == videoLine.length){
+            //请求新的数据，插入队列尾部,
+        }
+        currIndex++;
+        myVideo.src = videoLine[currIndex];
+        myVideo.play();
+    }
+    //上一条视频
+    function prevVideo(){
+
+        if(currIndex == 0){
+            //请求新的数据，插入队列头部
+
+          //  currIndex =  //新加载数据长度
+        }
+
+        currIndex--;
+        myVideo.src = videoLine[currIndex];
+        myVideo.play();
+    }
+
+    function playPause(event)
+    {
+        if (myVideo.paused)
+          myVideo.play();
+        else
+          myVideo.pause();
+
+
+    }
+
+    function hideAll(){
+       // $(".div_right_transparent").hide();
+        myVideo.pause();
+    }
+
+    function showAll(){
+      //  $(".div_right_transparent").show();
+        myVideo.play();
+    }
+    </script>
+
+<body>
+<div class="container-fluid">
+    <div class="mui-content mui-scroll-wrapper" >
+        <video id="video1" loop="loop">
+            <source src="../movie/movie2.mp4" type="video/mp4" />
+            Your browser does not support HTML5 video.
+        </video>
+    </div>
+    <div class="div_fullscreen_transparent">
+        <header class="mui-bar mui-bar-nav head_color_transparent">
+            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="alert('back');" ></a>
+            <h1 class="mui-title">短视频</h1>
+        </header>
+
+        <div class="div_footer_transparent">
+            <h5 id="title">这里是标题</h5>
+            <p id="note">这里是文本内容asdfask等级划分卡号案例的身份卡拉圣诞节爱上了的空间发链接爱上了的空间发链接案例的会计法律框架案例打开房间啊离开房间爱上了打开房间啊离开家案例打开房间啊了案例的空间法拉家纺案例打开房间啊了空间2啊的房间里埃里克就案例打开房间啊了</p>
+            <div class="box">
+                <p id="song" class="animate">@这里内容循环移动&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp@这里内容循环移动</p>
+            </div>
+
+
+
+        </div>
+        <div class="div_right_transparent">
+
+            <div><img src="../img/head.jpg"/></div>
+            <div style="margin-top:-15px;"><img src="../img/plus.png"/></div>
+            <img src="../img/heart.png"/><p id="heart">168</p>
+            <img src="../img/message.png"/><p id="message">1680</p>
+            <img src="../img/share.png"/><p id="share">1688</p>
+        </div>
+        <nav class="mui-bar mui-bar-tab">
+            <a class="mui-tab-item mui-active" >
+                <span class="mui-tab-label">首页</span>
+            </a>
+            <a class="mui-tab-item" >
+                <span class="mui-tab-label">消息</span>
+            </a>
+            <a class="mui-tab-item"  onclick="hideAll();showNewFrame('qrcode.html','smask')">
+                <img src="../img/add.png" />
+            </a>
+            <a class="mui-tab-item">
+                <span class="mui-tab-label">通讯录</span>
+            </a>
+            <a class="mui-tab-item">
+
+                <span class="mui-tab-label">设置</span>
+            </a>
+        </nav>
+    </div>
+</div>
+</body>
+</html>
